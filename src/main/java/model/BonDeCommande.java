@@ -4,92 +4,132 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Classe représentant un bon de commande dans le système de récompenses.
+ * Ce bon permet à un utilisateur d'échanger ses points contre des réductions.
+ */
 public class BonDeCommande {
 
-    private static int compteurId = 1;
+    // ===================== ATTRIBUTS =====================
 
+    /** Identifiant unique du bon de commande */
     private int id;
+
+    /** Utilisateur ayant passé cette commande */
     private Utilisateur utilisateur;
-    private List<Produit> produits;
-    private double montantTotal;
+
+    /** Liste des catégories de produits pour lesquelles des réductions sont demandées */
+    private List<CategorieProduit> ReductionsDisponibles;
+
+    /** État actuel de la commande (ex: "en attente", "validée", "annulée") */
     private String etatCommande;
+
+    /** Commerce auprès duquel la commande est passée */
     private Commerce commerce;
-    private LocalDate dateCommande;
 
-    public BonDeCommande(Utilisateur utilisateur, Commerce commerce) {
-        this.id = compteurId++;
+    /** Date de création de la commande */
+    private LocalDate DateCommande;
+
+    /** Nombre total de points utilisés pour cette commande */
+    private int pointsUtilises;
+
+    // ===================== CONSTRUCTEUR =====================
+
+    public BonDeCommande(int id, Utilisateur utilisateur, List<CategorieProduit> reductions, Commerce commerce) {
+        this.id = id;
         this.utilisateur = utilisateur;
+        this.ReductionsDisponibles = reductions != null ? reductions : new ArrayList<>();
         this.commerce = commerce;
-        this.produits = new ArrayList<>();
-        this.etatCommande = "EN_ATTENTE";
-        this.dateCommande = LocalDate.now();
+        this.DateCommande = LocalDate.now();
+        this.etatCommande = "en attente";
+        this.pointsUtilises = 0;
     }
 
-    public void ajouterProduit(Produit produit) {
-        produits.add(produit);
-        montantTotal += produit.getPrixEnPoints();
-    }
+    // ===================== MÉTHODES =====================
 
+    /**
+     * Verifie si l'utilisateur a assez de points pour valider la commande.
+     */
     public boolean verifierSoldeUtilisateur() {
-        return utilisateur.GetPtsFidelite() >= montantTotal;
+        int total = getTotalPointsUtilises();
+        return utilisateur.getPtsFidelite() >= total;
     }
 
-    public boolean utiliserPoints() {
+    /**
+     * Utilise les points de l'utilisateur pour valider la commande.
+     */
+    public void utiliserPoints() {
         if (verifierSoldeUtilisateur()) {
-            utilisateur.RetirerPoints((int) montantTotal);
+            pointsUtilises = getTotalPointsUtilises();
+            utilisateur.setPtsFidelite(utilisateur.getPtsFidelite() - pointsUtilises);
+        }
+    }
+
+    /**
+     * Valide la commande si les conditions sont remplies.
+     */
+    public boolean validerCommande() {
+        if (verifierSoldeUtilisateur()) {
+            utiliserPoints();
+            this.etatCommande = "validée";
             return true;
         }
         return false;
     }
 
-    public boolean validerCommande() {
-        if (utiliserPoints()) {
-            etatCommande = "VALIDÉE";
-            for (Produit p : produits) {
-                utilisateur.AcheterProduits(p);
-            }
+    /**
+     * Annule la commande si elle n'a pas encore ete validee.
+     */
+    public boolean annulerCommande() {
+        if (!etatCommande.equals("validée")) {
+            this.etatCommande = "annulée";
             return true;
-        } else {
-            etatCommande = "REFUSÉE";
-            return false;
         }
+        return false;
     }
 
-    // Getters
-    public int getId() {
-        return id;
+    /**
+     * Calcule le total de points necessaires pour cette commande.
+     */
+    public int getTotalPointsUtilises() {
+        int total = 0;
+        for (CategorieProduit cp : ReductionsDisponibles) {
+            total += cp.getPointNecessaire();
+        }
+        return total;
     }
 
-    public Utilisateur getUtilisateur() {
-        return utilisateur;
-    }
+    // ===================== GETTERS et SETTERS =====================
 
-    public List<Produit> getProduits() {
-        return produits;
-    }
-
-    public double getMontantTotal() {
-        return montantTotal;
+    public List<CategorieProduit> getProduits() {
+        return ReductionsDisponibles;
     }
 
     public String getEtatCommande() {
         return etatCommande;
     }
 
+    public void setEtatCommande(String etat) {
+        this.etatCommande = etat;
+    }
+
+    public LocalDate getDateCommande() {
+        return DateCommande;
+    }
+
     public Commerce getCommerce() {
         return commerce;
     }
 
-    public LocalDate getDateCommande() {
-        return dateCommande;
+    public Utilisateur getUtilisateur() {
+        return utilisateur;
     }
 
-    @Override
-    public String toString() {
-        return "BonDeCommande #" + id +
-                " | Utilisateur : " + utilisateur.GetNom() +
-                " | Montant : " + montantTotal +
-                " pts | État : " + etatCommande;
+    public int getPointsUtilises() {
+        return pointsUtilises;
+    }
+
+    public int getId() {
+        return id;
     }
 }
-

@@ -1,42 +1,64 @@
 package model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
+/**
+ * Représente un dépôt de déchets effectué par un utilisateur dans une poubelle.
+ * Chaque dépôt a un type, une quantité, un poids et génère des points fidélité.
+ */
 public class Depot {
 
-    private Utilisateur utilisateur;
-    private Poubelle poubelle;
+    // ================= ATTRIBUTS =================
 
+    /** Identifiant unique du dépôt */
+    private int id;
+
+    /** Type du déchet déposé */
     private NatureDechet type;
-    private double poids;
+
+    /** Poids du déchet déposé (en kg) */
+    private float poids;
+
+    /** Quantité d'unités déposées */
     private int quantite;
-    private Date heureDepot;
+
+    /** Date et heure du dépôt */
+    private LocalDateTime heureDepot;
+
+    /** Nombre de points attribués pour ce dépôt */
     private int points;
 
-    public Depot(Utilisateur utilisateur, Poubelle poubelle, NatureDechet type, int quantite, int points) {
-        this.utilisateur = utilisateur;
-        this.poubelle = poubelle;
+    /** Poubelle utilisée */
+    private Poubelle poubelle;
+
+    /** Utilisateur qui a déposé */
+    private Utilisateur utilisateur;
+
+    // ================= CONSTRUCTEUR =================
+
+    public Depot(int id, NatureDechet type, float poids, int quantite,
+                 LocalDateTime heureDepot, Poubelle poubelle, Utilisateur utilisateur) {
+        this.id = id;
         this.type = type;
+        this.poids = poids;
         this.quantite = quantite;
-        this.poids = type.getPoidsUnitaire() * quantite;
-        this.heureDepot = new Date();
-        this.points = points;
+        this.heureDepot = heureDepot;
+        this.poubelle = poubelle;
+        this.utilisateur = utilisateur;
+        this.points = calculerPointsAttribues(); // auto-calcul au moment du dépôt
     }
 
-    // Getters
-    public Utilisateur getUtilisateur() {
-        return utilisateur;
-    }
+    // ================= MÉTHODES GETTERS =================
 
-    public Poubelle getPoubelle() {
-        return poubelle;
+    public int getId() {
+        return id;
     }
 
     public NatureDechet getType() {
         return type;
     }
 
-    public double getPoids() {
+    public float getPoids() {
         return poids;
     }
 
@@ -44,7 +66,7 @@ public class Depot {
         return quantite;
     }
 
-    public Date getHeureDepot() {
+    public LocalDateTime getHeureDepot() {
         return heureDepot;
     }
 
@@ -52,16 +74,69 @@ public class Depot {
         return points;
     }
 
-    @Override
-    public String toString() {
-        return "Depot{" +
-                "utilisateur=" + utilisateur.GetNom() +
-                ", poubelle=" + poubelle.getId() +
-                ", type=" + type +
-                ", poids=" + poids +
-                ", quantite=" + quantite +
-                ", heureDepot=" + heureDepot +
-                ", points=" + points +
-                '}';
+    public Poubelle getPoubelle() {
+        return poubelle;
+    }
+
+    public Utilisateur getUtilisateur() {
+        return utilisateur;
+    }
+
+    // ================= MÉTHODES UML =================
+
+    /**
+     * Retourne la quantité de déchets déposés (simple wrapper ici).
+     */
+    public int calculerQuantiteDechets() {
+        return quantite;
+    }
+
+    /**
+     * Vérifie que le type de déchet est accepté par la poubelle utilisée.
+     */
+    public boolean verifierTypeDechet() {
+        return poubelle.getTypePoubelle().getTypesAcceptes().contains(type);
+    }
+
+    /**
+     * Vérifie que le dépôt est conforme à une poubelle donnée :
+     * accès autorisé + type de déchet autorisé.
+     */
+    public boolean verifierConformite(Poubelle p) {
+        return p.verifierAcces(utilisateur.getCodeAcces()) &&
+                p.getTypePoubelle().getTypesAcceptes().contains(type);
+    }
+
+    /**
+     * Renvoie une chaîne lisible décrivant ce dépôt.
+     */
+    public String afficherDepot() {
+        return "Dépôt #" + id +
+                " | Type: " + type +
+                ", Quantité: " + quantite +
+                ", Poids: " + poids + "kg" +
+                ", Points: " + points +
+                ", Date: " + heureDepot;
+    }
+
+    /**
+     * Calcule les points a attribuer à l'utilisateur pour ce dépôt,
+     * en fonction de la nature du déchet.
+     * Bareme, on a utilise l'exemple dans le sujet :
+     * - Plastique : 2 pts / unité
+     * - Verre : 3 pts / unité
+     * - Carton : 1 pt / unité
+     * - Métal : 4 pts / unité
+     * - Papier : 1 pt / unité
+     */
+    private int calculerPointsAttribues() {
+        int pointsParUnite = switch (type) {
+            case Plastique -> 2;
+            case Verre     -> 3;
+            case Carton    -> 1;
+            case Metal     -> 4;
+            case Papier    -> 1;
+        };
+        return quantite * pointsParUnite;
     }
 }

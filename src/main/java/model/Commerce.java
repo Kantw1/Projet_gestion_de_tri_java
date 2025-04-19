@@ -3,47 +3,106 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Représente un commerce partenaire qui propose des réductions
+ * sur des catégories de produits en échange de points.
+ */
 public class Commerce {
 
+    // ========== ATTRIBUTS ==========
+
+    /** Nom du commerce (ex. "Carrefour", "Décathlon") */
     private String nom;
-    private List<String> CategoriesProduits;
-    private List<BonDeCommande> commandes;
+
+    /** Liste des catégories de produits disponibles dans ce commerce */
+    private List<CategorieProduit> categoriesProduits;
+
+    /** Contrat de partenariat signé avec le centre de tri */
     private ContratPartenariat contrat;
 
-    public Commerce(String nom) {
+    /** Historique des bons de commande échangés dans ce commerce */
+    private List<BonDeCommande> historiqueCommandes;
+
+    /** Centre de tri auquel ce commerce est rattaché */
+    private CentreDeTri centre;
+
+    // ========== CONSTRUCTEUR ==========
+
+    public Commerce(String nom, CentreDeTri centre) {
         this.nom = nom;
-        this.CategoriesProduits = new ArrayList<>();
-        this.commandes = new ArrayList<>();
+        this.categoriesProduits = new ArrayList<>();
+        this.historiqueCommandes = new ArrayList<>();
+        this.centre = centre;
     }
 
-    public void EchangerPoints() {
-        System.out.println("Points échangés contre des produits ou avantages!");
-    }
-    //mettre dans utilisateur
-    public List<String> GetCategoriesProduits() {
-        return CategoriesProduits;
+    // ========== MÉTHODES UML ==========
+
+    /**
+     * Permet à un utilisateur d’échanger ses points contre un produit d’une catégorie.
+     * @return true si l’échange a été accepté.
+     */
+    public boolean echangerPoints(Utilisateur u, CategorieProduit cp) {
+        if (cp.estEligible(u.getPtsFidelite())) {
+            u.convertirPoints(cp.getPointNecessaire()); // retire les points
+            return true;
+        }
+        return false;
     }
 
-    public boolean VerifierConditionsContrat(ContratPartenariat contrat) {
-        return contrat != null && !contrat.GetCategorie().isEmpty();
+    /** Retourne la liste des catégories de produits proposées. */
+    public List<CategorieProduit> getCategoriesProduits() {
+        return categoriesProduits;
     }
 
-    public void AccepterCommande(BonDeCommande commande) {
-        if (commande != null && commande.validerCommande()) {
-            commandes.add(commande);
-            System.out.println("Commande acceptée par le commerce : " + nom);
-        } else {
-            System.out.println("commande refusée par le commerce : " + nom);
+    /** Vérifie que les catégories respectent le contrat de partenariat. */
+    public boolean verifierConditionsContrat(ContratPartenariat contrat) {
+        return contrat != null &&
+                contrat.estValide(java.time.LocalDate.now()) &&
+                categoriesProduits.stream().allMatch(c -> contrat.estCategorieAutorisee(c));
+    }
+
+    /** Accepte un bon de commande si les conditions sont respectées. */
+    public boolean accepterCommande(BonDeCommande commande) {
+        if (verifierConditionsContrat(this.contrat)) {
+            historiqueCommandes.add(commande);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Retourne le taux de réduction associé à une catégorie.
+     */
+    public float getReductionPourCategorie(CategorieProduit cp) {
+        return cp.getBonReduction();
+    }
+
+    /** Ajoute une catégorie de produits dans le commerce. */
+    public void ajouterCategorie(CategorieProduit cp) {
+        if (!categoriesProduits.contains(cp)) {
+            categoriesProduits.add(cp);
         }
     }
 
-    // Getters 
-    public String getNom() {
-        return nom;
+    /** Supprime une catégorie de produits du commerce. */
+    public void supprimerCategorie(CategorieProduit cp) {
+        categoriesProduits.remove(cp);
     }
 
-    public List<BonDeCommande> getCommandes() {
-        return commandes;
+    /** Retourne la liste des bons de commande échangés dans ce commerce. */
+    public List<BonDeCommande> getHistoriqueCommandes() {
+        return historiqueCommandes;
+    }
+
+    /** Retourne le centre de tri associé à ce commerce. */
+    public CentreDeTri getCentre() {
+        return centre;
+    }
+
+    // ========== GETTERS ==========
+
+    public String getNom() {
+        return nom;
     }
 
     public ContratPartenariat getContrat() {
@@ -53,4 +112,4 @@ public class Commerce {
     public void setContrat(ContratPartenariat contrat) {
         this.contrat = contrat;
     }
-} 
+}

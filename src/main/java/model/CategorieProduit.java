@@ -3,53 +3,86 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Représente une catégorie de produits échangeables via les points de fidélité.
+ * Chaque catégorie contient une liste de noms de produits, un seuil minimal de points,
+ * et un pourcentage de réduction applicable.
+ */
 public class CategorieProduit {
 
-    private static int compteurId = 1;
+    // ========== ATTRIBUTS ==========
 
+    /** Identifiant unique de la catégorie */
     private int id;
-    private String nom;
-    private int tauxConversion;
-    private List<Produit> produits;
 
-    public CategorieProduit(String nom, int tauxConversion) {
-        this.id = compteurId++;
+    /** Nom de la catégorie (ex. "Alimentaire", "Hygiène") */
+    private String nom;
+
+    /** Liste des produits dans cette catégorie (par leur nom) */
+    private List<String> produits;
+
+    /** Nombre de points nécessaires pour accéder à un produit de cette catégorie */
+    private int pointNecessaire;
+
+    /** Pourcentage de réduction accordé pour un produit (ex : 0.2 = 20%) */
+    private float bonReduction;
+
+    // ========== CONSTRUCTEUR ==========
+
+    public CategorieProduit(int id, String nom, int pointNecessaire, float bonReduction) {
+        this.id = id;
         this.nom = nom;
-        this.tauxConversion = tauxConversion;
+        this.pointNecessaire = pointNecessaire;
+        this.bonReduction = bonReduction;
         this.produits = new ArrayList<>();
     }
 
-    public int getId() {
-        return id;
-    }
+    // ========== MÉTHODES UML ==========
 
+    /** Renvoie le nom de la catégorie */
     public String getNom() {
         return nom;
     }
 
-    public int getTauxConversion() {
-        return tauxConversion;
-    }
-
-    public List<Produit> getProduits() {
-        return produits;
-    }
-
-    // Associe un produit à cette catégorie
-    public void associerProduit(Produit p) {
-        if (!produits.contains(p)) {
-            produits.add(p);
-            p.assignCategorie(this);
+    /** Ajoute un produit dans la catégorie */
+    public void associerProduit(String nomProduit) {
+        if (!produits.contains(nomProduit)) {
+            produits.add(nomProduit);
         }
     }
 
-    // Vérifie si un produit appartient à cette catégorie
-    public boolean verifierProduit(Produit p) {
-        return produits.contains(p);
+    /** Vérifie si la catégorie contient au moins un produit */
+    public boolean verifierProduit() {
+        return !produits.isEmpty();
     }
 
-    @Override
-    public String toString() {
-        return nom + " (conversion: " + tauxConversion + " pts)";
+    /** Renvoie le nombre de points nécessaires pour un produit de cette catégorie */
+    public int getPointNecessaire() {
+        return pointNecessaire;
+    }
+
+    /** Renvoie la réduction applicable sous forme de pourcentage */
+    public float getBonReduction() {
+        return bonReduction;
+    }
+
+    /** Vérifie si un utilisateur est éligible avec un certain nombre de points */
+    public boolean estEligible(int pointsUtilisateur) {
+        return pointsUtilisateur >= pointNecessaire;
+    }
+
+    /** Applique la réduction sur un prix donné */
+    public float appliquerReduction(float prixOriginal) {
+        return prixOriginal * (1 - bonReduction);
+    }
+
+    /** Retire un produit de la liste (s’il existe) */
+    public void retirerProduit(String nomProduit) {
+        produits.remove(nomProduit);
+    }
+
+    /** Retourne la liste des produits */
+    public List<String> getProduits() {
+        return produits;
     }
 }

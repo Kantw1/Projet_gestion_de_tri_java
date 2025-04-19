@@ -3,94 +3,144 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Représente une poubelle intelligente capable de gérer les dépôts de déchets.
+ * Elle contrôle l'accès, les types de déchets autorisés, et calcule les taux de remplissage et pénalités.
+ */
 public class Poubelle {
 
-    private static int compteurId = 1;
+    // ========== ATTRIBUTS ==========
 
+    /** Identifiant unique de la poubelle */
     private int id;
-    private int capaciteMax;
-    private String emplacement;
-    private String typePoubelle;
-    private int quantiteActuelle;
-    private List<Depot> depots;
-    
-  //penser à vider poubelle
 
-    public Poubelle(int capaciteMax, String emplacement, String typePoubelle) {
-        this.id = compteurId++;
+    /** Capacité maximale de la poubelle (en unités de quantité) */
+    private int capaciteMax;
+
+    /** Emplacement géographique de la poubelle */
+    private String emplacement;
+
+    /** Type de poubelle (ex: Bleue, Jaune, etc.) */
+    private TypePoubelle typePoubelle;
+
+    /** Quantité actuelle de déchets présents dans la poubelle */
+    private int quantiteActuelle;
+
+    /** Liste des dépôts effectués dans cette poubelle */
+    private List<Depot> historiqueDepots;
+
+    /** Codes d'accès autorisés (accès sans authentification complète) */
+    private List<Integer> accesAutorises;
+
+    /** Utilisateurs autorisés à accéder à cette poubelle */
+    private List<Utilisateur> utilisateursAutorises;
+
+    /** Seuil à partir duquel une alerte est déclenchée */
+    private int seuilAlerte;
+
+    /** Types de déchets autorisés dans cette poubelle */
+    private List<NatureDechet> dechetsAutorises;
+
+    // ========== CONSTRUCTEUR ==========
+
+    public Poubelle(int id, int capaciteMax, String emplacement, TypePoubelle typePoubelle, int seuilAlerte) {
+        this.id = id;
         this.capaciteMax = capaciteMax;
         this.emplacement = emplacement;
-        this.typePoubelle = typePoubelle.toUpperCase();
+        this.typePoubelle = typePoubelle;
         this.quantiteActuelle = 0;
-        this.depots = new ArrayList<>();
+        this.historiqueDepots = new ArrayList<>();
+        this.accesAutorises = new ArrayList<>();
+        this.utilisateursAutorises = new ArrayList<>();
+        this.dechetsAutorises = typePoubelle.getTypesAcceptes();
+        this.seuilAlerte = seuilAlerte;
     }
 
-    public void identifierUtilisateur(Utilisateur utilisateur) {
-        System.out.println("Utilisateur identifié: " + utilisateur.GetNom());
+    // ========== MÉTHODES UML ==========
+
+    /** Verifie si un utilisateur est autorise à accéder à la poubelle */
+    public boolean identifierUtilisateur(Utilisateur u) {
+        return utilisateursAutorises.contains(u);
     }
 
-    public int calculerQuantiteDechets() {
-        return this.quantiteActuelle;
-    }
-
+    /** Verifie si un déchet est autorisé dans cette poubelle */
     public boolean verifierTypeDechets(NatureDechet type) {
-        switch (typePoubelle) {
-            case "VERTE":
-                return type == NatureDechet.VERRE;
-            case "JAUNE":
-                return type == NatureDechet.PLASTIQUE || type == NatureDechet.CARTON || type == NatureDechet.METAL;
-            case "BLEUE":
-                return type == NatureDechet.PAPIER;
-            case "CLASSIQUE":
-                return true;
-            default:
-                return false;
-        }
+        return dechetsAutorises.contains(type);
     }
 
-    public int attribuerPoint(NatureDechet type, double poids) {
-        return verifierTypeDechets(type) ? (int) poids : -(int) poids;
+    /** Attribue les points de fidélite a un utilisateur pour un depot */
+    public void attribuerPoint(Utilisateur u) {
+        int total = historiqueDepots.stream()
+                .filter(d -> d.getUtilisateur().equals(u))
+                .mapToInt(Depot::getPoints)
+                .sum();
+        u.ajouterPoints(total);
     }
 
+    /** Envoie une alerte au centre de tri si le seuil est depassee */
     public void notifierCentreTri() {
-        if (quantiteActuelle >= capaciteMax) {
-            System.out.println("Poubelle " + id + " à " + emplacement + " est pleine !");
+        if (quantiteActuelle >= seuilAlerte) {
+            System.out.println("⚠ Alerte : seuil atteint à la poubelle #" + id);
         }
     }
 
-    public boolean verifierAcces(Utilisateur utilisateur) {
-        return utilisateur.GetCodeAcces() > 0;
+    /** Verifie si le code d'acces fourni est valide */
+    public boolean verifierAcces(int code) {
+        return accesAutorises.contains(code);
     }
 
-    public void ajouterDechets(Depot depot) {
-        int total = depot.getQuantite();
-        this.quantiteActuelle += total;
-        this.depots.add(depot);
+    /** Ajoute un depot à la poubelle */
+    public void ajouterDechets(Depot d) {
+        historiqueDepots.add(d);
+        quantiteActuelle += d.getQuantite();
         notifierCentreTri();
     }
 
-    // Getters
-    public int getId() {
-        return id;
+    /** Verifie si la poubelle est pleine */
+    public boolean estPleine() {
+        return quantiteActuelle >= capaciteMax;
     }
 
-    public int getCapaciteMax() {
-        return capaciteMax;
+    /** Calcule une penalité en fonction du non-respect des règles de tri */
+    public void calculerPenalite(Utilisateur u) {
+        System.out.println("Pénalité enregistrée pour l'utilisateur : " + u.getNom());
     }
 
-    public String getEmplacement() {
-        return emplacement;
+    /** Accepte un dépôt si tout est conforme */
+    public boolean accepterDepot(Depot d, Utilisateur u) {
+        if (!verifierAcces(u.getCodeAcces())) return false;
+        if (!verifierTypeDechets(d.getType())) return false;
+        if (estPleine()) return false;
+        ajouterDechets(d);
+        attribuerPoint(u);
+        return true;
     }
 
-    public String getTypePoubelle() {
-        return typePoubelle;
+    /** Calcule le taux de remplissage (entre 0 et 1) */
+    public float getTauxRemplissage() {
+        return (float) quantiteActuelle / capaciteMax;
     }
 
-    public int getQuantiteActuelle() {
-        return quantiteActuelle;
-    }
+    // ========== GETTERS ==========
 
-    public List<Depot> getDepots() {
-        return depots;
-    }
-} 
+    public int getId() { return id; }
+
+    public int getCapaciteMax() { return capaciteMax; }
+
+    public String getEmplacement() { return emplacement; }
+
+    public TypePoubelle getTypePoubelle() { return typePoubelle; }
+
+    public int getQuantiteActuelle() { return quantiteActuelle; }
+
+    public List<Depot> getHistoriqueDepots() { return historiqueDepots; }
+
+    public List<NatureDechet> getDechetsAutorises() { return dechetsAutorises; }
+
+    public List<Utilisateur> getUtilisateursAutorises() { return utilisateursAutorises; }
+
+    public List<Integer> getAccesAutorises() { return accesAutorises; }
+
+    public int getSeuilAlerte() { return seuilAlerte; }
+
+}

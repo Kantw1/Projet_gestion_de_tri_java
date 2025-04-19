@@ -2,109 +2,122 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
+/**
+ * Représente un utilisateur qui peut effectuer des dépôts de déchets,
+ * accumuler des points de fidélité et accéder à certaines poubelles autorisées.
+ */
 public class Utilisateur {
 
-    private static int compteurId = 1;
+    // ========== ATTRIBUTS ==========
 
+    /** Identifiant unique de l'utilisateur */
     private int id;
+
+    /** Nom de l'utilisateur */
     private String nom;
-    private int PtsFidelite;
-    private int CodeAcces;
-    private List<Produit> ProduitsAchetes;
+
+    /** Points de fidélité accumulés par l'utilisateur */
+    private int ptsFidelite;
+
+    /** Code d'accès personnel permettant l'identification auprès des poubelles */
+    private int codeAcces;
+
+    /** Historique des dépôts effectués par l'utilisateur */
     private List<Depot> historiqueDepots;
 
-    public Utilisateur(String nom) {
-        this.id = compteurId++;
+    /** Liste des poubelles auxquelles l'utilisateur a accès */
+    private List<Poubelle> poubellesAccessibles;
+
+    // ========== CONSTRUCTEUR ==========
+
+    public Utilisateur(int id, String nom, int codeAcces) {
+        this.id = id;
         this.nom = nom;
-        this.PtsFidelite = 0;
-        this.CodeAcces = genererCodeAcces();
-        this.ProduitsAchetes = new ArrayList<>();
+        this.codeAcces = codeAcces;
+        this.ptsFidelite = 0;
         this.historiqueDepots = new ArrayList<>();
+        this.poubellesAccessibles = new ArrayList<>();
     }
 
-    private int genererCodeAcces() {
-        return new Random().nextInt(900000) + 100000;
-    }
+    // ========== MÉTHODES UML ==========
 
-    public void DeposerDechets(Poubelle poubelle, NatureDechet type, int quantite) {
-        boolean conforme = poubelle.verifierTypeDechets(type);
-        double poids = type.getPoidsUnitaire() * quantite;
-        int points = (int) poids;
-        if (!conforme) points *= -1;
-    
-        Depot depot = new Depot(this, poubelle, type, quantite, points);
-        historiqueDepots.add(depot);
-        poubelle.ajouterDechets(depot);
-    
-        if (points >= 0) {
-            AjouterPoints(points);
-        } else {
-            RetirerPoints(-points);
-        }
-    }
-    
-
-	public void ConsulterHistorique() {
-	    System.out.println("Historique des dépôts de " + nom + " :");
-	    if (historiqueDepots.isEmpty()) {
-	        System.out.println("cette personne n'a fait aucun depot ");
-	    } else {
-	        for (Depot d : historiqueDepots) {
-	            System.out.println(" - " + d);
-	        }
-	    }
-	}
-	
-	public void ConvertirPoint() {
-	    if (PtsFidelite >= 100) {
-	        System.out.println("100 points convertis en bon d'achat de 10€");
-	        RetirerPoints(100);
-	    } else {
-	        System.out.println("pas assez de points pour convertir :/");
-	    }
-	}
-	//recevoir une information pour generer u bon de commande
-
-    public boolean AcheterProduits(Produit p) {
-        if (PtsFidelite >= p.getPrixEnPoints()) {
-            PtsFidelite -= p.getPrixEnPoints();
-            ProduitsAchetes.add(p);
-            return true;
-        } else {
-            System.out.println("Pas assez de points pour acheter : " + p.getNom());
-            return false;
+    /**
+     * Permet à l'utilisateur d'effectuer un dépôt dans une poubelle donnée.
+     * Le dépôt est ajouté à l'historique, et les points de fidélité sont mis à jour.
+     */
+    public void deposerDechets(Poubelle p, Depot d) {
+        if (p.acceptorDepot(d, this)) {
+            historiqueDepots.add(d);
+            ptsFidelite += d.getPoints();
         }
     }
 
-    // Getter
-    public int GetCodeAcces() {
-        return CodeAcces;
+    /**
+     * Renvoie l'historique complet des dépôts de l'utilisateur.
+     */
+    public List<Depot> consulterHistorique() {
+        return historiqueDepots;
     }
 
-    public int getId(){
-        return id;
+    /**
+     * Convertit un nombre de points de fidélité en bon de commande.
+     * Le bon généré dépend du nombre de points utilisés.
+     */
+    public BonDeCommande convertirPoints(int points) {
+        if (points <= ptsFidelite && points > 0) {
+            ptsFidelite -= points;
+            return new BonDeCommande(this, points);
+        }
+        return null;
     }
 
-    public List<Produit> GetListProduits() {
-        return ProduitsAchetes;
+    /**
+     * Renvoie le code d'accès personnel de l'utilisateur.
+     */
+    public int getCodeAcces() {
+        return codeAcces;
     }
 
-    public String GetNom() {
+    /**
+     * Renvoie le nom de l'utilisateur.
+     */
+    public String getNom() {
         return nom;
     }
 
-    public int GetPtsFidelite() {
-        return PtsFidelite;
+    /**
+     * Renvoie le nombre actuel de points de fidélité de l'utilisateur.
+     */
+    public int getPtsFidelite() {
+        return ptsFidelite;
     }
 
-    public void AjouterPoints(int points) {
-        PtsFidelite += points;
+    /**
+     * Permet à l'utilisateur d'acheter un produit en échange de points.
+     * L'achat n’est validé que si l’utilisateur dispose des points nécessaires.
+     */
+    public boolean acheterProduits(CategorieProduit produit) {
+        if (produit.estEligible(ptsFidelite)) {
+            ptsFidelite -= produit.getPointNecessaire();
+            return true;
+        }
+        return false;
     }
 
-    public void RetirerPoints(int points) {
-        PtsFidelite -= points;
-        if (PtsFidelite < 0) PtsFidelite = 0;
+    /**
+     * Ajoute une poubelle accessible à l'utilisateur.
+     */
+    public void ajouterPoubelleAccessible(Poubelle p) {
+        if (!poubellesAccessibles.contains(p)) {
+            poubellesAccessibles.add(p);
+        }
     }
-} 
+
+    /**
+     * Renvoie la liste des poubelles accessibles à cet utilisateur.
+     */
+    public List<Poubelle> getPoubellesAccessibles() {
+        return poubellesAccessibles;
+    }
+}
