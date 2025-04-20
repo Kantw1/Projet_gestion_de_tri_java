@@ -13,9 +13,9 @@ public class UtilisateurDAO {
         try (Connection conn = Database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, u.GetNom());
-            stmt.setInt(2, u.GetPtsFidelite());
-            stmt.setInt(3, u.GetCodeAcces());
+            stmt.setString(1, u.getNom());
+            stmt.setInt(2, u.getPtsFidelite());
+            stmt.setInt(3, u.getCodeAcces());
 
             stmt.executeUpdate();
             System.out.println("Utilisateur inséré avec succès !");
