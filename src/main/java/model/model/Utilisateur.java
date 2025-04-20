@@ -31,6 +31,9 @@ public class Utilisateur {
 
     // ========== CONSTRUCTEUR ==========
 
+    /**
+     * Initialise un nouvel utilisateur avec un identifiant, un nom et un code d'accès.
+     */
     public Utilisateur(int id, String nom, int codeAcces) {
         this.id = id;
         this.nom = nom;
@@ -47,7 +50,7 @@ public class Utilisateur {
      * Le dépôt est ajouté à l'historique, et les points de fidélité sont mis à jour.
      */
     public void deposerDechets(Poubelle p, Depot d) {
-        if (p.acceptorDepot(d, this)) {
+        if (p.accepterDepot(d, this)) {
             historiqueDepots.add(d);
             ptsFidelite += d.getPoints();
         }
@@ -65,9 +68,9 @@ public class Utilisateur {
      * Le bon généré dépend du nombre de points utilisés.
      */
     public BonDeCommande convertirPoints(int points) {
-        if (points <= ptsFidelite && points > 0) {
+        if (points > 0 && points <= ptsFidelite) {
             ptsFidelite -= points;
-            return new BonDeCommande(this, points);
+            return new BonDeCommande(0, this, new ArrayList<>(), null);
         }
         return null;
     }
@@ -92,6 +95,15 @@ public class Utilisateur {
     public int getPtsFidelite() {
         return ptsFidelite;
     }
+
+    /**
+     * Modifie le nombre de points de fidélité de l'utilisateur.
+     * @param ptsFidelite Le nouveau solde de points.
+     */
+    public void setPtsFidelite(int ptsFidelite) {
+        this.ptsFidelite = ptsFidelite;
+    }
+
 
     /**
      * Permet à l'utilisateur d'acheter un produit en échange de points.
@@ -119,5 +131,13 @@ public class Utilisateur {
      */
     public List<Poubelle> getPoubellesAccessibles() {
         return poubellesAccessibles;
+    }
+
+    /**
+     * Ajoute un certain nombre de points de fidélité à l'utilisateur.
+     * @param points Le nombre de points à ajouter.
+     */
+    public void ajouterPoints(int points) {
+        this.ptsFidelite += points;
     }
 }

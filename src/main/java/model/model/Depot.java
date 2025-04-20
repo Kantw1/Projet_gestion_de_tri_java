@@ -131,11 +131,12 @@ public class Depot {
      */
     private int calculerPointsAttribues() {
         int pointsParUnite = switch (type) {
-            case Plastique -> 2;
-            case Verre     -> 3;
-            case Carton    -> 1;
-            case Metal     -> 4;
-            case Papier    -> 1;
+            case model.NatureDechet.PLASTIQUE -> 2;
+            case model.NatureDechet.VERRE     -> 3;
+            case model.NatureDechet.CARTON    -> 1;
+            case model.NatureDechet.METAL     -> 4;
+            case model.NatureDechet.PAPIER    -> 1;
+            default -> throw new IllegalStateException("Unexpected value: " + type);
         };
         return quantite * pointsParUnite;
     }
