@@ -36,6 +36,6 @@ public class MainTest {
         launcher.execute(request);
 
         var summary = listener.getSummary();
-        summary.printTo(System.out);
+        summary.printTo(new java.io.PrintWriter(System.out));
     }
 }

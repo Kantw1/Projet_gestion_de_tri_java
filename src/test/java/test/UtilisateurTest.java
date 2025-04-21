@@ -1,11 +1,14 @@
 package test;
 
 import model.*;
+import model.TypePoubelle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,12 +20,14 @@ public class UtilisateurTest {
 
     @BeforeEach
     public void setUp() {
-        utilisateur = new Utilisateur(1, "Alice", 100, 1234);
-        poubelle = new Poubelle(1, 100, "Entrée", TypePoubelle.JAUNE);
-        poubelle.ajouterUtilisateurAutorise(utilisateur);
+        utilisateur = new Utilisateur(1, "Alice", 1234);
+        poubelle = new Poubelle(1, 100, "Chatelet", TypePoubelle.JAUNE, 5);
+        // Lien entre utilisateur et poubelle
         utilisateur.ajouterPoubelleAccessible(poubelle);
 
-        depot = new Depot(1, NatureDechet.PLASTIQUE, "1.0kg", 2, java.time.LocalDateTime.now(), poubelle, utilisateur);
+        // Correction du dépôt
+        depot = new Depot(1, NatureDechet.PLASTIQUE, 1.0f, 2, LocalDateTime.now(), poubelle, utilisateur);
+
         utilisateur.deposerDechets(poubelle, depot);
     }
 

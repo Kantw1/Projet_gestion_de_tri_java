@@ -52,8 +52,8 @@ public class CategorieProduit {
     }
 
     /** Vérifie si la catégorie contient au moins un produit */
-    public boolean verifierProduit() {
-        return !produits.isEmpty();
+    public boolean verifierProduit(String nomProduit) {
+        return produits.contains(nomProduit);
     }
 
     /** Renvoie le nombre de points nécessaires pour un produit de cette catégorie */

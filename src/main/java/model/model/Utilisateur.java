@@ -97,6 +97,13 @@ public class Utilisateur {
     }
 
     /**
+     * Renvoie directement l'historique des dépôts (accès direct à la liste).
+     */
+    public Object getHistoriqueDepots() {
+        return historiqueDepots;
+    }
+
+    /**
      * Modifie le nombre de points de fidélité de l'utilisateur.
      * @param ptsFidelite Le nouveau solde de points.
      */

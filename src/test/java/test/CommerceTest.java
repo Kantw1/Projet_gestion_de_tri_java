@@ -19,7 +19,7 @@ public class CommerceTest {
 
     @BeforeEach
     public void setUp() {
-        centre = new CentreDeTri("Centre 1", "Adresse", 1);
+        centre = new CentreDeTri(1, "Centre_1", "Adresse");
         commerce = new Commerce("Commerce Test", centre);
         utilisateur = new Utilisateur(1, "Client", 1234);
         utilisateur.ajouterPoints(100);
