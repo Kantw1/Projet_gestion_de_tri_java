@@ -3,6 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.*;
+import model.*;
 
 /**
  * Représente un centre de tri responsable de la gestion des poubelles,

@@ -1,13 +1,13 @@
 package test;
 
 import model.*;
+import model.CategorieProduit;
 import model.TypePoubelle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.*;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -71,7 +71,7 @@ public class UtilisateurTest {
         // Créer un produit nécessitant moins de points que ce que l'utilisateur possède
         List<String> nomsProduits = new ArrayList<>();
         nomsProduits.add("ProduitTest");
-        CategorieProduit produit = new CategorieProduit(1, "Test", nomsProduits, 30, 0.2f);
+        CategorieProduit produit = new CategorieProduit(1, "Test", 6, 30);
 
         boolean result = utilisateur.acheterProduits(produit);
         assertTrue(result);

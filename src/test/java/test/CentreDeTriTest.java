@@ -1,6 +1,10 @@
 package test;
 
 import model.*;
+import model.CentreDeTri;
+import model.Commerce;
+import model.Poubelle;
+import model.TypePoubelle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,8 +20,8 @@ public class CentreDeTriTest {
 
     @BeforeEach
     public void setUp() {
-        centre = new CentreDeTri("Centre Principal", "Adresse", 1);
-        poubelle = new Poubelle(1, 100, "Zone 1", TypePoubelle.JAUNE, 80);
+        centre = new CentreDeTri(7, "Centre Principal", "1 rue de la medaille");
+        poubelle = new Poubelle(1, 100, "Zone 1", TypePoubelle.JAUNE, 1);
         commerce = new Commerce("Commerce 1", centre);
     }
 

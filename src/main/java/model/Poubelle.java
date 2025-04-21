@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import model.*;
 
 /**
  * Représente une poubelle intelligente capable de gérer les dépôts de déchets.
@@ -55,6 +56,7 @@ public class Poubelle {
         this.dechetsAutorises = typePoubelle.getTypesAcceptes();
         this.seuilAlerte = seuilAlerte;
     }
+
 
     // ========== MÉTHODES UML ==========
 

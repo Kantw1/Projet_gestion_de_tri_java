@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import model.*;
 
 /**
  * Représente un utilisateur qui peut effectuer des dépôts de déchets,
@@ -99,7 +100,7 @@ public class Utilisateur {
     /**
      * Renvoie directement l'historique des dépôts (accès direct à la liste).
      */
-    public Object getHistoriqueDepots() {
+    public List<Depot> getHistoriqueDepots() {
         return historiqueDepots;
     }
 

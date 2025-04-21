@@ -1,6 +1,7 @@
 package model;
 
 import java.time.LocalDateTime;
+import model.*;
 
 /**
  * Représente un dépôt de déchets effectué par un utilisateur dans une poubelle.

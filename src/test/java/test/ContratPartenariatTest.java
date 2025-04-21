@@ -27,11 +27,11 @@ public class ContratPartenariatTest {
         debut = LocalDate.of(2024, 1, 1);
         fin = LocalDate.of(2025, 12, 31);
         centre = new CentreDeTri(1, "Centre Nord", "Rue des Fleurs");
-        commerce = new Commerce("Biocoop", "Biens alimentaires");
+        commerce = new Commerce("Biocoop", centre);
         contrat = new ContratPartenariat(10, debut, fin, centre, commerce);
 
-        categorie1 = new CategorieProduit(1, "Papier", List.of("ramette", "journal"), 10);
-        categorie2 = new CategorieProduit(2, "Verre", List.of("bouteille"), 15);
+        categorie1 = new CategorieProduit(1, "Papier", 8, 10);
+        categorie2 = new CategorieProduit(2, "Verre", 9, 15);
     }
 
     @Test
