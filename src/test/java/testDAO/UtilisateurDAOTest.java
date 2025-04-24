@@ -1,4 +1,4 @@
-package test;
+package testDAO;
 
 import dao.UtilisateurDAO;
 import model.Utilisateur;
@@ -17,45 +17,97 @@ public class UtilisateurDAOTest {
     private static UtilisateurDAO utilisateurDAO;
 
     @BeforeAll
-    static void setUp() throws SQLException {
-        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/BDD", "root", "root");
+    static void setup() throws Exception {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/BDD", "root", "");
         utilisateurDAO = new UtilisateurDAO(conn);
     }
 
     @Test
     void testInsertAndGetById() throws SQLException {
-        Utilisateur u = new Utilisateur(0, "Testeur", 12345);
-        u.setPtsFidelite(50);
-        utilisateurDAO.inserer(u);
+        Utilisateur u = new Utilisateur(0, "Alice", 1111);
+        u.setPtsFidelite(100);
+        utilisateurDAO.insert(u); // Insère l'utilisateur
 
         List<Utilisateur> liste = utilisateurDAO.getAll();
-        assertFalse(liste.isEmpty(), "La liste des utilisateurs ne doit pas être vide");
+        assertFalse(liste.isEmpty());
 
         Utilisateur dernier = liste.get(liste.size() - 1);
         Utilisateur charge = utilisateurDAO.getById(dernier.getId());
 
-        assertNotNull(charge, "L'utilisateur récupéré ne doit pas être null");
-        assertEquals("Testeur", charge.getNom(), "Le nom doit être 'Testeur'");
+        assertNotNull(charge);
+        assertEquals("Alice", charge.getNom());
+        assertEquals(100, charge.getPtsFidelite());
+        assertEquals(1111, charge.getCodeAcces());
     }
 
     @Test
     void testUpdate() throws SQLException {
         List<Utilisateur> liste = utilisateurDAO.getAll();
-        assertFalse(liste.isEmpty(), "Il faut au moins un utilisateur pour le test");
+        assertFalse(liste.isEmpty());
 
         Utilisateur u = liste.get(0);
-        u.setNom("NomModifie");
+        u.setNom("Modifié");
+        u.setPtsFidelite(200);
         utilisateurDAO.update(u);
 
-        Utilisateur charge = utilisateurDAO.getById(u.getId());
-        assertNotNull(charge, "L'utilisateur modifié ne doit pas être null");
-        assertEquals("NomModifie", charge.getNom(), "Le nom doit être mis à jour");
+        Utilisateur verif = utilisateurDAO.getById(u.getId());
+        assertEquals("Modifié", verif.getNom());
+        assertEquals(200, verif.getPtsFidelite());
+    }
+
+    @Test
+    void testDelete() throws SQLException {
+        Utilisateur u = new Utilisateur(0, "Temporaire", 2222);
+        u.setPtsFidelite(50);
+        utilisateurDAO.insert(u);
+
+        List<Utilisateur> liste = utilisateurDAO.getAll();
+        Utilisateur dernier = liste.get(liste.size() - 1);
+        int idASupprimer = dernier.getId();
+
+        utilisateurDAO.delete(idASupprimer);
+        Utilisateur supprime = utilisateurDAO.getById(idASupprimer);
+        assertNull(supprime);
     }
 
     @AfterAll
-    static void tearDown() throws SQLException {
+    static void teardown() throws SQLException {
         if (conn != null && !conn.isClosed()) {
             conn.close();
         }
     }
+
+    @Test
+    void testGetByCodeAcces() throws SQLException {
+        // Nettoyer si déjà existant
+        List<Utilisateur> tous = utilisateurDAO.getAll();
+        for (Utilisateur u : tous) {
+            if (u.getCodeAcces() == 9999) {
+                utilisateurDAO.delete(u.getId());
+            }
+        }
+
+        Utilisateur u = new Utilisateur(0, "Jean", 9999);
+        u.setPtsFidelite(88);
+        utilisateurDAO.insert(u);
+
+        Utilisateur recupere = utilisateurDAO.getByCodeAcces(9999);
+        assertNotNull(recupere);
+        assertEquals("Jean", recupere.getNom()); // ✅
+    }
+
+    @Test
+    void testUpdateFidelite() throws SQLException {
+        Utilisateur u = new Utilisateur(0, "PointsOnly", 1234);
+        u.setPtsFidelite(30);
+        utilisateurDAO.insert(u);
+
+        Utilisateur inserted = utilisateurDAO.getAll().get(utilisateurDAO.getAll().size() - 1);
+        utilisateurDAO.updateFidelite(inserted.getId(), 999);
+        Utilisateur updated = utilisateurDAO.getById(inserted.getId());
+
+        assertEquals(999, updated.getPtsFidelite());
+    }
+
 }

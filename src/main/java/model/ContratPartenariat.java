@@ -12,22 +12,11 @@ public class ContratPartenariat {
 
     // ========== ATTRIBUTS ==========
 
-    /** Date de début de validité du contrat */
+    private int id;  // ✅ utilisé pour l'accès DAO
     private LocalDate dateDebut;
-
-    /** Date de fin de validité du contrat */
     private LocalDate dateFin;
-
-    /** Liste des catégories de produits concernées par le contrat */
     private List<CategorieProduit> categoriesConcernees;
-
-    /** Identifiant unique du contrat */
-    private int id;
-
-    /** Centre de tri avec lequel le contrat est établi */
     private CentreDeTri centre;
-
-    /** Commerce concerné par ce contrat */
     private Commerce commerceConcerne;
 
     // ========== CONSTRUCTEUR ==========
@@ -42,78 +31,58 @@ public class ContratPartenariat {
         this.categoriesConcernees = new ArrayList<>();
     }
 
-    // ========== MÉTHODES UML ==========
+    // ========== GETTERS POUR DAO ==========
 
-    /**
-     * Définit les règles d’utilisation du contrat.
-     * Cette méthode peut être utilisée pour initialiser des paramètres internes ou vérifier la conformité.
-     */
-    public void definirRegleUtilisation() {
-        // Implémentation future des règles
+    /** Identifiant unique du contrat */
+    public int getId() {
+        return id;
     }
 
-    /**
-     * Renvoie la liste des catégories de produits concernées par le contrat.
-     */
+    /** Date de début du contrat */
+    public LocalDate getDateDebut() {
+        return dateDebut;
+    }
+
+    /** Date de fin du contrat */
+    public LocalDate getDateFin() {
+        return dateFin;
+    }
+
+    /** Centre de tri concerné */
+    public CentreDeTri getCentre() {
+        return centre;
+    }
+
+    /** Commerce concerné */
+    public Commerce getCommerce() {
+        return commerceConcerne;
+    }
+
+    // ========== MÉTHODES UML MÉTIER ==========
+
     public List<CategorieProduit> getCategories() {
         return categoriesConcernees;
     }
 
-    /**
-     * Ajoute une catégorie de produit à la liste des catégories concernées par le contrat.
-     */
     public void ajouterCategorie(CategorieProduit cp) {
         if (!categoriesConcernees.contains(cp)) {
             categoriesConcernees.add(cp);
         }
     }
 
-    /**
-     * Supprime une catégorie de produit de la liste des catégories concernées par le contrat.
-     */
     public void retirerCategorie(CategorieProduit cp) {
         categoriesConcernees.remove(cp);
     }
 
-    /**
-     * Vérifie si une catégorie de produit est autorisée par le contrat.
-     */
     public boolean estCategorieAutorisee(CategorieProduit cp) {
         return categoriesConcernees.contains(cp);
     }
 
-    /**
-     * Vérifie si le contrat est valide à une date donnée.
-     */
     public boolean estValide(LocalDate date) {
         return (date != null && !date.isBefore(dateDebut) && !date.isAfter(dateFin));
     }
 
-    /**
-     * Renvoie la date de début du contrat.
-     */
-    public LocalDate getDateDebut() {
-        return dateDebut;
-    }
-
-    /**
-     * Renvoie la date de fin du contrat.
-     */
-    public LocalDate getDateFin() {
-        return dateFin;
-    }
-
-    /**
-     * Renvoie le centre de tri associé à ce contrat.
-     */
-    public CentreDeTri getCentre() {
-        return centre;
-    }
-
-    /**
-     * Renvoie le commerce associé à ce contrat.
-     */
-    public Commerce getCommerce() {
-        return commerceConcerne;
+    public void definirRegleUtilisation() {
+        // À compléter si logique spécifique
     }
 }

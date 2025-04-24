@@ -17,34 +17,41 @@ public class BonDeCommandeTest {
     private CategorieProduit cp2;
     private List<CategorieProduit> produits;
     private Commerce commerce;
+    private CentreDeTri centre;
     private BonDeCommande commande;
 
     @BeforeEach
     public void setUp() {
+        // Création utilisateur avec 100 points
         utilisateur = new Utilisateur(1, "Utilisateur", 1234);
         utilisateur.ajouterPoints(100);
 
+        // Deux catégories à échanger
         cp1 = new CategorieProduit(1, "Cat1", 30, 0.2f);
         cp2 = new CategorieProduit(2, "Cat2", 50, 0.3f);
         produits = new ArrayList<>();
         produits.add(cp1);
         produits.add(cp2);
 
-        commerce = new Commerce("Commerce Test", null);
+        // Commerce attaché à un centre fictif
+        centre = new CentreDeTri(1, "Centre Test", "Adresse Centre");
+        commerce = new Commerce(1, "Commerce Test", centre);
+
+        // Création de la commande
         commande = new BonDeCommande(1, utilisateur, produits, commerce);
     }
 
     @Test
     public void testValiderCommande() {
         boolean result = commande.validerCommande();
-        assertTrue(result);
+        assertTrue(result, "La commande doit être validée");
         assertEquals("validée", commande.getEtatCommande());
     }
 
     @Test
     public void testUtiliserPoints() {
         commande.utiliserPoints();
-        assertEquals(20, utilisateur.getPtsFidelite());
+        assertEquals(20, utilisateur.getPtsFidelite(), "Il doit rester 20 points après utilisation");
     }
 
     @Test
@@ -61,7 +68,7 @@ public class BonDeCommandeTest {
     @Test
     public void testGetTotalPointsUtilises() {
         int total = commande.getTotalPointsUtilises();
-        assertEquals(80, total);
+        assertEquals(80, total, "Le total de points utilisés doit être 80");
     }
 
     @Test

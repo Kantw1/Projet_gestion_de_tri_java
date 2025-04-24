@@ -4,6 +4,7 @@ import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,48 +17,57 @@ public class CommerceTest {
     private CategorieProduit cat1;
     private Utilisateur utilisateur;
     private BonDeCommande commande;
+    private ContratPartenariat contrat;
 
     @BeforeEach
     public void setUp() {
-        centre = new CentreDeTri(1, "Centre_1", "Adresse");
-        commerce = new Commerce("Commerce Test", centre);
+        centre = new CentreDeTri(1, "Centre_1", "Adresse Test");
+        commerce = new Commerce(1, "Commerce Test", centre);
+
         utilisateur = new Utilisateur(1, "Client", 1234);
         utilisateur.ajouterPoints(100);
+
         cat1 = new CategorieProduit(1, "Produit", 50, 0.2f);
+        commerce.ajouterCategorie(cat1);
+
+        contrat = new ContratPartenariat(1,
+                LocalDate.now().minusDays(5),
+                LocalDate.now().plusDays(5),
+                centre, commerce);
+
+        contrat.ajouterCategorie(cat1); // ✅ AJOUT À FAIRE pour passer les tests
+
+        commerce.setContrat(contrat);
 
         List<CategorieProduit> produits = new ArrayList<>();
         produits.add(cat1);
-
         commande = new BonDeCommande(1, utilisateur, produits, commerce);
-        commerce.setContrat(new ContratPartenariat(1,
-                java.time.LocalDate.now().minusDays(1),
-                java.time.LocalDate.now().plusDays(1),
-                centre, commerce));
-        commerce.ajouterCategorie(cat1);
     }
+
 
     @Test
     public void testEchangerPoints() {
         boolean result = commerce.echangerPoints(utilisateur, cat1);
         assertTrue(result);
+        assertEquals(50, utilisateur.getPtsFidelite(), "Les points doivent être déduits après l'échange");
     }
 
     @Test
     public void testGetCategoriesProduits() {
         List<CategorieProduit> categories = commerce.getCategoriesProduits();
+        assertEquals(1, categories.size());
         assertTrue(categories.contains(cat1));
     }
 
     @Test
     public void testVerifierConditionsContrat() {
-        boolean result = commerce.verifierConditionsContrat(commerce.getContrat());
-        assertTrue(result);
+        assertTrue(commerce.verifierConditionsContrat(contrat));
     }
 
     @Test
     public void testAccepterCommande() {
-        boolean result = commerce.accepterCommande(commande);
-        assertTrue(result);
+        assertTrue(commerce.accepterCommande(commande));
+        assertTrue(commerce.getHistoriqueCommandes().contains(commande));
     }
 
     @Test
@@ -80,12 +90,6 @@ public class CommerceTest {
     }
 
     @Test
-    public void testGetHistoriqueCommandes() {
-        commerce.accepterCommande(commande);
-        assertTrue(commerce.getHistoriqueCommandes().contains(commande));
-    }
-
-    @Test
     public void testGetCentre() {
         assertEquals(centre, commerce.getCentre());
     }
@@ -97,6 +101,6 @@ public class CommerceTest {
 
     @Test
     public void testGetContrat() {
-        assertNotNull(commerce.getContrat());
+        assertEquals(contrat, commerce.getContrat());
     }
 }

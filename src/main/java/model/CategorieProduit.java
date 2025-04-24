@@ -37,23 +37,16 @@ public class CategorieProduit {
         this.produits = new ArrayList<>();
     }
 
-    // ========== MÉTHODES UML ==========
+    // ========== GETTERS ==========
+
+    /** Retourne l'identifiant de la catégorie */
+    public int getId() {
+        return id;
+    }
 
     /** Renvoie le nom de la catégorie */
     public String getNom() {
         return nom;
-    }
-
-    /** Ajoute un produit dans la catégorie */
-    public void associerProduit(String nomProduit) {
-        if (!produits.contains(nomProduit)) {
-            produits.add(nomProduit);
-        }
-    }
-
-    /** Vérifie si la catégorie contient au moins un produit */
-    public boolean verifierProduit(String nomProduit) {
-        return produits.contains(nomProduit);
     }
 
     /** Renvoie le nombre de points nécessaires pour un produit de cette catégorie */
@@ -64,6 +57,25 @@ public class CategorieProduit {
     /** Renvoie la réduction applicable sous forme de pourcentage */
     public float getBonReduction() {
         return bonReduction;
+    }
+
+    /** Retourne la liste des produits */
+    public List<String> getProduits() {
+        return produits;
+    }
+
+    // ========== MÉTHODES UML ==========
+
+    /** Ajoute un produit dans la catégorie */
+    public void associerProduit(String nomProduit) {
+        if (!produits.contains(nomProduit)) {
+            produits.add(nomProduit);
+        }
+    }
+
+    /** Vérifie si la catégorie contient un produit donné */
+    public boolean verifierProduit(String nomProduit) {
+        return produits.contains(nomProduit);
     }
 
     /** Vérifie si un utilisateur est éligible avec un certain nombre de points */
@@ -79,10 +91,5 @@ public class CategorieProduit {
     /** Retire un produit de la liste (s’il existe) */
     public void retirerProduit(String nomProduit) {
         produits.remove(nomProduit);
-    }
-
-    /** Retourne la liste des produits */
-    public List<String> getProduits() {
-        return produits;
     }
 }

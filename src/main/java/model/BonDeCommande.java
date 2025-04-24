@@ -55,6 +55,11 @@ public class BonDeCommande {
         return utilisateur.getPtsFidelite() >= total;
     }
 
+    public void setPointsUtilises(int pointsUtilises) {
+        this.pointsUtilises = pointsUtilises;
+    }
+
+
     /**
      * Utilise les points de l'utilisateur pour valider la commande.
      */

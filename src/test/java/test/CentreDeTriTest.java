@@ -1,10 +1,6 @@
 package test;
 
 import model.*;
-import model.CentreDeTri;
-import model.Commerce;
-import model.Poubelle;
-import model.TypePoubelle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +18,7 @@ public class CentreDeTriTest {
     public void setUp() {
         centre = new CentreDeTri(7, "Centre Principal", "1 rue de la medaille");
         poubelle = new Poubelle(1, 100, "Zone 1", TypePoubelle.JAUNE, 1);
-        commerce = new Commerce("Commerce 1", centre);
+        commerce = new Commerce(1, "Commerce 1", centre);
     }
 
     @Test
@@ -70,37 +66,37 @@ public class CentreDeTriTest {
 
     @Test
     public void testGetAdresse() {
-        assertEquals("Adresse", centre.getAdresse());
+        assertEquals("1 rue de la medaille", centre.getAdresse());
     }
 
     @Test
     public void testGetId() {
-        assertEquals(1, centre.getId());
+        assertEquals(7, centre.getId()); // ✔ ID fixé dans setUp()
     }
 
     @Test
     public void testCollecterDechets() {
         centre.ajouterPoubelle(poubelle);
-        centre.collecterDechets(); // S'assure que la méthode est appelable
+        centre.collecterDechets(); // S'exécute sans erreur
     }
 
     @Test
     public void testGenererStatistiques() {
-        centre.genererStatistiques(); // Doit s'exécuter sans erreur
+        centre.genererStatistiques(); // S'exécute sans erreur
     }
 
     @Test
     public void testTraiterRejet() {
-        centre.traiterRejet(); // Doit s'exécuter sans erreur
+        centre.traiterRejet(); // S'exécute sans erreur
     }
 
     @Test
     public void testAnalyserDepotsParQuartier() {
-        centre.analyserDepotsParQuartier(); // Doit s'exécuter sans erreur
+        centre.analyserDepotsParQuartier(); // S'exécute sans erreur
     }
 
     @Test
     public void testAnalyserDepotsParType() {
-        centre.analyserDepotsParType(); // Doit s'exécuter sans erreur
+        centre.analyserDepotsParType(); // S'exécute sans erreur
     }
 }

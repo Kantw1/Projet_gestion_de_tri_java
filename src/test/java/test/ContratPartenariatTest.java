@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,12 +23,20 @@ public class ContratPartenariatTest {
 
     @BeforeEach
     public void setUp() {
+        // Dates du contrat
         debut = LocalDate.of(2024, 1, 1);
         fin = LocalDate.of(2025, 12, 31);
+
+        // Centre de tri de référence
         centre = new CentreDeTri(1, "Centre Nord", "Rue des Fleurs");
-        commerce = new Commerce("Biocoop", centre);
+
+        // Commerce rattaché avec id
+        commerce = new Commerce(1, "Biocoop", centre);
+
+        // Contrat liant le commerce et le centre
         contrat = new ContratPartenariat(10, debut, fin, centre, commerce);
 
+        // Deux catégories de produits
         categorie1 = new CategorieProduit(1, "Papier", 8, 10);
         categorie2 = new CategorieProduit(2, "Verre", 9, 15);
     }
@@ -81,4 +88,3 @@ public class ContratPartenariatTest {
         assertEquals(fin, contrat.getDateFin());
     }
 }
-

@@ -14,6 +14,12 @@ public class Commerce {
     /** Nom du commerce (ex. "Carrefour", "Décathlon") */
     private String nom;
 
+    private int id;
+
+    public int getId() {
+        return id;
+    }
+
     /** Liste des catégories de produits disponibles dans ce commerce */
     private List<CategorieProduit> categoriesProduits;
 
@@ -28,7 +34,8 @@ public class Commerce {
 
     // ========== CONSTRUCTEUR ==========
 
-    public Commerce(String nom, CentreDeTri centre) {
+    public Commerce(int id, String nom, CentreDeTri centre) {
+        this.id = id;
         this.nom = nom;
         this.categoriesProduits = new ArrayList<>();
         this.historiqueCommandes = new ArrayList<>();

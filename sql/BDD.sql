@@ -1,125 +1,133 @@
 CREATE DATABASE IF NOT EXISTS BDD;
 USE BDD;
 
--- Table de base
+-- Table des utilisateurs
 CREATE TABLE Utilisateur (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    Nom VARCHAR(255),
-    PtsFidelite INT,
-    CodeAcces INT
+    nom VARCHAR(255),
+    ptsFidelite INT,
+    codeAcces INT
 );
 
+-- Centre de tri
 CREATE TABLE CentreDeTri (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    Nom VARCHAR(255),
-    Adresse VARCHAR(255)
+    nom VARCHAR(255),
+    adresse VARCHAR(255)
 );
 
+-- Poubelle
 CREATE TABLE Poubelle (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    CapaciteMax INT,
-    Emplacement VARCHAR(255),
-    TypePoubelle VARCHAR(255),
-    QuantiteActuelle INT
+    capaciteMax INT,
+    emplacement VARCHAR(255),
+    typePoubelle VARCHAR(255),
+    quantiteActuelle INT,
+    seuilAlerte INT
 );
 
+-- Dépôt
 CREATE TABLE Depot (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    Type VARCHAR(255),
-    Poids FLOAT,
-    Quantite INT,
-    HeureDepot DATETIME,
-    Points INT,
-    PoubelleID INT,
-    UtilisateurID INT,
-    FOREIGN KEY (PoubelleID) REFERENCES Poubelle(id),
-    FOREIGN KEY (UtilisateurID) REFERENCES Utilisateur(id)
+    type VARCHAR(255),
+    poids FLOAT,
+    quantite INT,
+    heureDepot DATETIME,
+    points INT,
+    poubelleID INT,
+    utilisateurID INT,
+    FOREIGN KEY (poubelleID) REFERENCES Poubelle(id),
+    FOREIGN KEY (utilisateurID) REFERENCES Utilisateur(id)
 );
 
+-- Catégorie de produits
 CREATE TABLE CategorieProduit (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    Nom VARCHAR(255),
-    TauxConversion INT,
-    PtsNecessaire INT
+    nom VARCHAR(255),
+    pointNecessaire INT,
+    bonReduction FLOAT
 );
 
+-- Produits dans une catégorie
 CREATE TABLE ProduitCategorie (
-	id INT,
-    Produit VARCHAR(255),
-    CategorieID INT,
-    PRIMARY KEY (id, CategorieID),
-    FOREIGN KEY (CategorieID) REFERENCES CategorieProduit(id)
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    produit VARCHAR(255),
+    categorieID INT,
+    FOREIGN KEY (categorieID) REFERENCES CategorieProduit(id)
 );
 
+-- Commerce
 CREATE TABLE Commerce (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    Nom VARCHAR(255),
-    ContratID INT,
-    CategorieProduitID INT,
-    FOREIGN KEY (CategorieProduitID) REFERENCES CategorieProduit(id)
+    nom VARCHAR(255),
+    centreID INT,
+    FOREIGN KEY (centreID) REFERENCES CentreDeTri(id)
 );
 
+-- Contrat de partenariat
 CREATE TABLE ContratPartenariat (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    CommerceID INT,
-    CentreDeTriID INT,
-    DateDebut DATE,
-    DateFin DATE,
-    FOREIGN KEY (CentreDeTriID) REFERENCES CentreDeTri(id),
-    FOREIGN KEY (CommerceID) REFERENCES Commerce(id)
+    dateDebut DATE,
+    dateFin DATE,
+    centreID INT,
+    commerceID INT,
+    FOREIGN KEY (centreID) REFERENCES CentreDeTri(id),
+    FOREIGN KEY (commerceID) REFERENCES Commerce(id)
 );
 
--- Mise à jour du lien Commerce ← Contrat après la création du contrat
-ALTER TABLE Commerce
-    ADD CONSTRAINT fk_contrat
-    FOREIGN KEY (ContratID) REFERENCES ContratPartenariat(id);
+-- Lien Commerce - Catégorie de produit
+CREATE TABLE CommerceCategorieProduit (
+    commerceID INT,
+    categorieID INT,
+    PRIMARY KEY (commerceID, categorieID),
+    FOREIGN KEY (commerceID) REFERENCES Commerce(id),
+    FOREIGN KEY (categorieID) REFERENCES CategorieProduit(id)
+);
 
+-- Bon de commande
 CREATE TABLE BonDeCommande (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    UtilisateurID INT,
-    EtatCommande VARCHAR(255),
-    DateCommande DATE,
-    CommerceID INT,
-    FOREIGN KEY (UtilisateurID) REFERENCES Utilisateur(id),
-    FOREIGN KEY (CommerceID) REFERENCES Commerce(id)
+    utilisateurID INT,
+    etatCommande VARCHAR(255),
+    dateCommande DATE,
+    commerceID INT,
+    pointsUtilises INT,
+    FOREIGN KEY (utilisateurID) REFERENCES Utilisateur(id),
+    FOREIGN KEY (commerceID) REFERENCES Commerce(id)
 );
 
+-- Commande liée à des catégories de produits
 CREATE TABLE CommandeCategorieProduit (
-    BonDeCommandeID INT,
-    CategorieProduitID INT,
-    PRIMARY KEY (BonDeCommandeID, CategorieProduitID),
-    FOREIGN KEY (BonDeCommandeID) REFERENCES BonDeCommande(id),
-    FOREIGN KEY (CategorieProduitID) REFERENCES CategorieProduit(id)
+    bonDeCommandeID INT,
+    categorieProduitID INT,
+    PRIMARY KEY (bonDeCommandeID, categorieProduitID),
+    FOREIGN KEY (bonDeCommandeID) REFERENCES BonDeCommande(id),
+    FOREIGN KEY (categorieProduitID) REFERENCES CategorieProduit(id)
 );
 
+-- Lien Centre ↔ Poubelle
 CREATE TABLE CentrePoubelle (
-    CentreID INT,
-    PoubelleID INT,
-    PRIMARY KEY (CentreID, PoubelleID),
-    FOREIGN KEY (CentreID) REFERENCES CentreDeTri(id),
-    FOREIGN KEY (PoubelleID) REFERENCES Poubelle(id)
+    centreID INT,
+    poubelleID INT,
+    PRIMARY KEY (centreID, poubelleID),
+    FOREIGN KEY (centreID) REFERENCES CentreDeTri(id),
+    FOREIGN KEY (poubelleID) REFERENCES Poubelle(id)
 );
 
+-- Lien Centre ↔ Commerce
 CREATE TABLE CentreCommerce (
-    CentreID INT,
-    CommerceID INT,
-    PRIMARY KEY (CentreID, CommerceID),
-    FOREIGN KEY (CentreID) REFERENCES CentreDeTri(id),
-    FOREIGN KEY (CommerceID) REFERENCES Commerce(id)
+    centreID INT,
+    commerceID INT,
+    PRIMARY KEY (centreID, commerceID),
+    FOREIGN KEY (centreID) REFERENCES CentreDeTri(id),
+    FOREIGN KEY (commerceID) REFERENCES Commerce(id)
 );
 
-CREATE TABLE CommerceCategorieProduit (
-    CommerceID INT,
-    CategorieID INT,
-    PRIMARY KEY (CommerceID, CategorieID),
-    FOREIGN KEY (CommerceID) REFERENCES Commerce(id),
-    FOREIGN KEY (CategorieID) REFERENCES CategorieProduit(id)
-);
-
+-- Historique des dépôts
 CREATE TABLE HistoriqueDepot (
-    UtilisateurID INT,
-    DepotID INT,
-    PRIMARY KEY (UtilisateurID, DepotID),
-    FOREIGN KEY (UtilisateurID) REFERENCES Utilisateur(id),
-    FOREIGN KEY (DepotID) REFERENCES Depot(id)
+    utilisateurID INT,
+    depotID INT,
+    PRIMARY KEY (utilisateurID, depotID),
+    FOREIGN KEY (utilisateurID) REFERENCES Utilisateur(id),
+    FOREIGN KEY (depotID) REFERENCES Depot(id)
 );

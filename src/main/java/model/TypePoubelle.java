@@ -12,7 +12,7 @@ public enum TypePoubelle {
     // === TYPES DE POUBELLE ===
 
     JAUNE(Arrays.asList(NatureDechet.PLASTIQUE, NatureDechet.CARTON, NatureDechet.METAL)),
-    VERT(Arrays.asList(NatureDechet.VERRE)),
+    VERTE(Arrays.asList(NatureDechet.VERRE)),
     BLEU(Arrays.asList(NatureDechet.PAPIER)),
     GRIS(Arrays.asList(NatureDechet.PLASTIQUE, NatureDechet.METAL, NatureDechet.VERRE, NatureDechet.CARTON, NatureDechet.PAPIER)),
     MARRON(Arrays.asList()); // déchets organiques, non précisés ici

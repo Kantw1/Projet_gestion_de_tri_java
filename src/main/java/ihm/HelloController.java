@@ -1,4 +1,4 @@
-package com.example.gestion_dechet;
+package ihm;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

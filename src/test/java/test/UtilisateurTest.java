@@ -1,14 +1,12 @@
 package test;
 
 import model.*;
-import model.CategorieProduit;
-import model.TypePoubelle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,13 +19,15 @@ public class UtilisateurTest {
     @BeforeEach
     public void setUp() {
         utilisateur = new Utilisateur(1, "Alice", 1234);
+        utilisateur.ajouterPoints(100);
+
         poubelle = new Poubelle(1, 100, "Chatelet", TypePoubelle.JAUNE, 5);
-        // Lien entre utilisateur et poubelle
         utilisateur.ajouterPoubelleAccessible(poubelle);
 
-        // Correction du dépôt
-        depot = new Depot(1, NatureDechet.PLASTIQUE, 1.0f, 2, LocalDateTime.now(), poubelle, utilisateur);
+        // 👇 Important : autoriser le code d'accès pour le dépôt
+        poubelle.getAccesAutorises().add(utilisateur.getCodeAcces());
 
+        depot = new Depot(1, NatureDechet.PLASTIQUE, 1.0f, 2, LocalDateTime.now(), poubelle, utilisateur);
         utilisateur.deposerDechets(poubelle, depot);
     }
 
@@ -39,16 +39,19 @@ public class UtilisateurTest {
 
     @Test
     public void testConsulterHistorique() {
-        List<Depot> historique = utilisateur.consulterHistorique();
+        List<Depot> historique = utilisateur.getHistoriqueDepots();
         assertEquals(1, historique.size());
         assertEquals(depot, historique.get(0));
     }
 
     @Test
     public void testConvertirPoints() {
+        int pointsAvant = utilisateur.getPtsFidelite(); // ex. 104
         BonDeCommande commande = utilisateur.convertirPoints(50);
+
         assertNotNull(commande);
         assertEquals(50, commande.getPointsUtilises());
+        assertEquals(pointsAvant - 50, utilisateur.getPtsFidelite()); // ✅ logique !
     }
 
     @Test
@@ -68,13 +71,11 @@ public class UtilisateurTest {
 
     @Test
     public void testAcheterProduits() {
-        // Créer un produit nécessitant moins de points que ce que l'utilisateur possède
-        List<String> nomsProduits = new ArrayList<>();
-        nomsProduits.add("ProduitTest");
-        CategorieProduit produit = new CategorieProduit(1, "Test", 6, 30);
+        CategorieProduit produit = new CategorieProduit(1, "Test", 30, 0.2f);
+        int pointsAvant = utilisateur.getPtsFidelite();
 
         boolean result = utilisateur.acheterProduits(produit);
         assertTrue(result);
-        assertTrue(utilisateur.getPtsFidelite() < 100); // Vérifie que les points ont été retirés
+        assertEquals(pointsAvant - produit.getPointNecessaire(), utilisateur.getPtsFidelite());
     }
 }
