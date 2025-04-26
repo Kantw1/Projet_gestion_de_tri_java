@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.gestion_dechet.ihm.DepotController">
+    <center>
+        <VBox spacing="15" alignment="CENTER">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <Label text="Déposer vos déchets" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+            <HBox spacing="10">
+                <Label text="Choix de la poubelle :" />
+                <ComboBox fx:id="poubelleComboBox" prefWidth="200" />
+            </HBox>
+
+            <GridPane hgap="10" vgap="10">
+                <Label text="Plastique :" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                <TextField fx:id="plastiqueField" promptText="Qté" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+                <Label text="Verre :" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                <TextField fx:id="verreField" promptText="Qté" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+                <Label text="Carton :" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+                <TextField fx:id="cartonField" promptText="Qté" GridPane.rowIndex="2" GridPane.columnIndex="1" /> <Label text="Métal :" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+                <TextField fx:id="metalField" promptText="Qté" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+            </GridPane>
+
+            <Button text="Valider le dépôt" onAction="#validerDepot" />
+            <Label fx:id="resultLabel" textFill="green" />
+        </VBox>
+    </center>
+</BorderPane>
+
+
