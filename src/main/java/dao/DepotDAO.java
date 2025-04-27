@@ -88,14 +88,108 @@ public class DepotDAO {
         }
     }
 
-    /**
-     * Supprime un dépôt de la base de données par ID.
-     */
     public void delete(int id) throws SQLException {
         String sql = "DELETE FROM depot WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
         }
+    }
+
+    // --- FONCTIONS AJOUTÉES DE RÉCUPÉRATION ---
+
+    /**
+     * Récupère tous les dépôts pour une poubelle donnée.
+     */
+    public List<Depot> getByPoubelleId(int poubelleId) throws SQLException {
+        List<Depot> liste = new ArrayList<>();
+        String sql = "SELECT * FROM depot WHERE poubelleID = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, poubelleId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Depot d = new Depot(
+                            rs.getInt("id"),
+                            NatureDechet.valueOf(rs.getString("type")),
+                            rs.getFloat("poids"),
+                            rs.getInt("quantite"),
+                            rs.getTimestamp("heureDepot").toLocalDateTime(),
+                            null, // pas d'objet Poubelle rechargé ici
+                            null  // pas d'objet Utilisateur rechargé ici
+                    );
+                    liste.add(d);
+                }
+            }
+        }
+        return liste;
+    }
+
+    /**
+     * Récupère tous les dépôts faits par un utilisateur donné.
+     */
+    public List<Depot> getByUtilisateurId(int utilisateurId) throws SQLException {
+        List<Depot> liste = new ArrayList<>();
+        String sql = "SELECT * FROM depot WHERE utilisateurID = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, utilisateurId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Depot d = new Depot(
+                            rs.getInt("id"),
+                            NatureDechet.valueOf(rs.getString("type")),
+                            rs.getFloat("poids"),
+                            rs.getInt("quantite"),
+                            rs.getTimestamp("heureDepot").toLocalDateTime(),
+                            null,
+                            null
+                    );
+                    liste.add(d);
+                }
+            }
+        }
+        return liste;
+    }
+
+    /**
+     * Récupère tous les dépôts effectués dans une plage de dates.
+     */
+    public List<Depot> getByDateRange(LocalDateTime debut, LocalDateTime fin) throws SQLException {
+        List<Depot> liste = new ArrayList<>();
+        String sql = "SELECT * FROM depot WHERE heureDepot BETWEEN ? AND ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setTimestamp(1, Timestamp.valueOf(debut));
+            stmt.setTimestamp(2, Timestamp.valueOf(fin));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Depot d = new Depot(
+                            rs.getInt("id"),
+                            NatureDechet.valueOf(rs.getString("type")),
+                            rs.getFloat("poids"),
+                            rs.getInt("quantite"),
+                            rs.getTimestamp("heureDepot").toLocalDateTime(),
+                            null,
+                            null
+                    );
+                    liste.add(d);
+                }
+            }
+        }
+        return liste;
+    }
+
+    /**
+     * Calcule le poids total déposé dans une poubelle donnée.
+     */
+    public float getTotalPoidsByPoubelle(int poubelleId) throws SQLException {
+        String sql = "SELECT SUM(poids) AS total FROM depot WHERE poubelleID = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, poubelleId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getFloat("total");
+                }
+            }
+        }
+        return 0;
     }
 }
