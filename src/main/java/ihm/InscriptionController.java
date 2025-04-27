@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import model.Utilisateur;
 import dao.UtilisateurDAO;
 import utils.DatabaseConnection;
+import java.io.IOException;
 
 public class InscriptionController {
 
@@ -54,4 +55,23 @@ public class InscriptionController {
             errorLabel.setText("Erreur lors de l'inscription.");
         }
     }
+    @FXML
+    private void handleGoToConnexion(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/hello-view.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) nomField.getScene().getWindow();
+            Scene scene = new Scene(root);
+
+            // Taille identique à celle de connexion
+            stage.setScene(scene);
+            stage.setWidth(500);
+            stage.setHeight(400);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            errorLabel.setText("Erreur lors du retour à la connexion.");
+        }
+    }
+
 }

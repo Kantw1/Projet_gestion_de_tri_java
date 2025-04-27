@@ -10,6 +10,6 @@
     <TextField fx:id="codeAccesField" promptText="Entrez un code d'accès" />
 
     <Button text="S'inscrire" onAction="#handleInscription" />
-
+    <Button text="Connexion" onAction="#handleGoToConnexion" />
     <Label fx:id="errorLabel" textFill="red" />
 </VBox>
