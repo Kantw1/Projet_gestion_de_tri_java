@@ -13,14 +13,22 @@ public class Utilisateur {
     private String nom;
     private int ptsFidelite;
     private int codeAcces;
+    private String role; // 'utilisateur' ou 'admin'
 
     private List<Depot> historiqueDepots;
     private List<Poubelle> poubellesAccessibles;
 
+    // === Constructeurs ===
+
     public Utilisateur(int id, String nom, int codeAcces) {
+        this(id, nom, codeAcces, "utilisateur"); // par défaut utilisateur simple
+    }
+
+    public Utilisateur(int id, String nom, int codeAcces, String role) {
         this.id = id;
         this.nom = nom;
         this.codeAcces = codeAcces;
+        this.role = role;
         this.ptsFidelite = 0;
         this.historiqueDepots = new ArrayList<>();
         this.poubellesAccessibles = new ArrayList<>();
@@ -103,5 +111,13 @@ public class Utilisateur {
 
     public List<Poubelle> getPoubellesAccessibles() {
         return poubellesAccessibles;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

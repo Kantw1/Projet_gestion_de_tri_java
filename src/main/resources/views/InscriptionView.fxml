@@ -1,15 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
 
-<VBox spacing="20" alignment="CENTER" xmlns:fx="http://javafx.com/fxml" fx:controller="ihm.InscriptionController">
-    <Label text="Créer un compte" style="-fx-font-size: 24px;"/>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="ihm.InscriptionController">
 
-    <TextField fx:id="nomField" promptText="Entrez votre nom" />
-    <TextField fx:id="codeAccesField" promptText="Entrez un code d'accès" />
+    <top>
+        <Label text="Créer un compte"
+               style="-fx-font-size: 32px; -fx-font-weight: bold;"
+               BorderPane.alignment="CENTER"/>
+    </top>
 
-    <Button text="S'inscrire" onAction="#handleInscription" />
-    <Button text="Connexion" onAction="#handleGoToConnexion" />
-    <Label fx:id="errorLabel" textFill="red" />
-</VBox>
+    <center>
+        <VBox spacing="25" alignment="CENTER">
+            <padding>
+                <Insets top="30" right="30" bottom="30" left="30"/>
+            </padding>
+
+            <TextField fx:id="nomField" promptText="Entrez votre nom" prefWidth="300" style="-fx-font-size: 16px;" />
+            <TextField fx:id="codeAccesField" promptText="Entrez un code d'accès" prefWidth="300" style="-fx-font-size: 16px;" />
+
+            <Button text="S'inscrire" onAction="#handleInscription" prefWidth="250" style="-fx-font-size: 18px;" />
+            <Button text="Connexion" onAction="#handleGoToConnexion" prefWidth="250" style="-fx-font-size: 18px;" />
+
+            <Label fx:id="errorLabel" textFill="red" style="-fx-font-size: 16px;" />
+        </VBox>
+    </center>
+
+</BorderPane>

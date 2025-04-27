@@ -27,7 +27,7 @@ public class UtilisateurDAOTest {
     void testInsertAndGetById() throws SQLException {
         Utilisateur u = new Utilisateur(0, "Alice", 1111);
         u.setPtsFidelite(100);
-        utilisateurDAO.insert(u); // Insère l'utilisateur
+        utilisateurDAO.insert(u);
 
         List<Utilisateur> liste = utilisateurDAO.getAll();
         assertFalse(liste.isEmpty());
@@ -71,13 +71,6 @@ public class UtilisateurDAOTest {
         assertNull(supprime);
     }
 
-    @AfterAll
-    static void teardown() throws SQLException {
-        if (conn != null && !conn.isClosed()) {
-            conn.close();
-        }
-    }
-
     @Test
     void testGetByCodeAcces() throws SQLException {
         // Nettoyer si déjà existant
@@ -94,7 +87,7 @@ public class UtilisateurDAOTest {
 
         Utilisateur recupere = utilisateurDAO.getByCodeAcces(9999);
         assertNotNull(recupere);
-        assertEquals("Jean", recupere.getNom()); // ✅
+        assertEquals("Jean", recupere.getNom());
     }
 
     @Test
@@ -110,4 +103,29 @@ public class UtilisateurDAOTest {
         assertEquals(999, updated.getPtsFidelite());
     }
 
+    @Test
+    void testIsAdmin() throws SQLException {
+        // Nettoyer si un "AdminTest" existe
+        List<Utilisateur> tous = utilisateurDAO.getAll();
+        for (Utilisateur u : tous) {
+            if (u.getNom().equals("AdminTest")) {
+                utilisateurDAO.delete(u.getId());
+            }
+        }
+
+        // Ajouter un utilisateur admin
+        Utilisateur admin = new Utilisateur(0, "AdminTest", 4321, "admin");
+        utilisateurDAO.insert(admin);
+
+        Utilisateur recupere = utilisateurDAO.getByCodeAcces(4321);
+        assertNotNull(recupere);
+        assertTrue(utilisateurDAO.isAdmin(recupere.getId())); // ✅ doit être admin
+    }
+
+    @AfterAll
+    static void teardown() throws SQLException {
+        if (conn != null && !conn.isClosed()) {
+            conn.close();
+        }
+    }
 }

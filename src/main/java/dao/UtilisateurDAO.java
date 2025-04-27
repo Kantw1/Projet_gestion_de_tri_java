@@ -17,16 +17,17 @@ public class UtilisateurDAO {
      * Insère un utilisateur dans la base.
      */
     public void insert(Utilisateur u) throws SQLException {
-        String sql = "INSERT INTO Utilisateur (nom, ptsFidelite, codeAcces) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Utilisateur (nom, ptsFidelite, codeAcces, role) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, u.getNom());
             stmt.setInt(2, u.getPtsFidelite());
             stmt.setInt(3, u.getCodeAcces());
+            stmt.setString(4, u.getRole());
             stmt.executeUpdate();
 
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
-                    u.setId(rs.getInt(1)); // ✅ affectation de l'ID généré
+                    u.setId(rs.getInt(1));
                 }
             }
         }
@@ -44,7 +45,8 @@ public class UtilisateurDAO {
                 Utilisateur u = new Utilisateur(
                         rs.getInt("id"),
                         rs.getString("nom"),
-                        rs.getInt("codeAcces")
+                        rs.getInt("codeAcces"),
+                        rs.getString("role")
                 );
                 u.setPtsFidelite(rs.getInt("ptsFidelite"));
                 return u;
@@ -65,7 +67,8 @@ public class UtilisateurDAO {
                 Utilisateur u = new Utilisateur(
                         rs.getInt("id"),
                         rs.getString("nom"),
-                        rs.getInt("codeAcces")
+                        rs.getInt("codeAcces"),
+                        rs.getString("role")
                 );
                 u.setPtsFidelite(rs.getInt("ptsFidelite"));
                 utilisateurs.add(u);
@@ -78,12 +81,13 @@ public class UtilisateurDAO {
      * Met à jour les informations d’un utilisateur.
      */
     public void update(Utilisateur u) throws SQLException {
-        String sql = "UPDATE Utilisateur SET nom = ?, ptsFidelite = ?, codeAcces = ? WHERE id = ?";
+        String sql = "UPDATE Utilisateur SET nom = ?, ptsFidelite = ?, codeAcces = ?, role = ? WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, u.getNom());
             stmt.setInt(2, u.getPtsFidelite());
             stmt.setInt(3, u.getCodeAcces());
-            stmt.setInt(4, u.getId());
+            stmt.setString(4, u.getRole());
+            stmt.setInt(5, u.getId());
             stmt.executeUpdate();
         }
     }
@@ -110,6 +114,7 @@ public class UtilisateurDAO {
             stmt.executeUpdate();
         }
     }
+
     /**
      * Récupère un utilisateur par son code d'accès.
      */
@@ -122,7 +127,8 @@ public class UtilisateurDAO {
                 Utilisateur u = new Utilisateur(
                         rs.getInt("id"),
                         rs.getString("nom"),
-                        rs.getInt("codeAcces")
+                        rs.getInt("codeAcces"),
+                        rs.getString("role")
                 );
                 u.setPtsFidelite(rs.getInt("ptsFidelite"));
                 return u;
@@ -143,7 +149,8 @@ public class UtilisateurDAO {
                 Utilisateur u = new Utilisateur(
                         rs.getInt("id"),
                         rs.getString("nom"),
-                        rs.getInt("codeAcces")
+                        rs.getInt("codeAcces"),
+                        rs.getString("role")
                 );
                 u.setPtsFidelite(rs.getInt("ptsFidelite"));
                 return u;
@@ -151,4 +158,38 @@ public class UtilisateurDAO {
         }
         return null;
     }
+    /**
+     * Vérifie si un utilisateur est administrateur à partir de son ID.
+     */
+    public boolean isAdmin(int id) throws SQLException {
+        String sql = "SELECT role FROM Utilisateur WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return "admin".equalsIgnoreCase(rs.getString("role"));
+            }
+        }
+        return false;
+    }
+    public Utilisateur getByNomAndCodeAcces(String nom, int codeAcces) throws SQLException {
+        String sql = "SELECT * FROM Utilisateur WHERE nom = ? AND codeAcces = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nom);
+            stmt.setInt(2, codeAcces);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Utilisateur u = new Utilisateur(
+                        rs.getInt("id"),
+                        rs.getString("nom"),
+                        rs.getInt("codeAcces"),
+                        rs.getString("role")
+                );
+                u.setPtsFidelite(rs.getInt("ptsFidelite"));
+                return u;
+            }
+        }
+        return null;
+    }
+
 }

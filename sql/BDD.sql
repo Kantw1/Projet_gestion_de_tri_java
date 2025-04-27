@@ -1,12 +1,12 @@
 CREATE DATABASE IF NOT EXISTS BDD;
                 USE BDD;
 
-                -- Table des utilisateurs
                 CREATE TABLE Utilisateur (
                     id INT PRIMARY KEY AUTO_INCREMENT,
                     nom VARCHAR(255),
                     ptsFidelite INT,
-                    codeAcces INT
+                    codeAcces INT,
+                    role VARCHAR(50) DEFAULT 'utilisateur' -- 'utilisateur' ou 'admin'
                 );
 
                 -- Centre de tri

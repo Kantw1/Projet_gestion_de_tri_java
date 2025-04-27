@@ -18,13 +18,13 @@ public class UtilisateurTest {
 
     @BeforeEach
     public void setUp() {
-        utilisateur = new Utilisateur(1, "Alice", 1234);
+        utilisateur = new Utilisateur(1, "Alice", 1234, "utilisateur"); // 👈 Ajout du rôle explicitement
         utilisateur.ajouterPoints(100);
 
         poubelle = new Poubelle(1, 100, "Chatelet", TypePoubelle.JAUNE, 5);
         utilisateur.ajouterPoubelleAccessible(poubelle);
 
-        // 👇 Important : autoriser le code d'accès pour le dépôt
+        // Important : autoriser le code d'accès pour le dépôt
         poubelle.getAccesAutorises().add(utilisateur.getCodeAcces());
 
         depot = new Depot(1, NatureDechet.PLASTIQUE, 1.0f, 2, LocalDateTime.now(), poubelle, utilisateur);
@@ -46,12 +46,12 @@ public class UtilisateurTest {
 
     @Test
     public void testConvertirPoints() {
-        int pointsAvant = utilisateur.getPtsFidelite(); // ex. 104
+        int pointsAvant = utilisateur.getPtsFidelite();
         BonDeCommande commande = utilisateur.convertirPoints(50);
 
         assertNotNull(commande);
         assertEquals(50, commande.getPointsUtilises());
-        assertEquals(pointsAvant - 50, utilisateur.getPtsFidelite()); // ✅ logique !
+        assertEquals(pointsAvant - 50, utilisateur.getPtsFidelite());
     }
 
     @Test
@@ -77,5 +77,16 @@ public class UtilisateurTest {
         boolean result = utilisateur.acheterProduits(produit);
         assertTrue(result);
         assertEquals(pointsAvant - produit.getPointNecessaire(), utilisateur.getPtsFidelite());
+    }
+
+    @Test
+    public void testGetRole() {
+        assertEquals("utilisateur", utilisateur.getRole());
+    }
+
+    @Test
+    public void testSetRole() {
+        utilisateur.setRole("admin");
+        assertEquals("admin", utilisateur.getRole());
     }
 }

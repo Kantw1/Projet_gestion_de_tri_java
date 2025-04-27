@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="ihm.AdminController">
+
+    <top>
+        <Label text="Interface Administrateur"
+               style="-fx-font-size: 32px; -fx-font-weight: bold;"
+               BorderPane.alignment="CENTER"/>
+    </top>
+
+    <center>
+        <VBox spacing="30" alignment="CENTER">
+            <padding>
+                <Insets top="30" right="30" bottom="30" left="30"/>
+            </padding>
+
+            <Button text="Voir la liste des utilisateurs" onAction="#handleVoirUtilisateurs" prefWidth="300" style="-fx-font-size: 18px;" />
+            <Button text="Ajouter un nouvel utilisateur" onAction="#handleAjouterUtilisateur" prefWidth="300" style="-fx-font-size: 18px;" />
+            <Button text="Se déconnecter" onAction="#handleDeconnexion" prefWidth="300" style="-fx-font-size: 18px;" />
+
+            <Label fx:id="infoLabel" textFill="green" style="-fx-font-size: 16px;"/>
+        </VBox>
+    </center>
+
+</BorderPane>

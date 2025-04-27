@@ -26,18 +26,23 @@ public class HelloController {
     @FXML
     private void handleLogin(ActionEvent event) {
         try {
-            String nom = nomField.getText().trim(); // Récupère le nom
-            int codeAcces = Integer.parseInt(codeAccesField.getText().trim()); // Récupère le code d'accès
+            String nom = nomField.getText().trim();
+            int codeAcces = Integer.parseInt(codeAccesField.getText().trim());
 
-            // Vérifie si l'utilisateur existe avec le nom et le code d'accès
             UtilisateurDAO utilisateurDAO = new UtilisateurDAO(DatabaseConnection.getConnection());
-            Utilisateur utilisateur = utilisateurDAO.getByNom(nom);
+            Utilisateur utilisateur = utilisateurDAO.getByNomAndCodeAcces(nom, codeAcces);
 
-            if (utilisateur != null && utilisateur.getCodeAcces() == codeAcces) {
-                // Connexion réussie → Changer de scène vers DepotView.fxml
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/DepotView.fxml"));
-                Parent root = loader.load();
+            if (utilisateur != null) {
                 Stage stage = (Stage) nomField.getScene().getWindow();
+                FXMLLoader loader;
+
+                if ("admin".equalsIgnoreCase(utilisateur.getRole())) {
+                    loader = new FXMLLoader(getClass().getResource("/views/AdminView.fxml"));
+                } else {
+                    loader = new FXMLLoader(getClass().getResource("/views/DepotView.fxml"));
+                }
+
+                Parent root = loader.load();
                 stage.setScene(new Scene(root));
                 stage.show();
             } else {
@@ -50,6 +55,8 @@ public class HelloController {
             errorLabel.setText("Erreur lors de la connexion.");
         }
     }
+
+
     @FXML
     private void handleInscriptionRedirection(ActionEvent event) {
         try {
