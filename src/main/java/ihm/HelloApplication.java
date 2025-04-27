@@ -1,4 +1,4 @@
-package com.example.gestion_dechet.ihm;
+package ihm;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
