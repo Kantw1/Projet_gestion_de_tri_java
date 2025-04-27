@@ -12,5 +12,7 @@
 
   <Button text="Se connecter" onAction="#handleLogin" />
 
+  <Button text="S'inscrire" onAction="#handleInscriptionRedirection" />
+
   <Label fx:id="errorLabel" textFill="red" />
 </VBox>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="20" alignment="CENTER" xmlns:fx="http://javafx.com/fxml" fx:controller="ihm.InscriptionController">
+    <Label text="Créer un compte" style="-fx-font-size: 24px;"/>
+
+    <TextField fx:id="nomField" promptText="Entrez votre nom" />
+    <TextField fx:id="codeAccesField" promptText="Entrez un code d'accès" />
+
+    <Button text="S'inscrire" onAction="#handleInscription" />
+
+    <Label fx:id="errorLabel" textFill="red" />
+</VBox>
