@@ -15,6 +15,9 @@ import utils.DatabaseConnection;
 public class HelloController {
 
     @FXML
+    private TextField nomField;
+
+    @FXML
     private TextField codeAccesField;
 
     @FXML
@@ -23,21 +26,23 @@ public class HelloController {
     @FXML
     private void handleLogin(ActionEvent event) {
         try {
-            int codeAcces = Integer.parseInt(codeAccesField.getText());
-            UtilisateurDAO utilisateurDAO = new UtilisateurDAO(DatabaseConnection.getConnection());
-            Utilisateur utilisateur = utilisateurDAO.getByCodeAcces(codeAcces);
+            String nom = nomField.getText().trim(); // Récupère le nom
+            int codeAcces = Integer.parseInt(codeAccesField.getText().trim()); // Récupère le code d'accès
 
-            if (utilisateur != null) {
+            // Vérifie si l'utilisateur existe avec le nom et le code d'accès
+            UtilisateurDAO utilisateurDAO = new UtilisateurDAO(DatabaseConnection.getConnection());
+            Utilisateur utilisateur = utilisateurDAO.getByNom(nom);
+
+            if (utilisateur != null && utilisateur.getCodeAcces() == codeAcces) {
                 // Connexion réussie → Changer de scène vers DepotView.fxml
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/DepotView.fxml"));
                 Parent root = loader.load();
-                Stage stage = (Stage) codeAccesField.getScene().getWindow();
+                Stage stage = (Stage) nomField.getScene().getWindow();
                 stage.setScene(new Scene(root));
                 stage.show();
             } else {
-                errorLabel.setText("Code d'accès incorrect.");
+                errorLabel.setText("Nom ou code d'accès incorrect.");
             }
-
         } catch (NumberFormatException e) {
             errorLabel.setText("Veuillez entrer un code valide (nombre).");
         } catch (Exception e) {

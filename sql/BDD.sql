@@ -1,36 +1,36 @@
 CREATE DATABASE IF NOT EXISTS BDD;
-USE BDD;
+                USE BDD;
 
--- Table des utilisateurs
-CREATE TABLE Utilisateur (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nom VARCHAR(255),
-    ptsFidelite INT,
-    codeAcces INT
-);
+                -- Table des utilisateurs
+                CREATE TABLE Utilisateur (
+                    id INT PRIMARY KEY AUTO_INCREMENT,
+                    nom VARCHAR(255),
+                    ptsFidelite INT,
+                    codeAcces INT
+                );
 
--- Centre de tri
-CREATE TABLE CentreDeTri (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nom VARCHAR(255),
-    adresse VARCHAR(255)
-);
+                -- Centre de tri
+                CREATE TABLE CentreDeTri (
+                    id INT PRIMARY KEY AUTO_INCREMENT,
+                    nom VARCHAR(255),
+                    adresse VARCHAR(255)
+                );
 
--- Poubelle
-CREATE TABLE Poubelle (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    capaciteMax INT,
-    emplacement VARCHAR(255),
-    typePoubelle VARCHAR(255),
-    quantiteActuelle INT,
-    seuilAlerte INT
-);
+                -- Poubelle
+                CREATE TABLE Poubelle (
+                    id INT PRIMARY KEY AUTO_INCREMENT,
+                    capaciteMax INT,
+                    emplacement VARCHAR(255),
+                    typePoubelle VARCHAR(255),
+                    quantiteActuelle INT,
+                    seuilAlerte INT
+                );
 
--- Dépôt
-CREATE TABLE Depot (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    type VARCHAR(255),
-    poids FLOAT,
+                -- Dépôt
+                CREATE TABLE Depot (
+                    id INT PRIMARY KEY AUTO_INCREMENT,
+                    type VARCHAR(255),
+                    poids FLOAT,
     quantite INT,
     heureDepot DATETIME,
     points INT,
