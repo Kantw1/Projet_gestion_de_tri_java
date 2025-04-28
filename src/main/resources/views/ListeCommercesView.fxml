@@ -12,11 +12,12 @@
     </top>
 
     <center>
-        <TableView fx:id="commerceTable" prefWidth="600" prefHeight="400">
+        <TableView fx:id="commerceTable" prefWidth="800" prefHeight="400">
             <columns>
                 <TableColumn fx:id="nomCol" text="Nom du Commerce" prefWidth="200"/>
                 <TableColumn fx:id="dateDebutCol" text="Date Début" prefWidth="200"/>
                 <TableColumn fx:id="dateFinCol" text="Date Fin" prefWidth="200"/>
+                <TableColumn fx:id="actionCol" text="Actions" prefWidth="200"/> <!-- AJOUT ICI -->
             </columns>
         </TableView>
     </center>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="ihm.ListeCategoriesController">
+    <top>
+        <Label text="Liste des Catégories Associées"
+               style="-fx-font-size: 24px; -fx-font-weight: bold;"
+               BorderPane.alignment="CENTER" />
+    </top>
+
+    <center>
+        <TableView fx:id="categorieTable" prefWidth="600" prefHeight="400">
+            <columns>
+                <TableColumn fx:id="nomCol" text="Nom de la Catégorie" prefWidth="300"/>
+                <TableColumn fx:id="pointsCol" text="Points Nécessaires" prefWidth="150"/>
+                <TableColumn fx:id="reductionCol" text="Réduction (%)" prefWidth="150"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+</BorderPane>
