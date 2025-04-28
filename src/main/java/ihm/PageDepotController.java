@@ -103,18 +103,16 @@ public class PageDepotController {
                 utilisateur
         );
 
-        depotDAO.insert(depot);
+        int basePoints = depot.getPoints(); // points initiaux (toujours positifs)
 
-        //Calcul des points : on prend les points du depot
-        int basePoints = depot.getPoints(); // 2, 3, 4, etc. selon type
-
-        // On vérifie si le type de déchet est accepté par la poubelle
         boolean dechetConforme = depot.verifierTypeDechet();
 
-        if (dechetConforme) {
-            return basePoints; // Bonus normal
-        } else {
-            return -basePoints; // perte des points de base
+        if (!dechetConforme) {
+            depot.setPoints(-basePoints); // on rend les points négatifs si non conforme
         }
+
+        depotDAO.insert(depot); // Insert avec les vrais points dans la BDD
+
+        return depot.getPoints(); // Retourne les points (positif ou négatif)
     }
 }

@@ -65,6 +65,11 @@ public class Depot {
         return points;
     }
 
+    public void setPoints(int points) {
+        this.points = points;
+    }
+
+
     public Poubelle getPoubelle() {
         return poubelle;
     }
