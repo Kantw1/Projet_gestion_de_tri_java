@@ -109,8 +109,13 @@ public class DepotController {
 
             Stage stage = new Stage();
             stage.setTitle("Historique de Dépôts");
-            stage.setScene(new Scene(root, 600, 400));
+
+            Scene scene = new Scene(root, 600, 400);
+            scene.getStylesheets().add(HelloApplication.class.getResource("/style.css").toExternalForm());
+
+            stage.setScene(scene);
             stage.show();
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -131,8 +136,12 @@ public class DepotController {
 
             Stage stage = new Stage();
             stage.setTitle("Mes Bons de Commande");
-            stage.setScene(new Scene(root, 600, 400));
+            Scene scene = new Scene(root, 600, 400);
+            scene.getStylesheets().add(HelloApplication.class.getResource("/style.css").toExternalForm());
+
+            stage.setScene(scene);
             stage.show();
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -174,8 +183,12 @@ public class DepotController {
 
             Stage stage = new Stage();
             stage.setTitle("Déposer vos déchets - " + poubelle.getEmplacement());
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root, 600, 400);
+            scene.getStylesheets().add(HelloApplication.class.getResource("/style.css").toExternalForm());
+
+            stage.setScene(scene);
             stage.show();
+
 
         } catch (Exception e) {
             e.printStackTrace();

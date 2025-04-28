@@ -94,8 +94,12 @@
 
                     Stage stage = new Stage();
                     stage.setTitle("Catégories de : " + selected.getNom());
-                    stage.setScene(new Scene(root));
+                    Scene scene = new Scene(root, 600, 400);
+                    scene.getStylesheets().add(HelloApplication.class.getResource("/style.css").toExternalForm());
+
+                    stage.setScene(scene);
                     stage.show();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
