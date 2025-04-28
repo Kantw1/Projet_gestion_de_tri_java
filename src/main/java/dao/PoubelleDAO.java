@@ -183,4 +183,18 @@ public class PoubelleDAO {
         }
         return liste;
     }
+    // DAO Utilisateur
+    public int getPointsFideliteById(int id) throws SQLException {
+        String sql = "SELECT ptsFidelite FROM Utilisateur WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("ptsFidelite");
+                }
+            }
+        }
+        return 0;
+    }
+
 }

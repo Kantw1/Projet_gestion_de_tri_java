@@ -51,18 +51,14 @@ public class Utilisateur {
         }
     }
 
-    public BonDeCommande convertirPoints(int points) {
-        if (points > 0 && points <= ptsFidelite) {
-            ptsFidelite -= points;
-
-            BonDeCommande commande = new BonDeCommande(0, this, new ArrayList<>(), null);
-            commande.setEtatCommande("validée");
-            commande.setPointsUtilises(points);
-
-            return commande;
+    public BonDeCommande convertirPoints(CategorieProduit categorie) {
+        if (categorie != null && categorie.estEligible(ptsFidelite)) {
+            ptsFidelite -= categorie.getPointNecessaire();
+            return new BonDeCommande(0, this, categorie, java.time.LocalDate.now(), categorie.getPointNecessaire());
         }
         return null;
     }
+
 
     public boolean acheterProduits(CategorieProduit produit) {
         if (produit.estEligible(ptsFidelite)) {

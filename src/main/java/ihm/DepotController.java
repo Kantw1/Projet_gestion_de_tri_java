@@ -126,7 +126,9 @@ public class DepotController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/liste-bons.fxml"));
             Parent root = loader.load();
 
-            // TODO : passer utilisateurConnecte si nécessaire
+            ListeBonsController controller = loader.getController();
+            controller.setUtilisateur(utilisateurConnecte); // 🔥 Ajout important !
+
             Stage stage = new Stage();
             stage.setTitle("Mes Bons de Commande");
             stage.setScene(new Scene(root, 600, 400));
@@ -137,6 +139,7 @@ public class DepotController {
         }
     }
 
+
     /**
      * Ouvre la page pour échanger des points.
      */
@@ -145,7 +148,9 @@ public class DepotController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/echanger-points.fxml"));
             Parent root = loader.load();
 
-            // TODO : passer utilisateurConnecte si nécessaire
+            EchangerPointsController controller = loader.getController();
+            controller.setUtilisateur(utilisateurConnecte); // 🔥 ON PASSE L'UTILISATEUR !!!
+
             Stage stage = new Stage();
             stage.setTitle("Échanger mes Points");
             stage.setScene(new Scene(root, 600, 400));

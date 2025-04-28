@@ -1,38 +1,35 @@
 package ihm;
 
 import dao.BonDeCommandeDAO;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import model.BonDeCommande;
 import model.Utilisateur;
 import utils.DatabaseConnection;
 
+
 import java.sql.Connection;
 import java.util.List;
 
 public class ListeBonsController {
-    @FXML
-    private void handleRetour() {
-        // Obtient la scène de la table
-        Stage stage = (Stage) tableBons.getScene().getWindow();  // Utilise tableBons au lieu de tableDepots
 
-        // Ferme la fenêtre actuelle
-        stage.close();
-    }
     @FXML
     private TableView<BonDeCommande> tableBons;
 
     @FXML
-    private TableColumn<BonDeCommande, String> colProduit;
+    private TableColumn<BonDeCommande, String> colCategorieProduit;
+
+    @FXML
+    private TableColumn<BonDeCommande, String> colCommerce;
 
     @FXML
     private TableColumn<BonDeCommande, Integer> colPointsUtilises;
 
     @FXML
-    private TableColumn<BonDeCommande, String> colEtat;
+    private TableColumn<BonDeCommande, String> colDateCommande;
 
     private Utilisateur utilisateurConnecte;
 
@@ -43,11 +40,16 @@ public class ListeBonsController {
 
     @FXML
     public void initialize() {
-        colProduit.setCellValueFactory(new PropertyValueFactory<>("produitsString")); // méthode getProduitsString()
-        colPointsUtilises.setCellValueFactory(new PropertyValueFactory<>("pointsUtilises"));
-        colEtat.setCellValueFactory(new PropertyValueFactory<>("etatCommande"));
+        colCategorieProduit.setCellValueFactory(data ->
+                new javafx.beans.property.SimpleStringProperty(data.getValue().getNomCategorieProduit())
+        );
+        colPointsUtilises.setCellValueFactory(data ->
+                new javafx.beans.property.SimpleIntegerProperty(data.getValue().getPointsUtilises()).asObject()
+        );
+        colDateCommande.setCellValueFactory(data ->
+                new javafx.beans.property.SimpleStringProperty(data.getValue().getDateCommande().toString())
+        );
     }
-
     private void chargerBons() {
         try (Connection conn = DatabaseConnection.getConnection()) {
             BonDeCommandeDAO bonDAO = new BonDeCommandeDAO(conn);
@@ -56,5 +58,11 @@ public class ListeBonsController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    private void handleRetour() {
+        Stage stage = (Stage) tableBons.getScene().getWindow();
+        stage.close();
     }
 }

@@ -49,9 +49,9 @@ public class Commerce {
      * @return true si l’échange a été accepté.
      */
     public boolean echangerPoints(Utilisateur u, CategorieProduit cp) {
-        if (cp.estEligible(u.getPtsFidelite())) {
-            u.convertirPoints(cp.getPointNecessaire()); // retire les points
-            return true;
+        if (cp != null && cp.estEligible(u.getPtsFidelite())) {
+            BonDeCommande bon = u.convertirPoints(cp); // retire les points et crée un bon
+            return bon != null;
         }
         return false;
     }

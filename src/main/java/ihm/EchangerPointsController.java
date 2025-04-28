@@ -4,6 +4,7 @@ import dao.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 import model.*;
 
 import utils.DatabaseConnection;
@@ -59,15 +60,15 @@ public class EchangerPointsController {
         }
 
         public String getNomCommerce() {
-            return commerce.getNom();
+            return commerce != null ? commerce.getNom() : "";
         }
 
         public String getNomCategorie() {
-            return categorieProduit.getNom();
+            return categorieProduit != null ? categorieProduit.getNom() : "";
         }
 
         public Integer getPointsNecessaires() {
-            return categorieProduit.getPointNecessaire();
+            return categorieProduit != null ? categorieProduit.getPointNecessaire() : 0;
         }
     }
 
@@ -78,32 +79,22 @@ public class EchangerPointsController {
         pointsColumn.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getPointsNecessaires()).asObject());
     }
 
-    // Appelé pour passer l'utilisateur connecté depuis l'écran précédent
-// Appelé pour passer l'utilisateur connecté depuis l'écran précédent
     public void setUtilisateur(Utilisateur utilisateur) {
         this.utilisateurConnecte = utilisateur;
 
         try (Connection conn = DatabaseConnection.getConnection()) {
             UtilisateurDAO utilisateurDAO = new UtilisateurDAO(conn);
 
-            // Recharge uniquement les points de fidélité
             int nouveauxPoints = utilisateurDAO.getPointsFideliteById(utilisateur.getId());
             utilisateurConnecte.setPtsFidelite(nouveauxPoints);
 
-            System.out.println("Utilisateur connecté : ID=" + utilisateurConnecte.getId() + ", Nom=" + utilisateurConnecte.getNom() + ", Points=" + utilisateurConnecte.getPtsFidelite());
-
             pointsLabel.setText("Points disponibles : " + utilisateurConnecte.getPtsFidelite());
-
-            // Charger les produits seulement après mise à jour des points
             chargerProduitsDisponibles();
-
         } catch (Exception e) {
             e.printStackTrace();
             afficherErreur("Erreur lors du chargement des points utilisateur.");
         }
     }
-
-
 
     private void chargerProduitsDisponibles() {
         try (Connection conn = DatabaseConnection.getConnection()) {
@@ -115,7 +106,6 @@ public class EchangerPointsController {
             int centreId = utilisateurDAO.getCentreIdByUtilisateurId(utilisateurConnecte.getId());
             centreUtilisateur = centreDeTriDAO.getById(centreId);
 
-            // 🔥 Aller chercher tous les contrats actifs
             List<ContratPartenariat> contratsActifs = new ArrayList<>();
             for (ContratPartenariat contrat : contratDAO.getContratsByCentre(centreUtilisateur)) {
                 if (contrat.getDateDebut().isBefore(java.time.LocalDate.now()) &&
@@ -145,6 +135,11 @@ public class EchangerPointsController {
         }
     }
 
+    @FXML
+    private void handleRetour() {
+        Stage stage = (Stage) tableView.getScene().getWindow();
+        stage.close();
+    }
 
     @FXML
     private void handleAcheterCategorie() {
@@ -176,7 +171,14 @@ public class EchangerPointsController {
             utilisateurDAO.updateFidelite(utilisateurConnecte.getId(), nouveauxPoints);
             utilisateurConnecte.setPtsFidelite(nouveauxPoints);
 
-            BonDeCommande bon = new BonDeCommande(0, utilisateurConnecte, List.of(ligne.getCategorieProduit()), ligne.getCommerce());
+            BonDeCommande bon = new BonDeCommande(
+                    0,
+                    utilisateurConnecte,
+                    ligne.getCategorieProduit(),
+                    java.time.LocalDate.now(),
+                    ligne.getPointsNecessaires()
+            );
+
             bonDeCommandeDAO.insert(bon);
 
             conn.commit();
@@ -190,6 +192,7 @@ public class EchangerPointsController {
             afficherErreur("Erreur lors de l'achat.");
         }
     }
+
 
     @FXML
     private void handleAcheterTout() {
@@ -206,41 +209,31 @@ public class EchangerPointsController {
 
             List<LigneProduit> selection = new ArrayList<>(tableView.getItems());
 
-            for (Commerce commerce : commercesDisponibles) {
-                List<LigneProduit> produitsCommerce = selection.stream()
-                        .filter(lp -> lp.getCommerce().getId() == commerce.getId())
-                        .toList();
-
-                if (produitsCommerce.isEmpty()) continue;
-
-                int totalPoints = produitsCommerce.stream()
-                        .mapToInt(LigneProduit::getPointsNecessaires)
-                        .sum();
-
-                if (utilisateurConnecte.getPtsFidelite() < totalPoints) {
-                    afficherErreur("Points insuffisants pour tout acheter chez " + commerce.getNom());
+            for (LigneProduit ligne : selection) {
+                int pointsCategorie = ligne.getPointsNecessaires();
+                if (utilisateurConnecte.getPtsFidelite() < pointsCategorie) {
                     continue;
                 }
 
-                if (confirmer("Acheter toutes les réductions chez " + commerce.getNom() + " pour " + totalPoints + " points ?")) {
-                    for (LigneProduit ligne : produitsCommerce) {
-                        int pointsCategorie = ligne.getPointsNecessaires();
-                        int nouveauxPoints = utilisateurConnecte.getPtsFidelite() - pointsCategorie;
+                utilisateurConnecte.setPtsFidelite(utilisateurConnecte.getPtsFidelite() - pointsCategorie);
+                utilisateurDAO.updateFidelite(utilisateurConnecte.getId(), utilisateurConnecte.getPtsFidelite());
 
-                        utilisateurConnecte.setPtsFidelite(nouveauxPoints);
-                        utilisateurDAO.updateFidelite(utilisateurConnecte.getId(), nouveauxPoints);
+                BonDeCommande bon = new BonDeCommande(
+                        0,
+                        utilisateurConnecte,
+                        ligne.getCategorieProduit(),
+                        java.time.LocalDate.now(),
+                        ligne.getPointsNecessaires()
+                );
+                bonDeCommandeDAO.insert(bon);
 
-                        BonDeCommande bon = new BonDeCommande(0, utilisateurConnecte, List.of(ligne.getCategorieProduit()), commerce);
-                        bonDeCommandeDAO.insert(bon);
 
-                        tableView.getItems().remove(ligne);
-                    }
-                    afficherSucces("Tous les achats chez " + commerce.getNom() + " effectués !");
-                    pointsLabel.setText("Points disponibles : " + utilisateurConnecte.getPtsFidelite());
-                }
+                tableView.getItems().remove(ligne);
             }
 
             conn.commit();
+            afficherSucces("Tous les achats ont été effectués !");
+            pointsLabel.setText("Points disponibles : " + utilisateurConnecte.getPtsFidelite());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -269,7 +262,6 @@ public class EchangerPointsController {
         alert.setTitle("Confirmation");
         alert.setHeaderText(null);
         alert.setContentText(message);
-
         Optional<ButtonType> result = alert.showAndWait();
         return result.isPresent() && result.get() == ButtonType.OK;
     }

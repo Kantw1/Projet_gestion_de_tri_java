@@ -2,7 +2,6 @@ package dao;
 
 import model.BonDeCommande;
 import model.CategorieProduit;
-import model.Commerce;
 import model.Utilisateur;
 
 import java.sql.*;
@@ -17,71 +16,52 @@ public class BonDeCommandeDAO {
         this.conn = conn;
     }
 
+    /**
+     * Insère un nouveau bon de commande.
+     */
     public void insert(BonDeCommande bon) throws SQLException {
-        String insertBon = "INSERT INTO BonDeCommande (utilisateurID, dateCommande, commerceID, pointsUtilises, etatCommande) VALUES (?, NOW(), ?, ?, ?)";
-        try (PreparedStatement stmt = conn.prepareStatement(insertBon, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setInt(1, bon.getUtilisateur().getId());
-            stmt.setInt(2, bon.getCommerce().getId());
-            stmt.setInt(3, bon.getPointsUtilises());
-            stmt.setString(4, "valide"); // tu peux mettre "valide" par défaut
-
-            stmt.executeUpdate();
-
-            ResultSet rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                int bonId = rs.getInt(1);
-
-                // Ensuite insérer chaque catégorie liée
-                String insertLiaison = "INSERT INTO CommandeCategorieProduit (bonDeCommandeID, categorieProduitID) VALUES (?, ?)";
-                try (PreparedStatement stmt2 = conn.prepareStatement(insertLiaison)) {
-                    for (CategorieProduit cp : bon.getCategories()) {
-                        stmt2.setInt(1, bonId);
-                        stmt2.setInt(2, cp.getId());
-                        stmt2.addBatch();
-                    }
-                    stmt2.executeBatch();
-                }
-            }
-        }
-    }
-
-    public BonDeCommande getById(int id, Utilisateur u, Commerce c, List<CategorieProduit> categories) throws SQLException {
-        String sql = "SELECT * FROM BonDeCommande WHERE id = ?";
+        String sql = "INSERT INTO BonDeCommande (utilisateurID, categorieProduitID, dateCommande, pointsUtilises) VALUES (?, ?, NOW(), ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    BonDeCommande bdc = new BonDeCommande(
-                            rs.getInt("id"),
-                            u,
-                            categories,
-                            c
-                    );
-                    bdc.setEtatCommande(rs.getString("etatCommande"));
-                    bdc.setPointsUtilises(rs.getInt("pointsUtilises"));
-                    return bdc;
-                }
-            }
+            stmt.setInt(1, bon.getUtilisateur().getId());
+            stmt.setInt(2, bon.getCategorieProduit().getId());
+            stmt.setInt(3, bon.getPointsUtilises());
+            stmt.executeUpdate();
         }
-        return null;
     }
 
+    /**
+     * Récupère tous les bons de commande liés à un utilisateur donné.
+     */
     public List<BonDeCommande> getByUtilisateurId(int utilisateurId) throws SQLException {
         List<BonDeCommande> bons = new ArrayList<>();
-        String sql = "SELECT id, etatCommande, pointsUtilises FROM BonDeCommande WHERE utilisateurID = ?";
+        String sql = """
+        SELECT bc.id, bc.dateCommande, bc.pointsUtilises, 
+               cp.id AS catId, cp.nom AS catNom, cp.pointNecessaire, cp.bonReduction
+        FROM BonDeCommande bc
+        JOIN CategorieProduit cp ON bc.categorieProduitID = cp.id
+        WHERE bc.utilisateurID = ?
+        ORDER BY bc.dateCommande DESC
+    """;
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, utilisateurId);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    BonDeCommande bdc = new BonDeCommande(
-                            rs.getInt("id"),
-                            null, // utilisateur sera géré si besoin
-                            new ArrayList<>(), // liste vide de produits pour l'affichage simple
-                            null // commerce non utilisé ici
+                    Utilisateur utilisateur = new Utilisateur(utilisateurId, null, 0, "utilisateur", -1); // utilisateur simplifié
+                    CategorieProduit categorie = new CategorieProduit(
+                            rs.getInt("catId"),
+                            rs.getString("catNom"),
+                            rs.getInt("pointNecessaire"),
+                            rs.getFloat("bonReduction")
                     );
-                    bdc.setEtatCommande(rs.getString("etatCommande"));
-                    bdc.setPointsUtilises(rs.getInt("pointsUtilises"));
-                    bons.add(bdc);
+                    BonDeCommande bon = new BonDeCommande(
+                            rs.getInt("id"),
+                            utilisateur,
+                            categorie,
+                            rs.getDate("dateCommande").toLocalDate(),
+                            rs.getInt("pointsUtilises")
+                    );
+                    bons.add(bon);
                 }
             }
         }
@@ -89,53 +69,14 @@ public class BonDeCommandeDAO {
     }
 
 
-    public List<BonDeCommande> getAll(Utilisateur u, Commerce c, List<CategorieProduit> categories) throws SQLException {
-        List<BonDeCommande> commandes = new ArrayList<>();
-        String sql = "SELECT * FROM BonDeCommande WHERE utilisateurID = ? AND commerceID = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, u.getId());
-            stmt.setInt(2, c.getId());
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    BonDeCommande bdc = new BonDeCommande(
-                            rs.getInt("id"),
-                            u,
-                            categories,
-                            c
-                    );
-                    bdc.setEtatCommande(rs.getString("etatCommande"));
-                    bdc.setPointsUtilises(rs.getInt("pointsUtilises"));
-                    commandes.add(bdc);
-                }
-            }
-        }
-        return commandes;
-    }
-
-    public void update(BonDeCommande bdc) throws SQLException {
-        String sql = "UPDATE BonDeCommande SET etatCommande = ?, dateCommande = ?, pointsUtilises = ? WHERE id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, bdc.getEtatCommande());
-            stmt.setDate(2, Date.valueOf(bdc.getDateCommande()));
-            stmt.setInt(3, bdc.getPointsUtilises());
-            stmt.setInt(4, bdc.getId());
-            stmt.executeUpdate();
-        }
-    }
-
+    /**
+     * Supprime un bon de commande par son ID.
+     */
     public void delete(int id) throws SQLException {
-        // Supprimer d’abord les catégories liées
-        try (PreparedStatement stmt1 = conn.prepareStatement(
-                "DELETE FROM CommandeCategorieProduit WHERE bonDeCommandeID = ?")) {
-            stmt1.setInt(1, id);
-            stmt1.executeUpdate();
-        }
-
-        // Ensuite la commande elle-même
-        try (PreparedStatement stmt2 = conn.prepareStatement(
-                "DELETE FROM BonDeCommande WHERE id = ?")) {
-            stmt2.setInt(1, id);
-            stmt2.executeUpdate();
+        String sql = "DELETE FROM BonDeCommande WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
         }
     }
 }

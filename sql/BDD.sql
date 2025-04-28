@@ -84,15 +84,14 @@ CREATE TABLE CommerceCategorieProduit (
 
 -- Bon de commande
 CREATE TABLE BonDeCommande (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    utilisateurID INT,
-    etatCommande VARCHAR(255),
-    dateCommande DATE,
-    commerceID INT,
-    pointsUtilises INT,
-    FOREIGN KEY (utilisateurID) REFERENCES Utilisateur(id),
-    FOREIGN KEY (commerceID) REFERENCES Commerce(id)
-);
+                      id INT PRIMARY KEY AUTO_INCREMENT,
+                      utilisateurID INT,
+                      categorieProduitID INT,
+                      dateCommande DATE,
+                      pointsUtilises INT,
+                      FOREIGN KEY (utilisateurID) REFERENCES Utilisateur(id),
+                      FOREIGN KEY (categorieProduitID) REFERENCES CategorieProduit(id)
+                  );
 
 -- Commande liée à des catégories de produits
 CREATE TABLE CommandeCategorieProduit (
