@@ -258,6 +258,18 @@ public class UtilisateurDAO {
         }
         return null;
     }
-
+    public int getCentreIdByUtilisateurId(int utilisateurId) throws SQLException {
+        String sql = "SELECT centreID FROM CentreUtilisateur WHERE utilisateurID = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, utilisateurId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("centreID");
+                } else {
+                    throw new SQLException("Aucun centre trouvé pour l'utilisateur ID=" + utilisateurId);
+                }
+            }
+        }
+    }
 
 }
