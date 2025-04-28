@@ -80,9 +80,23 @@ public class EchangerPointsController {
 
     // Appelé pour passer l'utilisateur connecté depuis l'écran précédent
     public void setUtilisateur(Utilisateur utilisateur) {
-        this.utilisateurConnecte = utilisateur;
-        chargerProduitsDisponibles();
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            UtilisateurDAO utilisateurDAO = new UtilisateurDAO(conn);
+            Utilisateur utilisateurMisAJour = utilisateurDAO.getById(utilisateur.getId());
+
+            if (utilisateurMisAJour != null) {
+                this.utilisateurConnecte = utilisateurMisAJour;
+            } else {
+                this.utilisateurConnecte = utilisateur; // fallback si problème (devrait pas arriver)
+            }
+
+            chargerProduitsDisponibles();
+        } catch (Exception e) {
+            e.printStackTrace();
+            afficherErreur("Erreur lors du chargement de l'utilisateur.");
+        }
     }
+
 
     private void chargerProduitsDisponibles() {
         try (Connection conn = DatabaseConnection.getConnection()) {
