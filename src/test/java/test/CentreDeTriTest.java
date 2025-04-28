@@ -19,7 +19,7 @@ public class CentreDeTriTest {
     @BeforeEach
     public void setUp() {
         centre = new CentreDeTri(7, "Centre Principal", "1 rue de la medaille");
-        poubelle = new Poubelle(0, 100, "Emplacement", TypePoubelle.PLASTIQUE, 50, 20, centre);
+        poubelle = new Poubelle(1, 100, "Zone 1", TypePoubelle.JAUNE, 1);
         commerce = new Commerce(1, "Commerce 1", centre);
 
         depotValide = new Depot(1, NatureDechet.PLASTIQUE, 10); // NatureDechet accepté par type JAUNE
