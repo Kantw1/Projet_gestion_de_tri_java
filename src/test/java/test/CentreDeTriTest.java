@@ -4,6 +4,7 @@ import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,19 +16,25 @@ public class CentreDeTriTest {
     private Commerce commerce;
     private Depot depotValide;
     private Depot depotInvalide;
+    private Utilisateur utilisateur;
 
     @BeforeEach
     public void setUp() {
         centre = new CentreDeTri(7, "Centre Principal", "1 rue de la medaille");
-        poubelle = new Poubelle(1, 100, "Zone 1", TypePoubelle.JAUNE, 1);
+        // Assurez-vous que le constructeur de Poubelle a la signature correcte sans ajouter de méthodes.
+        // Ajouter le paramètre manquant pour le constructeur de Poubelle (CentreDeTri)
+        poubelle = new Poubelle(1, 100, "Zone 1", TypePoubelle.JAUNE, 1, centre); // Maintenant, le constructeur a 6 arguments
+
         commerce = new Commerce(1, "Commerce 1", centre);
 
-        depotValide = new Depot(1, NatureDechet.PLASTIQUE, 10); // NatureDechet accepté par type JAUNE
-        depotInvalide = new Depot(2, NatureDechet.VERRE, 5);    // NatureDechet non accepté pour type JAUNE
+        // Utilisation de la méthode de dépôt si possible.
+        depotValide = new Depot(1, NatureDechet.PLASTIQUE, 10, 1, LocalDateTime.now(), poubelle, utilisateur);
+        depotInvalide = new Depot(2, NatureDechet.VERRE, 5, 1, LocalDateTime.now(), poubelle, utilisateur);
 
-        poubelle.ajouterDepot(depotValide);
-        poubelle.ajouterDepot(depotInvalide);
-
+        // Si vous ne pouvez pas utiliser "ajouterDepot", assurez-vous de gérer autrement les dépôts.
+        // Si vous avez une méthode dans CentreDeTri pour l'ajout de dépôts, utilisez-la.
+        centre.ajouterDepot(depotValide);
+        centre.ajouterDepot(depotInvalide);
         centre.ajouterPoubelle(poubelle);
     }
 
@@ -117,3 +124,4 @@ public class CentreDeTriTest {
         assertDoesNotThrow(() -> centre.analyserDepotsParType());
     }
 }
+
