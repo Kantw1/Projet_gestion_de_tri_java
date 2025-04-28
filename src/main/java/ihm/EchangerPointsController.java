@@ -87,17 +87,21 @@ public class EchangerPointsController {
             if (utilisateurMisAJour != null) {
                 this.utilisateurConnecte = utilisateurMisAJour;
             } else {
-                this.utilisateurConnecte = utilisateur; // fallback
+                this.utilisateurConnecte = utilisateur;
             }
-            // Mettre immédiatement à jour le label des points
+            System.out.println("Utilisateur rechargé : ID=" + utilisateurConnecte.getId() + ", Nom=" + utilisateurConnecte.getNom() + ", Points=" + utilisateurConnecte.getPtsFidelite());
+            
             pointsLabel.setText("Points disponibles : " + utilisateurConnecte.getPtsFidelite());
 
+            // Ensuite charger la table produits
             chargerProduitsDisponibles();
+
         } catch (Exception e) {
             e.printStackTrace();
             afficherErreur("Erreur lors du chargement de l'utilisateur.");
         }
     }
+
 
     private void chargerProduitsDisponibles() {
         try (Connection conn = DatabaseConnection.getConnection()) {
