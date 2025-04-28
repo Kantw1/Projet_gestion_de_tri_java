@@ -15,6 +15,8 @@ public class Utilisateur {
     private int codeAcces;
     private String role; // 'utilisateur' ou 'admin'
 
+    private int centreId;
+
     private List<Depot> historiqueDepots;
     private List<Poubelle> poubellesAccessibles;
 
@@ -32,6 +34,7 @@ public class Utilisateur {
         this.ptsFidelite = 0;
         this.historiqueDepots = new ArrayList<>();
         this.poubellesAccessibles = new ArrayList<>();
+        this.centreId = centreId;
     }
 
     // === Logique métier ===
@@ -92,6 +95,10 @@ public class Utilisateur {
     public void setNom(String nom) {
         this.nom = nom;
     }
+
+    public int getCentreId() {return centreId;}
+
+    public void setCentreId(int centreId) {this.centreId = centreId;}
 
     public int getPtsFidelite() {
         return ptsFidelite;

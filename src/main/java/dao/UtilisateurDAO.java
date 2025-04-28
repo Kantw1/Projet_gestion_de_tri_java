@@ -14,7 +14,7 @@ public class UtilisateurDAO {
     }
 
     /**
-     * Insère un utilisateur dans la base.
+     * Insère un utilisateur dans la base, puis l'associe à un centre s'il est défini et si ce n'est pas un admin.
      */
     public void insert(Utilisateur u) throws SQLException {
         String sql = "INSERT INTO Utilisateur (nom, ptsFidelite, codeAcces, role) VALUES (?, ?, ?, ?)";
@@ -28,6 +28,48 @@ public class UtilisateurDAO {
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
                     u.setId(rs.getInt(1));
+                }
+            }
+        }
+
+        // ➔ associer l'utilisateur à un centre
+        // ➔ UNIQUEMENT si ce n'est pas  un admin
+        if (!"admin".equalsIgnoreCase(u.getRole()) && u.getCentreId() > 0) {
+            String sqlCentreUtilisateur = "INSERT INTO CentreUtilisateur (centreID, utilisateurID) VALUES (?, ?)";
+            try (PreparedStatement stmt = conn.prepareStatement(sqlCentreUtilisateur)) {
+                stmt.setInt(1, u.getCentreId());
+                stmt.setInt(2, u.getId());
+                stmt.executeUpdate();
+            }
+        }
+    }
+
+    /**
+     * Met à jour l'association d'un utilisateur à un centre donné.
+     * Si aucune association n'existait, elle est créée.
+     */
+    public void updateCentreUtilisateur(int utilisateurId, int nouveauCentreId) throws SQLException {
+        // Vérifie d'abord si l'association existe
+        String selectSql = "SELECT * FROM CentreUtilisateur WHERE utilisateurID = ?";
+        try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
+            selectStmt.setInt(1, utilisateurId);
+            ResultSet rs = selectStmt.executeQuery();
+
+            if (rs.next()) {
+                // Si une association existe déjà ➔ on fait un UPDATE
+                String updateSql = "UPDATE CentreUtilisateur SET centreID = ? WHERE utilisateurID = ?";
+                try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+                    updateStmt.setInt(1, nouveauCentreId);
+                    updateStmt.setInt(2, utilisateurId);
+                    updateStmt.executeUpdate();
+                }
+            } else {
+                // Sinon ➔ on fait un INSERT
+                String insertSql = "INSERT INTO CentreUtilisateur (centreID, utilisateurID) VALUES (?, ?)";
+                try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+                    insertStmt.setInt(1, nouveauCentreId);
+                    insertStmt.setInt(2, utilisateurId);
+                    insertStmt.executeUpdate();
                 }
             }
         }
@@ -53,6 +95,23 @@ public class UtilisateurDAO {
             }
         }
         return null;
+    }
+
+    /**
+     * Récupère l'ID du centre associé à un utilisateur donné.
+     * @param utilisateurId l'identifiant de l'utilisateur
+     * @return l'ID du centre associé, ou -1 s'il n'est associé à aucun centre
+     */
+    public int getCentreByUtilisateurId(int utilisateurId) throws SQLException {
+        String sql = "SELECT centreID FROM CentreUtilisateur WHERE utilisateurID = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, utilisateurId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("centreID");
+            }
+        }
+        return -1; // retourne -1 si aucun centre n'est associé
     }
 
     /**

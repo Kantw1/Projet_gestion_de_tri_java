@@ -19,7 +19,9 @@
             </padding>
 
             <TextField fx:id="nomField" promptText="Entrez votre nom" prefWidth="300" style="-fx-font-size: 16px;" />
-            <TextField fx:id="codeAccesField" promptText="Entrez un code d'accès" prefWidth="300" style="-fx-font-size: 16px;" />
+            <TextField fx:id="codeAccesField" promptText="Entrez un code d'accès (4 chiffres)" prefWidth="300" style="-fx-font-size: 16px;" />
+
+            <ComboBox fx:id="centreComboBox" promptText="Choisissez votre centre de tri" prefWidth="300" style="-fx-font-size: 16px;" />
 
             <Button text="S'inscrire" onAction="#handleInscription" prefWidth="250" style="-fx-font-size: 18px;" />
             <Button text="Connexion" onAction="#handleGoToConnexion" prefWidth="250" style="-fx-font-size: 18px;" />

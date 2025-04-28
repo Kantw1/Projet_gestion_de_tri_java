@@ -123,6 +123,16 @@ CREATE TABLE CentreCommerce (
     FOREIGN KEY (commerceID) REFERENCES Commerce(id)
 );
 
+-- Lien Centre ↔ Utilisateur
+CREATE TABLE CentreUtilisateur (
+    centreID INT,
+    utilisateurID INT,
+    PRIMARY KEY (centreID, utilisateurID),
+    FOREIGN KEY (centreID) REFERENCES CentreDeTri(id),
+    FOREIGN KEY (utilisateurID) REFERENCES Utilisateur(id)
+);
+
+
 -- Historique des dépôts
 CREATE TABLE HistoriqueDepot (
     utilisateurID INT,
@@ -131,3 +141,6 @@ CREATE TABLE HistoriqueDepot (
     FOREIGN KEY (utilisateurID) REFERENCES Utilisateur(id),
     FOREIGN KEY (depotID) REFERENCES Depot(id)
 );
+
+INSERT INTO CentreDeTri (nom, adresse) VALUES ('Centre Nord', '12 rue du Centre, Paris');
+INSERT INTO CentreDeTri (nom, adresse) VALUES ('Centre Nord', '1 rue des nuages gabagoul, Cergy');
