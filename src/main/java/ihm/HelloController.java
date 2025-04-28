@@ -37,14 +37,23 @@ public class HelloController {
                 FXMLLoader loader;
 
                 if ("admin".equalsIgnoreCase(utilisateur.getRole())) {
+                    // Si c'est un administrateur, on charge la vue Admin sans passer d'utilisateur
                     loader = new FXMLLoader(getClass().getResource("/views/AdminView.fxml"));
+                    Parent root = loader.load();
+                    stage.setScene(new Scene(root));
+                    stage.show();
                 } else {
+                    // Sinon c'est un utilisateur normal ➔ on charge DepotView ET on passe l'utilisateur au contrôleur
                     loader = new FXMLLoader(getClass().getResource("/views/DepotView.fxml"));
-                }
+                    Parent root = loader.load();
 
-                Parent root = loader.load();
-                stage.setScene(new Scene(root));
-                stage.show();
+                    // 🔥 Ici on récupère le contrôleur pour lui passer l'utilisateur connecté
+                    DepotController depotController = loader.getController();
+                    depotController.setUtilisateur(utilisateur);
+
+                    stage.setScene(new Scene(root));
+                    stage.show();
+                }
             } else {
                 errorLabel.setText("Nom ou code d'accès incorrect.");
             }
@@ -55,7 +64,6 @@ public class HelloController {
             errorLabel.setText("Erreur lors de la connexion.");
         }
     }
-
 
     @FXML
     private void handleInscriptionRedirection(ActionEvent event) {

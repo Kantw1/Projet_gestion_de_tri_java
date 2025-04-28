@@ -33,7 +33,7 @@ public class Depot {
         this.points = calculerPointsAttribues(); // Calcul automatique
     }
 
-    // ========== GETTERS ==========
+    // ========== GETTERS/SETTERS ==========
 
     public int getId() {
         return id;
@@ -59,6 +59,7 @@ public class Depot {
         return heureDepot;
     }
 
+    public void setId(int id) {this.id = id;}
 
     public int getPoints() {
         return points;

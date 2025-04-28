@@ -28,6 +28,12 @@ public class DepotDAO {
             stmt.setInt(6, d.getPoubelle().getId());
             stmt.setInt(7, d.getUtilisateur().getId());
             stmt.executeUpdate();
+
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    d.setId(rs.getInt(1)); // 🔥 on met à jour l'ID du dépôt !
+                }
+            }
         }
     }
 
