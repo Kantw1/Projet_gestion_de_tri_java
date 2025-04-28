@@ -7,11 +7,16 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="ihm.ListeCentresController">
 
     <top>
-        <VBox alignment="CENTER" spacing="20">
-            <Label text="Gestion des Centres de Tri"
-                   style="-fx-font-size: 28px; -fx-font-weight: bold;"
-                   BorderPane.alignment="CENTER" />
-            <Button text="Ajouter un Centre de Tri" onAction="#handleAjouterCentre" prefWidth="250" style="-fx-font-size: 16px;" />
+        <VBox spacing="10">
+            <HBox alignment="TOP_LEFT">
+                <Button text="Retour" onAction="#handleRetour" style="-fx-font-size: 14px; -fx-padding: 5px 10px;"/>
+            </HBox>
+            <VBox spacing="10" alignment="CENTER">
+                <Label text="Gestion des Centres de Tri"
+                       style="-fx-font-size: 28px; -fx-font-weight: bold;"
+                       BorderPane.alignment="CENTER" />
+                <Button text="Ajouter un Centre de Tri" onAction="#handleAjouterCentre" prefWidth="250" style="-fx-font-size: 16px;" />
+            </VBox>
         </VBox>
     </top>
 

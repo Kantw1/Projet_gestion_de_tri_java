@@ -7,9 +7,16 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="ihm.ListeContratsController">
 
     <top>
-        <Label text="Liste des Commerces"
-               style="-fx-font-size: 24px; -fx-font-weight: bold;"
-               BorderPane.alignment="CENTER"/>
+        <VBox spacing="10">
+            <HBox alignment="TOP_LEFT">
+                <Button text="Retour" onAction="#handleRetour" style="-fx-font-size: 14px; -fx-padding: 5px 10px;"/>
+            </HBox>
+            <VBox spacing="10" alignment="CENTER">
+                <Label text="Liste des Commerces"
+                    style="-fx-font-size: 24px; -fx-font-weight: bold;"
+                    BorderPane.alignment="CENTER"/>
+            </VBox>
+        </VBox>
     </top>
 
     <center>

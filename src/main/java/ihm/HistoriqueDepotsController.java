@@ -8,12 +8,21 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import model.Depot;
 import model.Utilisateur;
 import utils.DatabaseConnection;
+import javafx.stage.Stage;
+
 
 import java.sql.Connection;
 import java.util.List;
 
 public class HistoriqueDepotsController {
+    @FXML
+    private void handleRetour() {
+        // Obtient la scène de la table
+        Stage stage = (Stage) tableDepots.getScene().getWindow();
 
+        // Ferme la fenêtre actuelle
+        stage.close();
+    }
     @FXML
     private TableView<Depot> tableDepots;
 

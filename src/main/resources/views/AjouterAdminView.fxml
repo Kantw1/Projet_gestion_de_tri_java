@@ -3,16 +3,27 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="ihm.AjouterAdminController"
-      spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="ihm.AjouterAdminController">
 
-    <Label text="Créer un Administrateur" style="-fx-font-size: 16px;"/>
+    <!-- Section Top (bouton retour en haut à gauche) -->
+    <top>
+        <HBox alignment="TOP_LEFT" spacing="10">
+            <Button text="Retour" onAction="#handleRetour" style="-fx-font-size: 14px; -fx-padding: 5px 10px;"/>
+        </HBox>
+    </top>
 
-    <TextField fx:id="nomField" promptText="Nom"/>
+    <!-- Section Center (contenu principal avec le formulaire) -->
+    <center>
+        <VBox spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+            <Label text="Créer un Administrateur" style="-fx-font-size: 16px;"/>
 
-    <PasswordField fx:id="motDePasseField" promptText="Code d'accès (4 chiffres)"/>
+            <TextField fx:id="nomField" promptText="Nom"/>
 
-    <Button text="Créer Administrateur" onAction="#handleCreerAdmin"/>
+            <PasswordField fx:id="motDePasseField" promptText="Code d'accès (4 chiffres)"/>
 
-</VBox>
+            <Button text="Créer Administrateur" onAction="#handleCreerAdmin"/>
+        </VBox>
+    </center>
+
+</BorderPane>

@@ -23,7 +23,12 @@
     import java.util.List;
 
     public class ListeContratsController {
-
+        @FXML
+        private void handleRetour() {
+            // Utilise commerceTable ou un autre composant qui est bien présent dans le FXML
+            Stage stage = (Stage) commerceTable.getScene().getWindow();  // Utilisation de commerceTable
+            stage.close();  // Ferme la fenêtre actuelle
+        }
         @FXML
         private TableView<Commerce> commerceTable;
         @FXML

@@ -18,7 +18,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class ListeUtilisateursController {
-
+    @FXML
+    private void handleRetour() {
+        Stage stage = (Stage) utilisateurTable.getScene().getWindow();
+        stage.close();
+    }
     @FXML
     private TableView<Utilisateur> utilisateurTable;
     @FXML

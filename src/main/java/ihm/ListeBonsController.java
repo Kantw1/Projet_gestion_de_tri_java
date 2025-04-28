@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 import model.BonDeCommande;
 import model.Utilisateur;
 import utils.DatabaseConnection;
@@ -13,7 +14,14 @@ import java.sql.Connection;
 import java.util.List;
 
 public class ListeBonsController {
+    @FXML
+    private void handleRetour() {
+        // Obtient la scène de la table
+        Stage stage = (Stage) tableBons.getScene().getWindow();  // Utilise tableBons au lieu de tableDepots
 
+        // Ferme la fenêtre actuelle
+        stage.close();
+    }
     @FXML
     private TableView<BonDeCommande> tableBons;
 

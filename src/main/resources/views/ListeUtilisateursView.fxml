@@ -9,6 +9,7 @@
         <Label text="Liste des Utilisateurs"
                style="-fx-font-size: 28px; -fx-font-weight: bold;"
                BorderPane.alignment="CENTER"/>
+        <Button text="Retour" onAction="#handleRetour" prefWidth="100"/>
     </top>
 
     <center>

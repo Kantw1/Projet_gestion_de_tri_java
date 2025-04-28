@@ -10,13 +10,21 @@
             prefHeight="500.0" prefWidth="700.0">
 
     <top>
-        <VBox spacing="10" alignment="CENTER">
-            <Label fx:id="titreDepotLabel"
-                   text="Déposer vos déchets"
-                   style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-padding: 20px;"/>
-            <Label fx:id="poubelleInfoLabel"
-                   text="Informations sur la poubelle"
-                   style="-fx-font-size: 18px;"/>
+        <VBox spacing="10">
+            <!-- Bouton retour en haut à gauche -->
+            <HBox alignment="TOP_LEFT">
+                <Button text="Retour" onAction="#handleRetour" style="-fx-font-size: 14px; -fx-padding: 5px 10px;"/>
+            </HBox>
+
+            <!-- Textes centrés -->
+            <VBox spacing="10" alignment="CENTER">
+                <Label fx:id="titreDepotLabel"
+                       text="Déposer vos déchets"
+                       style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-padding: 10px;"/>
+                <Label fx:id="poubelleInfoLabel"
+                       text="Informations sur la poubelle"
+                       style="-fx-font-size: 18px;"/>
+            </VBox>
         </VBox>
     </top>
 
