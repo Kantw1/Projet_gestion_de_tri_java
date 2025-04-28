@@ -1,7 +1,7 @@
 package ihm;
 
 import dao.CentreDeTriDAO;
-import dao.PoubelleDAO;
+import dao.CommerceDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import model.CentreDeTri;
+import model.Commerce;
 import utils.DatabaseConnection;
 
 import java.sql.Connection;
@@ -33,6 +34,7 @@ public class ListeCentresController {
 
     private ObservableList<CentreDeTri> centres;
     private CentreDeTriDAO centreDAO;
+    private CommerceDAO commerceDAO;
 
     @FXML
     private void handleAjouterCentre() {
@@ -59,12 +61,12 @@ public class ListeCentresController {
         });
     }
 
-
     @FXML
     private void initialize() {
         try {
             Connection conn = DatabaseConnection.getConnection();
             centreDAO = new CentreDeTriDAO(conn);
+            commerceDAO = new CommerceDAO(conn);
 
             idCol.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getId()).asObject());
             nomCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getNom()));
@@ -88,13 +90,14 @@ public class ListeCentresController {
         actionCol.setCellFactory(param -> new TableCell<CentreDeTri, Void>() {
             private final Button deleteBtn = new Button("Supprimer");
             private final Button voirPoubellesBtn = new Button("Voir Poubelles");
-            private final HBox pane = new HBox(10, voirPoubellesBtn, deleteBtn);
+            private final Button voirCommercesBtn = new Button("Voir Commerces");
+            private final HBox pane = new HBox(10, voirPoubellesBtn, voirCommercesBtn, deleteBtn);
 
             {
                 deleteBtn.setOnAction(event -> {
                     CentreDeTri centre = getTableView().getItems().get(getIndex());
                     try {
-                        centreDAO.delete(centre.getId()); // Supprime dans CentrePoubelle + CentreDeTri
+                        centreDAO.delete(centre.getId());
                         loadCentres();
                     } catch (SQLException e) {
                         e.printStackTrace();
@@ -118,6 +121,25 @@ public class ListeCentresController {
                         e.printStackTrace();
                     }
                 });
+
+                voirCommercesBtn.setOnAction(event -> {
+                    CentreDeTri centre = getTableView().getItems().get(getIndex());
+                    try {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ListeCommercesView.fxml"));
+                        Parent root = loader.load();
+
+                        ListeCommercesController controller = loader.getController();
+                        controller.setCentre(centre);
+
+                        Stage stage = new Stage();
+                        stage.setTitle("Commerces du Centre " + centre.getNom());
+                        stage.setScene(new Scene(root));
+                        stage.show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+
             }
 
             @Override

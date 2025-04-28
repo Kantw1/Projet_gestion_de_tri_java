@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="ihm.ListeCommercesController">
+    <top>
+        <Label text="Liste des Commerces Associés"
+               style="-fx-font-size: 24px; -fx-font-weight: bold;"
+               BorderPane.alignment="CENTER" />
+    </top>
+
+    <center>
+        <TableView fx:id="commerceTable" prefWidth="600" prefHeight="400">
+            <columns>
+                <TableColumn fx:id="nomCol" text="Nom du Commerce" prefWidth="200"/>
+                <TableColumn fx:id="dateDebutCol" text="Date Début" prefWidth="200"/>
+                <TableColumn fx:id="dateFinCol" text="Date Fin" prefWidth="200"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+</BorderPane>

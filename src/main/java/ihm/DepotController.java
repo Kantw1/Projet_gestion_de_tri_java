@@ -12,7 +12,6 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import model.*;
 import utils.DatabaseConnection;
-import views.PageDepotController;
 
 import java.sql.Connection;
 import java.util.List;

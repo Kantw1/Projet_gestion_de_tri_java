@@ -88,5 +88,42 @@ public class ContratPartenariatDAO {
             stmt.executeUpdate();
         }
     }
+    /**
+     * Récupère les commerces associés à un centre de tri donné, avec les dates du contrat.
+     */
+    public List<ContratPartenariat> getContratsByCentre(CentreDeTri centre) throws SQLException {
+        List<ContratPartenariat> contrats = new ArrayList<>();
+        String sql = """
+        SELECT cp.id, cp.dateDebut, cp.dateFin, 
+               c.id AS commerceId, c.nom AS commerceNom
+        FROM contratPartenariat cp
+        JOIN commerce c ON cp.commerceID = c.id
+        WHERE cp.centreID = ?
+        """;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, centre.getId());
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Commerce commerce = new Commerce(
+                            rs.getInt("commerceId"),
+                            rs.getString("commerceNom"),
+                            centre
+                    );
+
+                    ContratPartenariat contrat = new ContratPartenariat(
+                            rs.getInt("id"),
+                            rs.getDate("dateDebut").toLocalDate(),
+                            rs.getDate("dateFin").toLocalDate(),
+                            centre,
+                            commerce
+                    );
+
+                    contrats.add(contrat);
+                }
+            }
+        }
+        return contrats;
+    }
+
 
 }
