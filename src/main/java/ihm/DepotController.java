@@ -161,7 +161,7 @@ public class DepotController {
      */
     private void ouvrirPageDepot(Poubelle poubelle) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("PageDepot.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/PageDepot.fxml"));
             Parent root = loader.load();
 
             PageDepotController controller = loader.getController();
