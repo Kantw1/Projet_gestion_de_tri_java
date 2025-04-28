@@ -119,4 +119,10 @@ public class Commerce {
     public void setContrat(ContratPartenariat contrat) {
         this.contrat = contrat;
     }
+
+    @Override
+    public String toString() {
+        return nom; // afficher uniquement le nom du commerce dans la ComboBox
+    }
+
 }

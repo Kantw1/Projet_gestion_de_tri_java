@@ -60,8 +60,6 @@ CREATE TABLE ProduitCategorie (
 CREATE TABLE Commerce (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nom VARCHAR(255),
-    centreID INT,
-    FOREIGN KEY (centreID) REFERENCES CentreDeTri(id)
 );
 
 -- Contrat de partenariat
@@ -112,15 +110,6 @@ CREATE TABLE CentrePoubelle (
     PRIMARY KEY (centreID, poubelleID),
     FOREIGN KEY (centreID) REFERENCES CentreDeTri(id),
     FOREIGN KEY (poubelleID) REFERENCES Poubelle(id)
-);
-
--- Lien Centre ↔ Commerce
-CREATE TABLE CentreCommerce (
-    centreID INT,
-    commerceID INT,
-    PRIMARY KEY (centreID, commerceID),
-    FOREIGN KEY (centreID) REFERENCES CentreDeTri(id),
-    FOREIGN KEY (commerceID) REFERENCES Commerce(id)
 );
 
 -- Lien Centre ↔ Utilisateur
