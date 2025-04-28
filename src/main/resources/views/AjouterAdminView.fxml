@@ -3,16 +3,16 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="ihm.AjouterAdminController"
-
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="ihm.AjouterAdminController"
       spacing="10" alignment="CENTER" style="-fx-padding: 20;">
 
-    <Label text="Ajouter un Administrateur" style="-fx-font-size: 16px;"/>
+    <Label text="Créer un Administrateur" style="-fx-font-size: 16px;"/>
 
     <TextField fx:id="nomField" promptText="Nom"/>
-    <TextField fx:id="prenomField" promptText="Prénom"/>
-    <TextField fx:id="emailField" promptText="Email"/>
-    <PasswordField fx:id="motDePasseField" promptText="Mot de passe"/>
 
-    <Button text="Créer" onAction="#handleCreerAdmin"/>
+    <PasswordField fx:id="motDePasseField" promptText="Code d'accès (4 chiffres)"/>
+
+    <Button text="Créer Administrateur" onAction="#handleCreerAdmin"/>
+
 </VBox>

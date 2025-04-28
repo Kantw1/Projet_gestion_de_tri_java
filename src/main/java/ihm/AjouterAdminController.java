@@ -25,19 +25,22 @@ public class AjouterAdminController {
     @FXML
     private void handleCreerAdmin() {
         String nom = nomField.getText();
-        String prenom = prenomField.getText(); // Pour l'instant inutilisé sauf si tu modifies ta base
-        String email = emailField.getText();    // Pareil : prévu mais pas encore utilisé en base
-        String motDePasse = motDePasseField.getText(); // Non utilisé ici car Utilisateur n'a pas ce champ
+        String codeAccesStr = motDePasseField.getText(); // en réalité ici on récupère le code d'accès (mot de passe à 4 chiffres)
 
-        if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || motDePasse.isEmpty()) {
+        if (nom.isEmpty() || codeAccesStr.isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Tous les champs doivent être remplis.");
             return;
         }
 
-        try {
-            int codeAcces = (int) (Math.random() * 100000);
+        // Vérification que le code d'accès est exactement 4 chiffres
+        if (!codeAccesStr.matches("\\d{4}")) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Le code d'accès doit être composé de 4 chiffres.");
+            return;
+        }
 
-            // CORRECTION ici : utiliser ton constructeur existant
+        try {
+            int codeAcces = Integer.parseInt(codeAccesStr);
+
             Utilisateur nouvelAdmin = new Utilisateur(0, nom, codeAcces, "admin");
 
             UtilisateurDAO utilisateurDAO = new UtilisateurDAO(utils.DatabaseConnection.getConnection());
@@ -45,14 +48,16 @@ public class AjouterAdminController {
 
             showAlert(Alert.AlertType.INFORMATION, "Succès", "Administrateur ajouté avec succès !");
             nomField.clear();
-            prenomField.clear();
-            emailField.clear();
+            prenomField.clear();  // même si tu ne l'utilises pas
+            emailField.clear();   // même si tu ne l'utilises pas
             motDePasseField.clear();
+
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de l'ajout de l'administrateur.");
         }
     }
+
 
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
