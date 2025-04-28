@@ -102,7 +102,9 @@ public class InscriptionController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/hello-view.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) nomField.getScene().getWindow();
-            stage.setScene(new Scene(root, 500, 400));
+            Scene scene = new Scene(root, 500, 400);
+            scene.getStylesheets().add(HelloApplication.class.getResource("/style.css").toExternalForm());
+            stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

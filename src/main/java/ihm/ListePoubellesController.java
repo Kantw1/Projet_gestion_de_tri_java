@@ -112,8 +112,12 @@ public class ListePoubellesController {
 
                         Stage stage = new Stage();
                         stage.setTitle("Historique de la Poubelle #" + p.getId());
-                        stage.setScene(new Scene(root));
+                        Scene scene = new Scene(root, 600, 400);
+                        scene.getStylesheets().add(HelloApplication.class.getResource("/style.css").toExternalForm());
+
+                        stage.setScene(scene);
                         stage.show();
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

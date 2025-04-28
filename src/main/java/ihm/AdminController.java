@@ -35,8 +35,12 @@ public class AdminController {
             Parent root = loader.load();
             Stage stage = new Stage();
             stage.setTitle("Ajouter un Administrateur");
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root, 600, 400);
+            scene.getStylesheets().add(HelloApplication.class.getResource("/style.css").toExternalForm());
+
+            stage.setScene(scene);
             stage.show();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -48,8 +52,12 @@ public class AdminController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ListeCentresView.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) infoLabel.getScene().getWindow();
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root, 600, 400);
+            scene.getStylesheets().add(HelloApplication.class.getResource("/style.css").toExternalForm());
+
+            stage.setScene(scene);
             stage.show();
+
         } catch (Exception e) {
             e.printStackTrace();
             infoLabel.setText("Erreur lors de l'ouverture de la liste des centres !");
@@ -63,8 +71,12 @@ public class AdminController {
 
             Stage stage = new Stage();
             stage.setTitle("Liste des Contrats de Partenariat");
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root, 600, 400);
+            scene.getStylesheets().add(HelloApplication.class.getResource("/style.css").toExternalForm());
+
+            stage.setScene(scene);
             stage.show();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -78,8 +90,11 @@ public class AdminController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/hello-view.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) infoLabel.getScene().getWindow();
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(HelloApplication.class.getResource("/style.css").toExternalForm());
+            stage.setScene(scene);
             stage.show();
+
         } catch (Exception e) {
             e.printStackTrace();
         }

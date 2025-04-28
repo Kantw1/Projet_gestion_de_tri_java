@@ -84,8 +84,12 @@ public class ListeCategoriesController {
 
             Stage stage = new Stage();
             stage.setTitle("Ajouter une Catégorie");
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
+            Scene scene = new Scene(root, 600, 400);
+            scene.getStylesheets().add(HelloApplication.class.getResource("/style.css").toExternalForm());
+
+            stage.setScene(scene);
+            stage.show();
+
 
             // Après ajout, on recharge
             loadCategories();

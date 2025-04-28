@@ -29,11 +29,15 @@ public class ListeCentresController {
 
             // Créer une nouvelle scène avec la vue chargée
             Scene scene = new Scene(root);
+            scene.getStylesheets().add(HelloApplication.class.getResource("/style.css").toExternalForm());
+
+
 
             // Créer un nouveau stage pour afficher la nouvelle vue
             Stage stage = new Stage();
             stage.setTitle("Page Admin");
             stage.setScene(scene);
+
 
             // Fermer la fenêtre actuelle
             Stage currentStage = (Stage) ((Button) event.getSource()).getScene().getWindow();
