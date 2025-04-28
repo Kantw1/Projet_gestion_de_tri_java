@@ -7,6 +7,7 @@ import org.junit.jupiter.api.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,29 +16,33 @@ public class CentreCommerceDAOTest {
 
     private static Connection conn;
     private static CentreCommerceDAO ccDAO;
-    private static CentreDeTri centre;
-    private static Commerce commerce;
+    private static CentreDeTriDAO centreDAO;
+    private static CommerceDAO commerceDAO;
+    private CentreDeTri centre;
+    private Commerce commerce;
 
     @BeforeAll
-    static void setup() throws Exception {
+    static void setupAll() throws Exception {
         Class.forName("com.mysql.cj.jdbc.Driver");
         conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/BDD", "root", "");
-
         ccDAO = new CentreCommerceDAO(conn);
+        centreDAO = new CentreDeTriDAO(conn);
+        commerceDAO = new CommerceDAO(conn);
+    }
 
-        CentreDeTriDAO centreDAO = new CentreDeTriDAO(conn);
-        centre = new CentreDeTri(0, "Centre CC", "Zone Centre");
+    @BeforeEach
+    void setup() throws SQLException {
+        centre = new CentreDeTri(0, "Centre Test", "Zone Test");
         centreDAO.insert(centre);
         centre = centreDAO.getAll().get(centreDAO.getAll().size() - 1);
 
-        CommerceDAO commerceDAO = new CommerceDAO(conn);
-        commerce = new Commerce(0, "Fnac", centre);
+        commerce = new Commerce(0, "Commerce Test", centre);
         commerceDAO.insert(commerce);
         commerce = commerceDAO.getAll(centre).get(commerceDAO.getAll(centre).size() - 1);
     }
 
     @Test
-    void testInsertAndGet() throws Exception {
+    void testInsertAndGet() throws SQLException {
         ccDAO.insert(centre.getId(), commerce.getId());
 
         List<Integer> commerces = ccDAO.getCommercesByCentre(centre.getId());
@@ -48,7 +53,7 @@ public class CentreCommerceDAOTest {
     }
 
     @Test
-    void testDelete() throws Exception {
+    void testDelete() throws SQLException {
         if (!ccDAO.exists(centre.getId(), commerce.getId())) {
             ccDAO.insert(centre.getId(), commerce.getId());
         }
@@ -59,8 +64,14 @@ public class CentreCommerceDAOTest {
         assertFalse(commerces.contains(commerce.getId()));
     }
 
+    @AfterEach
+    void cleanup() throws SQLException {
+        commerceDAO.delete(commerce.getId());
+        centreDAO.delete(centre.getId());
+    }
+
     @AfterAll
-    static void teardown() throws Exception {
+    static void teardownAll() throws SQLException {
         if (conn != null && !conn.isClosed()) conn.close();
     }
 }

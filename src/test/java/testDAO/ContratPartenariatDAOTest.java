@@ -35,9 +35,9 @@ public class ContratPartenariatDAOTest {
         centre = centreDAO.getAll().get(centreDAO.getAll().size() - 1);
 
         CommerceDAO commerceDAO = new CommerceDAO(conn);
-        commerce = new Commerce(0, "Boulanger", centre);
+        commerce = new Commerce(0, "Boulanger", null);
         commerceDAO.insert(commerce);
-        commerce = commerceDAO.getAll(centre).get(commerceDAO.getAll(centre).size() - 1);
+        commerce = commerceDAO.getAllWithoutCentre().get(commerceDAO.getAllWithoutCentre().size() - 1);
 
         contratDAO = new ContratPartenariatDAO(conn);
     }
@@ -50,7 +50,7 @@ public class ContratPartenariatDAOTest {
                 centre, commerce);
         contratDAO.insert(contrat);
 
-        List<ContratPartenariat> tous = contratDAO.getAll(centre, commerce);
+        List<ContratPartenariat> tous = contratDAO.getAll();
         assertFalse(tous.isEmpty());
 
         ContratPartenariat dernier = tous.get(tous.size() - 1);
@@ -63,7 +63,7 @@ public class ContratPartenariatDAOTest {
 
     @Test
     void testUpdate() throws SQLException {
-        List<ContratPartenariat> liste = contratDAO.getAll(centre, commerce);
+        List<ContratPartenariat> liste = contratDAO.getAll();
         assertFalse(liste.isEmpty());
 
         ContratPartenariat contrat = liste.get(0);
@@ -88,7 +88,7 @@ public class ContratPartenariatDAOTest {
                 centre, commerce);
         contratDAO.insert(contrat);
 
-        List<ContratPartenariat> liste = contratDAO.getAll(centre, commerce);
+        List<ContratPartenariat> liste = contratDAO.getAll();
         ContratPartenariat dernier = liste.get(liste.size() - 1);
         int idASupprimer = dernier.getId();
 

@@ -26,13 +26,9 @@ public class CategorieProduitDAOTest {
     @Test
     void testInsertAndGet() throws SQLException {
         CategorieProduit cp = new CategorieProduit(0, "Culture", 40, 0.25f);
-        categorieDAO.insert(cp);
+        int idGenere = categorieDAO.insertAndGetId(cp);
 
-        List<CategorieProduit> toutes = categorieDAO.getAll();
-        assertFalse(toutes.isEmpty());
-
-        CategorieProduit derniere = toutes.get(toutes.size() - 1);
-        CategorieProduit chargee = categorieDAO.getById(derniere.getId());
+        CategorieProduit chargee = categorieDAO.getById(idGenere);
 
         assertNotNull(chargee);
         assertEquals("Culture", chargee.getNom());
@@ -42,11 +38,10 @@ public class CategorieProduitDAOTest {
 
     @Test
     void testUpdate() throws SQLException {
-        List<CategorieProduit> liste = categorieDAO.getAll();
-        assertFalse(liste.isEmpty());
+        CategorieProduit cp = new CategorieProduit(0, "Sport", 50, 0.20f);
+        int idGenere = categorieDAO.insertAndGetId(cp);
 
-        CategorieProduit cp = liste.get(0);
-        CategorieProduit modifie = new CategorieProduit(cp.getId(), "Loisirs", 60, 0.3f);
+        CategorieProduit modifie = new CategorieProduit(idGenere, "Loisirs", 60, 0.3f);
         categorieDAO.update(modifie);
 
         CategorieProduit verif = categorieDAO.getById(modifie.getId());
@@ -55,24 +50,20 @@ public class CategorieProduitDAOTest {
         assertEquals(0.3f, verif.getBonReduction());
     }
 
+    @Test
+    void testDelete() throws SQLException {
+        CategorieProduit cp = new CategorieProduit(0, "Test Delete", 70, 0.15f);
+        int idGenere = categorieDAO.insertAndGetId(cp);
+
+        categorieDAO.delete(idGenere);
+        CategorieProduit supprimee = categorieDAO.getById(idGenere);
+        assertNull(supprimee, "La catégorie supprimée ne devrait plus être retrouvée");
+    }
+
     @AfterAll
     static void teardown() throws SQLException {
         if (conn != null && !conn.isClosed()) {
             conn.close();
         }
     }
-    @Test
-    void testDelete() throws SQLException {
-        CategorieProduit cp = new CategorieProduit(0, "Test Delete", 70, 0.15f);
-        categorieDAO.insert(cp);
-
-        List<CategorieProduit> liste = categorieDAO.getAll();
-        CategorieProduit derniere = liste.get(liste.size() - 1);
-        int idASupprimer = derniere.getId();
-
-        categorieDAO.delete(idASupprimer);
-        CategorieProduit supprimee = categorieDAO.getById(idASupprimer);
-        assertNull(supprimee, "La catégorie supprimée ne devrait plus être retrouvée");
-    }
-
 }

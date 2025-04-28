@@ -1,6 +1,7 @@
 package testDAO;
 
 import dao.PoubelleDAO;
+import model.CentreDeTri;
 import model.Poubelle;
 import model.TypePoubelle;
 import org.junit.jupiter.api.*;
@@ -16,18 +17,19 @@ public class PoubelleDAOTest {
 
     private static Connection conn;
     private static PoubelleDAO poubelleDAO;
+    private static int centreIdTest = 1; // Utiliser un ID de centre de tri existant pour les tests
 
     @BeforeAll
     static void setUp() throws SQLException, ClassNotFoundException {
-        Class.forName("com.mysql.cj.jdbc.Driver"); // important pour enregistrer le driver
+        Class.forName("com.mysql.cj.jdbc.Driver");
         conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/BDD", "root", "");
         poubelleDAO = new PoubelleDAO(conn);
     }
 
     @Test
     void testInsertAndGetById() throws SQLException {
-        Poubelle p = new Poubelle(0, 200, "TestRue", TypePoubelle.JAUNE, 80);
-        poubelleDAO.insert(p);
+        Poubelle p = new Poubelle(0, 200, "TestRue", TypePoubelle.JAUNE, 80, 20);
+        poubelleDAO.insert(p, centreIdTest);
 
         List<Poubelle> toutes = poubelleDAO.getAll();
         assertFalse(toutes.isEmpty(), "La liste des poubelles ne doit pas être vide");
@@ -41,15 +43,28 @@ public class PoubelleDAOTest {
 
     @Test
     void testUpdate() throws SQLException {
+        Poubelle p = new Poubelle(0, 200, "TestUpdateRue", TypePoubelle.VERTE, 50, 10);
+        poubelleDAO.insert(p, centreIdTest);
+
         List<Poubelle> liste = poubelleDAO.getAll();
         assertFalse(liste.isEmpty());
 
-        Poubelle p = liste.get(0);
-        p = new Poubelle(p.getId(), p.getCapaciteMax(), "RueModifiée", p.getTypePoubelle(), p.getSeuilAlerte());
-        poubelleDAO.update(p);
+        Poubelle derniere = liste.get(liste.size() - 1);
+        derniere.setEmplacement("RueModifiee");
+        poubelleDAO.update(derniere);
 
-        Poubelle modifiee = poubelleDAO.getById(p.getId());
-        assertEquals("RueModifiée", modifiee.getEmplacement());
+        Poubelle modifiee = poubelleDAO.getById(derniere.getId());
+        assertEquals("RueModifiee", modifiee.getEmplacement());
+    }
+
+    @AfterEach
+    void cleanup() throws SQLException {
+        List<Poubelle> liste = poubelleDAO.getAll();
+        for (Poubelle p : liste) {
+            if (p.getEmplacement().startsWith("Test")) {
+                poubelleDAO.delete(p.getId());
+            }
+        }
     }
 
     @AfterAll
@@ -58,16 +73,4 @@ public class PoubelleDAOTest {
             conn.close();
         }
     }
-    @AfterEach
-    void cleanup() throws SQLException {
-        List<Poubelle> liste = poubelleDAO.getAll();
-        for (Poubelle p : liste) {
-            if (p.getEmplacement().startsWith("Test")) {
-                // Suppression possible si méthode delete() est implémentée
-                poubelleDAO.delete(p.getId());
-            }
-        }
-    }
-
 }
-

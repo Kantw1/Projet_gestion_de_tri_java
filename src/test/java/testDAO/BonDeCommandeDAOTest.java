@@ -8,15 +8,12 @@ import org.junit.jupiter.api.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.PreparedStatement;
-
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class BonDeCommandeDAOTest {
+class BonDeCommandeDAOTest {
 
     private static Connection conn;
     private static BonDeCommandeDAO bdcDAO;
@@ -30,17 +27,16 @@ public class BonDeCommandeDAOTest {
         Class.forName("com.mysql.cj.jdbc.Driver");
         conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/BDD", "root", "");
 
-        // Création des dépendances via DAO
-        UtilisateurDAO utilisateurDAO = new UtilisateurDAO(conn);
-        utilisateur = new Utilisateur(0, "Testeur", 1234);
-        utilisateur.ajouterPoints(200);
-        utilisateurDAO.insert(utilisateur);
-        utilisateur = utilisateurDAO.getAll().get(utilisateurDAO.getAll().size() - 1);
-
         CentreDeTriDAO centreDAO = new CentreDeTriDAO(conn);
         CentreDeTri centre = new CentreDeTri(0, "Centre 1", "Adresse");
         centreDAO.insert(centre);
         centre = centreDAO.getAll().get(centreDAO.getAll().size() - 1);
+
+        UtilisateurDAO utilisateurDAO = new UtilisateurDAO(conn);
+        utilisateur = new Utilisateur(0, "Testeur", 1234, "utilisateur", centre.getId());
+        utilisateur.ajouterPoints(200);
+        utilisateurDAO.insert(utilisateur);
+        utilisateur = utilisateurDAO.getAll().get(utilisateurDAO.getAll().size() - 1);
 
         CommerceDAO commerceDAO = new CommerceDAO(conn);
         commerce = new Commerce(0, "Carrefour", centre);
@@ -61,22 +57,23 @@ public class BonDeCommandeDAOTest {
     @Test
     void testInsertAndGet() throws SQLException {
         BonDeCommande bdc = new BonDeCommande(0, utilisateur, categories, commerce);
-        bdc.utiliserPoints(); // simule la validation
+        bdc.setEtatCommande("valide");
+        bdc.setPointsUtilises(50);
         bdcDAO.insert(bdc);
 
-        List<BonDeCommande> liste = bdcDAO.getAll(utilisateur, commerce, categories);
+        List<BonDeCommande> liste = bdcDAO.getByUtilisateurId(utilisateur.getId());
         assertFalse(liste.isEmpty());
 
         BonDeCommande dernier = liste.get(liste.size() - 1);
         BonDeCommande charge = bdcDAO.getById(dernier.getId(), utilisateur, commerce, categories);
 
         assertNotNull(charge);
-        assertEquals("en attente", charge.getEtatCommande()); // avant validation
+        assertEquals("valide", charge.getEtatCommande());
     }
 
     @Test
     void testUpdate() throws SQLException {
-        List<BonDeCommande> liste = bdcDAO.getAll(utilisateur, commerce, categories);
+        List<BonDeCommande> liste = bdcDAO.getByUtilisateurId(utilisateur.getId());
         assertFalse(liste.isEmpty());
 
         BonDeCommande bdc = liste.get(0);
@@ -87,23 +84,26 @@ public class BonDeCommandeDAOTest {
         assertEquals("validée", verif.getEtatCommande());
     }
 
-    @AfterAll
-    static void tearDown() throws SQLException {
-        if (conn != null && !conn.isClosed()) conn.close();
-    }
     @Test
     void testDelete() throws SQLException {
         BonDeCommande bdc = new BonDeCommande(0, utilisateur, categories, commerce);
-        bdc.utiliserPoints();
+        bdc.setEtatCommande("valide");
+        bdc.setPointsUtilises(50);
         bdcDAO.insert(bdc);
 
-        List<BonDeCommande> toutes = bdcDAO.getAll(utilisateur, commerce, categories);
+        List<BonDeCommande> toutes = bdcDAO.getByUtilisateurId(utilisateur.getId());
         BonDeCommande dernier = toutes.get(toutes.size() - 1);
 
-        // Appel direct au DAO
         bdcDAO.delete(dernier.getId());
 
         BonDeCommande supprimee = bdcDAO.getById(dernier.getId(), utilisateur, commerce, categories);
-        assertNull(supprimee, "La commande doit avoir été supprimée");
+        assertNull(supprimee);
+    }
+
+    @AfterAll
+    static void tearDown() throws SQLException {
+        if (conn != null && !conn.isClosed()) {
+            conn.close();
+        }
     }
 }

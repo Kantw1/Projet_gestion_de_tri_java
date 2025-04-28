@@ -12,6 +12,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class CentreDeTriDAOTest {
 
     private static Connection conn;
@@ -25,6 +26,7 @@ public class CentreDeTriDAOTest {
     }
 
     @Test
+    @Order(1)
     void testInsertAndGet() throws SQLException {
         CentreDeTri centre = new CentreDeTri(0, "Centre Test", "Rambouillet");
         centreDAO.insert(centre);
@@ -37,26 +39,27 @@ public class CentreDeTriDAOTest {
 
         assertNotNull(c);
         assertEquals("Centre Test", c.getNom());
+        assertEquals("Rambouillet", c.getAdresse());
     }
 
     @Test
+    @Order(2)
     void testUpdate() throws SQLException {
         List<CentreDeTri> liste = centreDAO.getAll();
         assertFalse(liste.isEmpty());
 
-        CentreDeTri c = liste.get(0);
+        CentreDeTri c = liste.get(liste.size() - 1);
         CentreDeTri modifie = new CentreDeTri(c.getId(), "Centre Modifié", c.getAdresse());
         centreDAO.update(modifie);
 
         CentreDeTri verif = centreDAO.getById(modifie.getId());
+        assertNotNull(verif);
         assertEquals("Centre Modifié", verif.getNom());
+        assertEquals(c.getAdresse(), verif.getAdresse());
     }
 
-    @AfterAll
-    static void teardown() throws SQLException {
-        if (conn != null && !conn.isClosed()) conn.close();
-    }
     @Test
+    @Order(3)
     void testDelete() throws SQLException {
         CentreDeTri centre = new CentreDeTri(0, "Centre Temp", "TestAdresse");
         centreDAO.insert(centre);
@@ -64,11 +67,14 @@ public class CentreDeTriDAOTest {
         List<CentreDeTri> liste = centreDAO.getAll();
         CentreDeTri dernier = liste.get(liste.size() - 1);
 
-        // Suppose que tu ajoutes cette méthode dans CentreDeTriDAO
         centreDAO.delete(dernier.getId());
 
         CentreDeTri supprime = centreDAO.getById(dernier.getId());
-        assertNull(supprime, "Le centre doit avoir été supprimé");
+        assertNull(supprime);
     }
 
+    @AfterAll
+    static void teardown() throws SQLException {
+        if (conn != null && !conn.isClosed()) conn.close();
+    }
 }

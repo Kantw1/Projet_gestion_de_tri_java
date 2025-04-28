@@ -8,6 +8,7 @@ import org.junit.jupiter.api.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -34,17 +35,14 @@ public class HistoriqueDepotDAOTest {
         poubelleDAO = new PoubelleDAO(conn);
         depotDAO = new DepotDAO(conn);
 
-        // Création utilisateur
         utilisateur = new Utilisateur(0, "HistoriqueTest", 3333);
         utilisateurDAO.insert(utilisateur);
         utilisateur = utilisateurDAO.getAll().get(utilisateurDAO.getAll().size() - 1);
 
-        // Création poubelle
         poubelle = new Poubelle(0, 150, "Rue Historique", TypePoubelle.JAUNE, 40);
         poubelleDAO.insert(poubelle);
         poubelle = poubelleDAO.getAll().get(poubelleDAO.getAll().size() - 1);
 
-        // Création dépôt
         depot = new Depot(0, NatureDechet.VERRE, 2.5f, 4, LocalDateTime.now(), poubelle, utilisateur);
         depotDAO.insert(depot);
         depot = depotDAO.getAll(poubelle, utilisateur).get(depotDAO.getAll(poubelle, utilisateur).size() - 1);
@@ -52,9 +50,8 @@ public class HistoriqueDepotDAOTest {
 
     @Test
     void testInsertAndGet() throws SQLException {
-        // ⚠ Assure-toi que tu n'ajoutes pas deux fois la même relation
         if (!historiqueDAO.existe(utilisateur.getId(), depot.getId())) {
-            historiqueDAO.insert(utilisateur.getId(), depot.getId());
+            historiqueDAO.insert(utilisateur.getId(), depot.getId(), Timestamp.valueOf(depot.getHeureDepot()), depot.getType().name(), depot.getPoints());
         }
 
         List<Integer> depots = historiqueDAO.getDepotsByUtilisateur(utilisateur.getId());
@@ -64,10 +61,11 @@ public class HistoriqueDepotDAOTest {
         assertTrue(utilisateurs.contains(utilisateur.getId()));
     }
 
-
     @Test
     void testDelete() throws SQLException {
-        historiqueDAO.insert(utilisateur.getId(), depot.getId());
+        if (!historiqueDAO.existe(utilisateur.getId(), depot.getId())) {
+            historiqueDAO.insert(utilisateur.getId(), depot.getId(), Timestamp.valueOf(depot.getHeureDepot()), depot.getType().name(), depot.getPoints());
+        }
         historiqueDAO.delete(utilisateur.getId(), depot.getId());
 
         List<Integer> depots = historiqueDAO.getDepotsByUtilisateur(utilisateur.getId());
