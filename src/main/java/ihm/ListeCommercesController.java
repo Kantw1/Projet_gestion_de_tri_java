@@ -23,6 +23,9 @@ import java.util.List;
 public class ListeCommercesController {
 
     @FXML
+    private Button ajouterPartenariatBtn;
+
+    @FXML
     private TableView<ContratPartenariat> commerceTable;
     @FXML
     private TableColumn<ContratPartenariat, String> nomCol;
@@ -60,6 +63,35 @@ public class ListeCommercesController {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    private void handleAjouterPartenariat() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/AjouterPartenariatView.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            AjouterPartenariatController controller = loader.getController();
+            controller.setCentre(centre); // Passe le centre sélectionné
+
+            Stage stage = new Stage();
+            stage.setTitle("Ajouter un Partenariat");
+            stage.setScene(new Scene(root));
+            stage.showAndWait(); // attendre fermeture
+            loadContrats(); // Refresh après ajout
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 
     private void loadContrats() throws SQLException {
         List<ContratPartenariat> contrats = contratDAO.getContratsByCentre(centre);

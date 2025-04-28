@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="15" alignment="CENTER" xmlns:fx="http://javafx.com/fxml" fx:controller="ihm.AjouterPartenariatController">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Ajouter un Partenariat" style="-fx-font-size: 22px; -fx-font-weight: bold;" />
+
+    <HBox spacing="10">
+        <Label text="Commerce :" prefWidth="100"/>
+        <ComboBox fx:id="commerceCombo" prefWidth="200"/>
+    </HBox>
+
+    <HBox spacing="10">
+        <Label text="Date Début :" prefWidth="100"/>
+        <DatePicker fx:id="dateDebutPicker" prefWidth="200"/>
+    </HBox>
+
+    <HBox spacing="10">
+        <Label text="Date Fin :" prefWidth="100"/>
+        <DatePicker fx:id="dateFinPicker" prefWidth="200"/>
+    </HBox>
+
+    <Button text="Valider" onAction="#handleValider" prefWidth="150" style="-fx-font-size: 16px;" />
+</VBox>

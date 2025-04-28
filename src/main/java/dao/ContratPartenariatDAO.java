@@ -124,6 +124,25 @@ public class ContratPartenariatDAO {
         }
         return contrats;
     }
+    public List<ContratPartenariat> getAllByCentre(CentreDeTri centre) throws SQLException {
+        List<ContratPartenariat> contrats = new ArrayList<>();
+        String sql = "SELECT * FROM contratPartenariat WHERE centreID = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, centre.getId());
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Commerce commerce = new Commerce(rs.getInt("commerceID"), "", centre); // juste l'ID, pas besoin du nom
+                contrats.add(new ContratPartenariat(
+                        rs.getInt("id"),
+                        rs.getDate("dateDebut").toLocalDate(),
+                        rs.getDate("dateFin").toLocalDate(),
+                        centre,
+                        commerce
+                ));
+            }
+        }
+        return contrats;
+    }
 
 
 }

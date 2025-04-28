@@ -95,4 +95,23 @@ public class CommerceDAO {
         }
     }
 
+    public List<Commerce> getAvailableForCentre(CentreDeTri centre) throws SQLException {
+        List<Commerce> commercesDisponibles = new ArrayList<>();
+        String sql = "SELECT * FROM Commerce WHERE id NOT IN (SELECT commerceID FROM ContratPartenariat WHERE centreID = ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, centre.getId());
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                commercesDisponibles.add(new Commerce(
+                        rs.getInt("id"),
+                        rs.getString("nom"),
+                        null // centre non applicable directement (car pas stocké dans Commerce)
+                ));
+            }
+        }
+        return commercesDisponibles;
+    }
+
+
+
 }

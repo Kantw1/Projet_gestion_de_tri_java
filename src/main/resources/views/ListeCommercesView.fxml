@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.geometry.Insets?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="ihm.ListeCommercesController">
     <top>
-        <Label text="Liste des Commerces Associés"
-               style="-fx-font-size: 24px; -fx-font-weight: bold;"
-               BorderPane.alignment="CENTER" />
+        <HBox spacing="20" alignment="CENTER">
+            <Label text="Liste des Commerces Associés"
+                   style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+            <Button text="Ajouter Partenariat" fx:id="ajouterPartenariatBtn" onAction="#handleAjouterPartenariat"
+                    style="-fx-font-size: 16px;" />
+        </HBox>
     </top>
 
     <center>
@@ -17,7 +24,7 @@
                 <TableColumn fx:id="nomCol" text="Nom du Commerce" prefWidth="200"/>
                 <TableColumn fx:id="dateDebutCol" text="Date Début" prefWidth="200"/>
                 <TableColumn fx:id="dateFinCol" text="Date Fin" prefWidth="200"/>
-                <TableColumn fx:id="actionCol" text="Actions" prefWidth="200"/> <!-- AJOUT ICI -->
+                <TableColumn fx:id="actionCol" text="Actions" prefWidth="200"/>
             </columns>
         </TableView>
     </center>
