@@ -35,7 +35,7 @@ public class AjouterAdminController {
         try {
             int codeAcces = Integer.parseInt(codeAccesStr);
 
-            Utilisateur nouvelAdmin = new Utilisateur(0, nom, codeAcces, "admin");
+            Utilisateur nouvelAdmin = new Utilisateur(0, nom, codeAcces, "admin", 0);
 
             UtilisateurDAO utilisateurDAO = new UtilisateurDAO(utils.DatabaseConnection.getConnection());
             utilisateurDAO.insert(nouvelAdmin);

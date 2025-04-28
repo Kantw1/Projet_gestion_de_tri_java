@@ -76,7 +76,7 @@ public class InscriptionController {
             int codeAcces = Integer.parseInt(codeAccesText);
             int centreId = centreMap.get(centreSelectionne);
 
-            Utilisateur utilisateur = new Utilisateur(0, nom, codeAcces);
+            Utilisateur utilisateur = new Utilisateur(0, nom, codeAcces, centreId);
             utilisateur.setCentreId(centreId); // on affecte le centre choisi
 
             UtilisateurDAO utilisateurDAO = new UtilisateurDAO(DatabaseConnection.getConnection());

@@ -14,7 +14,6 @@ public class Utilisateur {
     private int ptsFidelite;
     private int codeAcces;
     private String role; // 'utilisateur' ou 'admin'
-
     private int centreId;
 
     private List<Depot> historiqueDepots;
@@ -22,11 +21,17 @@ public class Utilisateur {
 
     // === Constructeurs ===
 
-    public Utilisateur(int id, String nom, int codeAcces) {
-        this(id, nom, codeAcces, "utilisateur"); // par défaut utilisateur simple
+    /**
+     * Constructeur utilisé pour un utilisateur simple (par défaut le rôle est "utilisateur")
+     */
+    public Utilisateur(int id, String nom, int codeAcces, int centreId) {
+        this(id, nom, codeAcces, "utilisateur", centreId);
     }
 
-    public Utilisateur(int id, String nom, int codeAcces, String role) {
+    /**
+     * Constructeur complet, avec rôle spécifié (utilisateur ou admin).
+     */
+    public Utilisateur(int id, String nom, int codeAcces, String role, int centreId) {
         this.id = id;
         this.nom = nom;
         this.codeAcces = codeAcces;
@@ -83,7 +88,6 @@ public class Utilisateur {
         return id;
     }
 
-    /** Permet de définir l'ID après insertion en base de données. */
     public void setId(int id) {
         this.id = id;
     }
@@ -96,9 +100,13 @@ public class Utilisateur {
         this.nom = nom;
     }
 
-    public int getCentreId() {return centreId;}
+    public int getCentreId() {
+        return centreId;
+    }
 
-    public void setCentreId(int centreId) {this.centreId = centreId;}
+    public void setCentreId(int centreId) {
+        this.centreId = centreId;
+    }
 
     public int getPtsFidelite() {
         return ptsFidelite;

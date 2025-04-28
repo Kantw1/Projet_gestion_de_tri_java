@@ -117,8 +117,9 @@ public class DepotDAO {
                 // ⚡ On récupère aussi l'utilisateur
                 Utilisateur utilisateur = new Utilisateur(
                         rs.getInt("utilisateurID"),
-                        "",   // nom vide (si tu veux l'afficher après tu pourras changer)
-                        0     // codeAcces 0 ici juste pour éviter une erreur
+                        "",   // nom vide (à compléter plus tard si besoin)
+                        0,    // codeAcces vide
+                        0     // centreId vide
                 );
 
                 Depot depot = new Depot(
@@ -128,7 +129,7 @@ public class DepotDAO {
                         rs.getInt("quantite"),
                         rs.getTimestamp("heureDepot").toLocalDateTime(),
                         null,
-                        utilisateur // ✅ Met l'utilisateur ici !
+                        utilisateur // ✅ utilisateur associé
                 );
 
                 liste.add(depot);

@@ -7,39 +7,23 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="ihm.DepotController">
 
     <top>
-        <Label text="Déposer vos déchets"
-               style="-fx-font-size: 32px; -fx-font-weight: bold;"
-               BorderPane.alignment="CENTER"/>
+        <VBox alignment="CENTER">
+            <Label fx:id="centreLabel"
+                   style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-padding: 20px;"
+                   text="Centre de Tri : "/>
+            <Label text="Sélectionnez votre poubelle pour déposer vos déchets"
+                   style="-fx-font-size: 18px;"/>
+        </VBox>
     </top>
 
     <center>
-        <VBox spacing="20" alignment="CENTER">
-            <padding>
-                <Insets top="20" right="20" bottom="20" left="20"/>
-            </padding>
-
-            <HBox spacing="15" alignment="CENTER">
-                <Label text="Choix de la poubelle :" style="-fx-font-size: 16px;" />
-                <ComboBox fx:id="poubelleComboBox" prefWidth="300" />
-            </HBox>
-
-            <GridPane hgap="20" vgap="20" alignment="CENTER">
-                <Label text="Plastique :" GridPane.rowIndex="0" GridPane.columnIndex="0" />
-                <TextField fx:id="plastiqueField" promptText="Quantité" GridPane.rowIndex="0" GridPane.columnIndex="1" />
-
-                <Label text="Verre :" GridPane.rowIndex="1" GridPane.columnIndex="0" />
-                <TextField fx:id="verreField" promptText="Quantité" GridPane.rowIndex="1" GridPane.columnIndex="1" />
-
-                <Label text="Carton :" GridPane.rowIndex="2" GridPane.columnIndex="0" />
-                <TextField fx:id="cartonField" promptText="Quantité" GridPane.rowIndex="2" GridPane.columnIndex="1" />
-
-                <Label text="Métal :" GridPane.rowIndex="3" GridPane.columnIndex="0" />
-                <TextField fx:id="metalField" promptText="Quantité" GridPane.rowIndex="3" GridPane.columnIndex="1" />
-            </GridPane>
-
-            <Button text="Valider le dépôt" onAction="#validerDepot" style="-fx-font-size: 16px; -fx-padding: 10px 20px;" />
-            <Label fx:id="resultLabel" textFill="green" style="-fx-font-size: 16px;" />
-        </VBox>
+        <ScrollPane fitToWidth="true">
+            <VBox fx:id="poubelleListVBox" spacing="20" alignment="CENTER">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+            </VBox>
+        </ScrollPane>
     </center>
 
 </BorderPane>

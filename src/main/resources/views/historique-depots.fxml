@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="ihm.HistoriqueDepotsController"
+            prefWidth="600" prefHeight="400">
+
+    <top>
+        <Label text="Historique des Dépôts"
+               style="-fx-font-size: 24px; -fx-font-weight: bold;"
+               BorderPane.alignment="CENTER"/>
+    </top>
+
+    <center>
+        <TableView fx:id="tableDepots" prefWidth="580" prefHeight="350">
+            <columns>
+                <TableColumn fx:id="colType" text="Type" prefWidth="120"/>
+                <TableColumn fx:id="colPoids" text="Poids" prefWidth="100"/>
+                <TableColumn fx:id="colQuantite" text="Quantité" prefWidth="100"/>
+                <TableColumn fx:id="colDate" text="Date Dépôt" prefWidth="180"/>
+            </columns>
+        </TableView>
+    </center>
+
+</BorderPane>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="ihm.EchangerPointsController"
+            prefWidth="500" prefHeight="300">
+
+    <top>
+        <Label text="Échanger mes Points"
+               style="-fx-font-size: 24px; -fx-font-weight: bold;"
+               BorderPane.alignment="CENTER"/>
+    </top>
+
+    <center>
+        <VBox spacing="20" alignment="CENTER">
+            <Label text="Nombre de points à échanger :" />
+            <TextField fx:id="pointsField" promptText="Ex: 100"/>
+            <Button text="Échanger" onAction="#handleEchanger"/>
+            <Label fx:id="resultLabel" />
+        </VBox>
+    </center>
+
+</BorderPane>

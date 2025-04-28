@@ -65,6 +65,29 @@ public class BonDeCommandeDAO {
         return null;
     }
 
+    public List<BonDeCommande> getByUtilisateurId(int utilisateurId) throws SQLException {
+        List<BonDeCommande> bons = new ArrayList<>();
+        String sql = "SELECT id, etatCommande, pointsUtilises FROM BonDeCommande WHERE utilisateurID = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, utilisateurId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    BonDeCommande bdc = new BonDeCommande(
+                            rs.getInt("id"),
+                            null, // utilisateur sera géré si besoin
+                            new ArrayList<>(), // liste vide de produits pour l'affichage simple
+                            null // commerce non utilisé ici
+                    );
+                    bdc.setEtatCommande(rs.getString("etatCommande"));
+                    bdc.setPointsUtilises(rs.getInt("pointsUtilises"));
+                    bons.add(bdc);
+                }
+            }
+        }
+        return bons;
+    }
+
+
     public List<BonDeCommande> getAll(Utilisateur u, Commerce c, List<CategorieProduit> categories) throws SQLException {
         List<BonDeCommande> commandes = new ArrayList<>();
         String sql = "SELECT * FROM BonDeCommande WHERE utilisateurID = ? AND commerceID = ?";

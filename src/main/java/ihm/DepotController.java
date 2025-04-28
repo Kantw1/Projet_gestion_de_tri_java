@@ -1,188 +1,179 @@
 package ihm;
 
-import dao.DepotDAO;
-import dao.HistoriqueDepotDAO;
 import dao.PoubelleDAO;
+import dao.CentreDeTriDAO;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 import model.*;
 import utils.DatabaseConnection;
+import views.PageDepotController;
 
 import java.sql.Connection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-/**
- * Contrôleur pour la page de dépôt des déchets.
- * Gère la sélection de la poubelle et le calcul des points en fonction du tri.
- */
 public class DepotController {
 
     @FXML
-    private ComboBox<String> poubelleComboBox;
+    private Label centreLabel;
 
     @FXML
-    private TextField plastiqueField, verreField, cartonField, metalField;
-
-    @FXML
-    private Label resultLabel;
-
-    private Map<String, Poubelle> emplacementPoubelleMap = new HashMap<>();
+    private VBox poubelleListVBox;
 
     private Utilisateur utilisateurConnecte;
 
     /**
-     * Cette méthode est appelée automatiquement au chargement du FXML,
-     * mais on ne charge pas encore les poubelles ici.
-     */
-    @FXML
-    public void initialize() {
-        // On ne fait rien ici pour le moment
-        // Car l'utilisateur connecté n'est pas encore passé au contrôleur
-    }
-
-    /**
      * Setter pour passer l'utilisateur connecté au contrôleur.
-     * Dès que l'utilisateur est connu, on charge ses poubelles.
      */
     public void setUtilisateur(Utilisateur utilisateur) {
         this.utilisateurConnecte = utilisateur;
-        chargerPoubellesDuCentre();
+        afficherCentreEtPoubelles();
     }
 
     /**
-     * Charge les poubelles du centre associé à l'utilisateur connecté.
+     * Charge le centre et les poubelles associées.
      */
-    private void chargerPoubellesDuCentre() {
+    private void afficherCentreEtPoubelles() {
         try (Connection conn = DatabaseConnection.getConnection()) {
             PoubelleDAO poubelleDAO = new PoubelleDAO(conn);
+            CentreDeTriDAO centreDAO = new CentreDeTriDAO(conn);
+
+            System.out.println("DEBUG - utilisateurConnecte.centreId = " + utilisateurConnecte.getCentreId());
+
+            CentreDeTri centre = centreDAO.getById(utilisateurConnecte.getCentreId());
+            centreLabel.setText("Centre de Tri : " + centre.getNom());
+
+            // ➔ Ajout des boutons fonctionnels en haut de la page
+            ajouterBoutonsFonctionnels();
+
+            // ➔ Affichage des poubelles
             List<Poubelle> poubelles = poubelleDAO.getPoubellesByCentreId(utilisateurConnecte.getCentreId());
+            System.out.println("Nombre de poubelles trouvées : " + poubelles.size());
 
             for (Poubelle p : poubelles) {
-                emplacementPoubelleMap.put(p.getEmplacement(), p);
-                poubelleComboBox.getItems().add(p.getEmplacement());
+                Button boutonDepot = new Button("Déposer dans la poubelle " + p.getEmplacement());
+                boutonDepot.setStyle("-fx-font-size: 16px; -fx-padding: 10px 20px;");
+                boutonDepot.setOnAction(e -> ouvrirPageDepot(p));
+                poubelleListVBox.getChildren().add(boutonDepot);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            resultLabel.setText("Erreur chargement des poubelles.");
+            Label erreurLabel = new Label("Erreur chargement centre ou poubelles.");
+            erreurLabel.setStyle("-fx-text-fill: red;");
+            poubelleListVBox.getChildren().add(erreurLabel);
         }
     }
 
     /**
-     * Lors du clic sur "Valider dépôt", calcule les points obtenus selon la poubelle choisie et les déchets déposés.
+     * Ajoute les boutons "Historique", "Bons", "Échanger Points" en haut de la page.
      */
-    @FXML
-    public void validerDepot() {
-        String emplacementChoisi = poubelleComboBox.getValue();
-        if (emplacementChoisi == null) {
-            resultLabel.setText("Veuillez choisir une poubelle.");
-            resultLabel.setTextFill(javafx.scene.paint.Color.RED);
-            return;
-        }
+    private HBox creerBoutonsFonctionnels() {
+        HBox hboxBoutons = new HBox(20);
+        hboxBoutons.setStyle("-fx-padding: 20px;");
+        hboxBoutons.setAlignment(javafx.geometry.Pos.CENTER);
 
-        Poubelle poubelle = emplacementPoubelleMap.get(emplacementChoisi);
+        Button btnHistorique = new Button("Voir Historique Dépôts");
+        Button btnBons = new Button("Voir Bons de Commande");
+        Button btnEchangerPoints = new Button("Échanger des Points");
 
-        int plastique = parseField(plastiqueField.getText());
-        int verre = parseField(verreField.getText());
-        int carton = parseField(cartonField.getText());
-        int metal = parseField(metalField.getText());
+        btnHistorique.setOnAction(e -> ouvrirHistorique());
+        btnBons.setOnAction(e -> ouvrirBons());
+        btnEchangerPoints.setOnAction(e -> ouvrirEchangerPoints());
 
-        int pointsTotaux = 0; // on va additionner tous les points
+        hboxBoutons.getChildren().addAll(btnHistorique, btnBons, btnEchangerPoints);
+        return hboxBoutons;
+    }
 
-        try (Connection conn = DatabaseConnection.getConnection()) {
-            DepotDAO depotDAO = new DepotDAO(conn);
-            HistoriqueDepotDAO historiqueDepotDAO = new HistoriqueDepotDAO(conn);
-
-            // Plastique
-            if (plastique > 0) {
-                pointsTotaux += deposerDechet(depotDAO, historiqueDepotDAO, NatureDechet.PLASTIQUE, plastique, poubelle, utilisateurConnecte);
-            }
-
-            // Verre
-            if (verre > 0) {
-                pointsTotaux += deposerDechet(depotDAO, historiqueDepotDAO, NatureDechet.VERRE, verre, poubelle, utilisateurConnecte);
-            }
-
-            // Carton
-            if (carton > 0) {
-                pointsTotaux += deposerDechet(depotDAO, historiqueDepotDAO, NatureDechet.CARTON, carton, poubelle, utilisateurConnecte);
-            }
-
-            // Métal
-            if (metal > 0) {
-                pointsTotaux += deposerDechet(depotDAO, historiqueDepotDAO, NatureDechet.METAL, metal, poubelle, utilisateurConnecte);
-            }
-
-            // Affichage final des points
-            resultLabel.setText("Points obtenus : " + pointsTotaux);
-            resultLabel.setTextFill(pointsTotaux >= 0 ? javafx.scene.paint.Color.GREEN : javafx.scene.paint.Color.RED);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            resultLabel.setText("Erreur lors du dépôt.");
-            resultLabel.setTextFill(javafx.scene.paint.Color.RED);
-        }
+    private void ajouterBoutonsFonctionnels() {
+        HBox hbox = creerBoutonsFonctionnels();
+        poubelleListVBox.getChildren().add(0, hbox);
     }
 
 
     /**
-     * Utilitaire pour parser proprement un champ texte en entier.
+     * Ouvre la page d'historique des dépôts.
      */
-    private int parseField(String value) {
+    private void ouvrirHistorique() {
         try {
-            return Integer.parseInt(value.trim());
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/historique-depots.fxml"));
+            Parent root = loader.load();
+
+            HistoriqueDepotsController controller = loader.getController();
+            controller.setUtilisateur(utilisateurConnecte); // 🔥 on passe l'utilisateur connecté
+
+            Stage stage = new Stage();
+            stage.setTitle("Historique de Dépôts");
+            stage.setScene(new Scene(root, 600, 400));
+            stage.show();
+
         } catch (Exception e) {
-            return 0;
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * Ouvre la page des bons de commande.
+     */
+    private void ouvrirBons() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/liste-bons.fxml"));
+            Parent root = loader.load();
+
+            // TODO : passer utilisateurConnecte si nécessaire
+            Stage stage = new Stage();
+            stage.setTitle("Mes Bons de Commande");
+            stage.setScene(new Scene(root, 600, 400));
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     /**
-     * Calcule les points en fonction du type de poubelle et des déchets déposés.
+     * Ouvre la page pour échanger des points.
      */
-    private int calculerPoints(TypePoubelle typePoubelle, int plastique, int verre, int carton, int metal) {
-        switch (typePoubelle) {
-            case JAUNE:
-                // Jaune accepte plastique, carton, métal ➔ bonus
-                return plastique * 2 + carton * 2 + metal * 2 - verre * 3;
-            case VERTE:
-                // Verte accepte verre uniquement ➔ bonus pour verre, malus pour le reste
-                return verre * 3 - (plastique + carton + metal);
-            case BLEU:
-                // Bleu accepte papier uniquement (ici assimilé à carton dans ton calcul pour l'instant)
-                return carton * 2 - (plastique + verre + metal);
-            case GRIS:
-                // Gris accepte tout ➔ pas de malus, tout est accepté
-                return plastique + verre + carton + metal;
-            default:
-                return 0;
+    private void ouvrirEchangerPoints() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/echanger-points.fxml"));
+            Parent root = loader.load();
+
+            // TODO : passer utilisateurConnecte si nécessaire
+            Stage stage = new Stage();
+            stage.setTitle("Échanger mes Points");
+            stage.setScene(new Scene(root, 600, 400));
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     /**
-     * Dépose un déchet, calcule les points, insère dans la BDD et retourne les points gagnés.
+     * Ouvre la page de dépôt pour une poubelle spécifique.
      */
-    private int deposerDechet(DepotDAO depotDAO, HistoriqueDepotDAO historiqueDepotDAO, NatureDechet type, int quantite, Poubelle poubelle, Utilisateur utilisateur) throws Exception {
-        float poids = (float) (quantite * type.getPoidsUnitaire());
+    private void ouvrirPageDepot(Poubelle poubelle) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("PageDepot.fxml"));
+            Parent root = loader.load();
 
-        Depot depot = new Depot(
-                0,
-                type,
-                poids,
-                quantite,
-                java.time.LocalDateTime.now(),
-                poubelle,
-                utilisateur
-        );
+            PageDepotController controller = loader.getController();
+            controller.setUtilisateurEtPoubelle(utilisateurConnecte, poubelle);
 
-        depotDAO.insert(depot); // 🔥 On insère et récupère l'ID
+            Stage stage = new Stage();
+            stage.setTitle("Déposer vos déchets - " + poubelle.getEmplacement());
+            stage.setScene(new Scene(root));
+            stage.show();
 
-        // Maintenant qu'on a l'ID généré, on insère l'historique
-        //historiqueDepotDAO.insert(utilisateur.getId(), depot.getId());
-
-        return depot.getPoints();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-
-
 }

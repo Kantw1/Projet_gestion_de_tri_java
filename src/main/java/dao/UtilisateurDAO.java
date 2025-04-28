@@ -88,7 +88,8 @@ public class UtilisateurDAO {
                         rs.getInt("id"),
                         rs.getString("nom"),
                         rs.getInt("codeAcces"),
-                        rs.getString("role")
+                        rs.getString("role"),
+                        getCentreByUtilisateurId(rs.getInt("id"))
                 );
                 u.setPtsFidelite(rs.getInt("ptsFidelite"));
                 return u;
@@ -127,7 +128,8 @@ public class UtilisateurDAO {
                         rs.getInt("id"),
                         rs.getString("nom"),
                         rs.getInt("codeAcces"),
-                        rs.getString("role")
+                        rs.getString("role"),
+                        getCentreByUtilisateurId(rs.getInt("id"))
                 );
                 u.setPtsFidelite(rs.getInt("ptsFidelite"));
                 utilisateurs.add(u);
@@ -187,7 +189,8 @@ public class UtilisateurDAO {
                         rs.getInt("id"),
                         rs.getString("nom"),
                         rs.getInt("codeAcces"),
-                        rs.getString("role")
+                        rs.getString("role"),
+                        getCentreByUtilisateurId(rs.getInt("id"))
                 );
                 u.setPtsFidelite(rs.getInt("ptsFidelite"));
                 return u;
@@ -195,6 +198,7 @@ public class UtilisateurDAO {
         }
         return null;
     }
+
 
     /**
      * Récupère un utilisateur par son nom.
@@ -209,7 +213,8 @@ public class UtilisateurDAO {
                         rs.getInt("id"),
                         rs.getString("nom"),
                         rs.getInt("codeAcces"),
-                        rs.getString("role")
+                        rs.getString("role"),
+                        getCentreByUtilisateurId(rs.getInt("id"))
                 );
                 u.setPtsFidelite(rs.getInt("ptsFidelite"));
                 return u;
@@ -217,6 +222,7 @@ public class UtilisateurDAO {
         }
         return null;
     }
+
     /**
      * Vérifie si un utilisateur est administrateur à partir de son ID.
      */
@@ -231,6 +237,7 @@ public class UtilisateurDAO {
         }
         return false;
     }
+
     public Utilisateur getByNomAndCodeAcces(String nom, int codeAcces) throws SQLException {
         String sql = "SELECT * FROM Utilisateur WHERE nom = ? AND codeAcces = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -242,7 +249,8 @@ public class UtilisateurDAO {
                         rs.getInt("id"),
                         rs.getString("nom"),
                         rs.getInt("codeAcces"),
-                        rs.getString("role")
+                        rs.getString("role"),
+                        getCentreByUtilisateurId(rs.getInt("id"))
                 );
                 u.setPtsFidelite(rs.getInt("ptsFidelite"));
                 return u;
@@ -250,5 +258,6 @@ public class UtilisateurDAO {
         }
         return null;
     }
+
 
 }
