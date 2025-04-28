@@ -1,7 +1,8 @@
-package views;
+package ihm;
 
 import dao.DepotDAO;
 import dao.HistoriqueDepotDAO;
+import dao.UtilisateurDAO;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import model.*;
@@ -29,26 +30,17 @@ public class PageDepotController {
     private Utilisateur utilisateur;
     private Poubelle poubelle;
 
-    /**
-     * Setter appelé pour recevoir l'utilisateur connecté et la poubelle sélectionnée.
-     */
     public void setUtilisateurEtPoubelle(Utilisateur utilisateur, Poubelle poubelle) {
         this.utilisateur = utilisateur;
         this.poubelle = poubelle;
         initialiserPage();
     }
 
-    /**
-     * Initialise l'affichage des infos de la poubelle.
-     */
     private void initialiserPage() {
         titreDepotLabel.setText("Déposer dans : " + poubelle.getEmplacement());
         poubelleInfoLabel.setText("Type de poubelle : " + poubelle.getTypePoubelle().toString());
     }
 
-    /**
-     * Lors du clic sur "Valider le dépôt"
-     */
     @FXML
     public void validerDepot() {
         int plastique = parseField(plastiqueField.getText());
@@ -61,6 +53,7 @@ public class PageDepotController {
         try (Connection conn = DatabaseConnection.getConnection()) {
             DepotDAO depotDAO = new DepotDAO(conn);
             HistoriqueDepotDAO historiqueDepotDAO = new HistoriqueDepotDAO(conn);
+            UtilisateurDAO utilisateurDAO = new UtilisateurDAO(conn);
 
             if (plastique > 0) {
                 pointsTotaux += deposerDechet(depotDAO, historiqueDepotDAO, NatureDechet.PLASTIQUE, plastique);
@@ -74,6 +67,10 @@ public class PageDepotController {
             if (metal > 0) {
                 pointsTotaux += deposerDechet(depotDAO, historiqueDepotDAO, NatureDechet.METAL, metal);
             }
+
+            // points de fidélité de l'utilisateur en base
+            utilisateur.ajouterPoints(pointsTotaux);
+            utilisateurDAO.updateFidelite(utilisateur.getId(), utilisateur.getPtsFidelite());
 
             resultLabel.setText("Points obtenus : " + pointsTotaux);
             resultLabel.setTextFill(pointsTotaux >= 0 ? javafx.scene.paint.Color.GREEN : javafx.scene.paint.Color.RED);
@@ -108,8 +105,16 @@ public class PageDepotController {
 
         depotDAO.insert(depot);
 
-        // historiqueDepotDAO.insert(utilisateur.getId(), depot.getId());
+        //Calcul des points : on prend les points du depot
+        int basePoints = depot.getPoints(); // 2, 3, 4, etc. selon type
 
-        return depot.getPoints();
+        // On vérifie si le type de déchet est accepté par la poubelle
+        boolean dechetConforme = depot.verifierTypeDechet();
+
+        if (dechetConforme) {
+            return basePoints; // Bonus normal
+        } else {
+            return -basePoints; // perte des points de base
+        }
     }
 }
