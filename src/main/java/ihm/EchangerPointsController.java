@@ -12,17 +12,8 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import javafx.stage.Stage;
 
 public class EchangerPointsController {
-    @FXML
-    private void handleRetour() {
-        // Obtient la scène de la table
-        Stage stage = (Stage) tableView.getScene().getWindow();  // Utilise tableView
-
-        // Ferme la fenêtre actuelle
-        stage.close();
-    }
 
     @FXML
     private TableView<LigneProduit> tableView;
@@ -88,28 +79,30 @@ public class EchangerPointsController {
     }
 
     // Appelé pour passer l'utilisateur connecté depuis l'écran précédent
+// Appelé pour passer l'utilisateur connecté depuis l'écran précédent
     public void setUtilisateur(Utilisateur utilisateur) {
+        this.utilisateurConnecte = utilisateur;
+
         try (Connection conn = DatabaseConnection.getConnection()) {
             UtilisateurDAO utilisateurDAO = new UtilisateurDAO(conn);
-            Utilisateur utilisateurMisAJour = utilisateurDAO.getById(utilisateur.getId());
 
-            if (utilisateurMisAJour != null) {
-                this.utilisateurConnecte = utilisateurMisAJour;
-            } else {
-                this.utilisateurConnecte = utilisateur;
-            }
-            System.out.println("Utilisateur rechargé : ID=" + utilisateurConnecte.getId() + ", Nom=" + utilisateurConnecte.getNom() + ", Points=" + utilisateurConnecte.getPtsFidelite());
+            // Recharge uniquement les points de fidélité
+            int nouveauxPoints = utilisateurDAO.getPointsFideliteById(utilisateur.getId());
+            utilisateurConnecte.setPtsFidelite(nouveauxPoints);
+
+            System.out.println("Utilisateur connecté : ID=" + utilisateurConnecte.getId() + ", Nom=" + utilisateurConnecte.getNom() + ", Points=" + utilisateurConnecte.getPtsFidelite());
 
             pointsLabel.setText("Points disponibles : " + utilisateurConnecte.getPtsFidelite());
 
-            // Ensuite charger la table produits
+            // Charger les produits seulement après mise à jour des points
             chargerProduitsDisponibles();
 
         } catch (Exception e) {
             e.printStackTrace();
-            afficherErreur("Erreur lors du chargement de l'utilisateur.");
+            afficherErreur("Erreur lors du chargement des points utilisateur.");
         }
     }
+
 
 
     private void chargerProduitsDisponibles() {
