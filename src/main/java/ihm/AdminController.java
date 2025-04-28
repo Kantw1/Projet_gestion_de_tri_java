@@ -21,7 +21,10 @@ public class AdminController {
             Stage stage = new Stage();
             stage.setTitle("Liste des utilisateurs");
             stage.setScene(new Scene(root));
+            Scene scene = new Scene(root, 600, 400);
+            scene.getStylesheets().add(HelloApplication.class.getResource("/style.css").toExternalForm());
             stage.show();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -69,7 +72,7 @@ public class AdminController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ListeContratsView.fxml"));
             Parent root = loader.load();
 
-            Stage stage = new Stage();
+            Stage stage = (Stage) infoLabel.getScene().getWindow();
             stage.setTitle("Liste des Contrats de Partenariat");
             Scene scene = new Scene(root, 600, 400);
             scene.getStylesheets().add(HelloApplication.class.getResource("/style.css").toExternalForm());

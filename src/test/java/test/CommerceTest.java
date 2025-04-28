@@ -24,9 +24,15 @@ public class CommerceTest {
         centre = new CentreDeTri(1, "Centre_1", "Adresse Test");
         commerce = new Commerce(1, "Commerce Test", centre);
 
+<<<<<<< HEAD
         utilisateur = new Utilisateur(1, "Client", 1234, "utilisateur", 1);
         utilisateur.ajouterPoints(100);
         assertEquals(100, utilisateur.getPtsFidelite(), "L'utilisateur doit commencer avec 100 points");
+=======
+        utilisateur = new Utilisateur(1, "Client", 100, 1);
+
+        utilisateur.ajouterPoints(100); // Ajout de 100 points
+>>>>>>> b0bec017eb47513429820aa01dc801d454906266
 
         cat1 = new CategorieProduit(1, "Produit", 50, 0.2f);
         commerce.ajouterCategorie(cat1);
@@ -42,7 +48,13 @@ public class CommerceTest {
         contrat.ajouterCategorie(cat1);
         commerce.setContrat(contrat);
 
+<<<<<<< HEAD
         commande = new BonDeCommande(1, utilisateur, cat1, LocalDate.now(), cat1.getPointNecessaire());
+=======
+        List<CategorieProduit> produits = new ArrayList<>();
+        produits.add(cat1);
+        commande = new BonDeCommande(1, utilisateur, cat1, LocalDate.now(), 0);
+>>>>>>> b0bec017eb47513429820aa01dc801d454906266
     }
 
     @Test
