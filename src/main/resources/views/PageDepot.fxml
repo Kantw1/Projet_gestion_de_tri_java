@@ -6,7 +6,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="views.PageDepotController"
+            fx:controller="ihm.PageDepotController"
             prefHeight="500.0" prefWidth="700.0">
 
     <top>
