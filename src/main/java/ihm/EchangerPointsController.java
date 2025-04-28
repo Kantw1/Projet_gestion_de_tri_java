@@ -101,12 +101,15 @@ public class EchangerPointsController {
             List<Integer> commerceIds = centreCommerceDAO.getCommercesByCentre(centreId);
 
             for (int commerceId : commerceIds) {
-                Commerce commerce = new Commerce(commerceId, "", centreUtilisateur);
-                commercesDisponibles.add(commerce);
+                Commerce commerce = centreCommerceDAO.getCommerceById(commerceId);
+                if (commerce != null) {
+                    commerce.setCentre(centreUtilisateur);
+                    commercesDisponibles.add(commerce);
 
-                List<CategorieProduit> categories = categorieProduitDAO.getCategoriesByCommerceId(commerceId);
-                for (CategorieProduit categorie : categories) {
-                    lignes.add(new LigneProduit(commerce, categorie));
+                    List<CategorieProduit> categories = categorieProduitDAO.getCategoriesByCommerceId(commerceId);
+                    for (CategorieProduit categorie : categories) {
+                        lignes.add(new LigneProduit(commerce, categorie));
+                    }
                 }
             }
 

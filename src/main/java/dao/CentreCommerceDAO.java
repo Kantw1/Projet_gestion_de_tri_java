@@ -1,5 +1,7 @@
 package dao;
 
+import model.Commerce;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +56,19 @@ public class CentreCommerceDAO {
         }
         return centres;
     }
+
+    public Commerce getCommerceById(int commerceId) throws SQLException {
+        String sql = "SELECT id, nom FROM Commerce WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, commerceId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new Commerce(rs.getInt("id"), rs.getString("nom"), null); // centre sera mis après dans Controller
+            }
+        }
+        return null;
+    }
+
 
     public boolean exists(int centreID, int commerceID) throws SQLException {
         String sql = "SELECT COUNT(*) FROM CentreCommerce WHERE centreID = ? AND commerceID = ?";

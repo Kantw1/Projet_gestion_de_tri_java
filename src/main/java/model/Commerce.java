@@ -112,6 +112,22 @@ public class Commerce {
         return nom;
     }
 
+    public void setCentre(CentreDeTri centre) {
+        this.centre = centre;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public void setCategoriesProduits(List<CategorieProduit> categoriesProduits) {
+        this.categoriesProduits = categoriesProduits;
+    }
+
     public ContratPartenariat getContrat() {
         return contrat;
     }
