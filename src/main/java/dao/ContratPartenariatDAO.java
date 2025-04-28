@@ -175,6 +175,27 @@ public class ContratPartenariatDAO {
         }
         return contrats;
     }
-
+    public List<Commerce> getCommercesByCentre(int centreId) throws SQLException {
+        List<Commerce> commerces = new ArrayList<>();
+        String sql = """
+        SELECT c.id, c.nom
+        FROM Commerce c
+        JOIN ContratPartenariat cp ON cp.commerceID = c.id
+        WHERE cp.centreID = ?
+    """;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, centreId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    commerces.add(new Commerce(
+                            rs.getInt("id"),
+                            rs.getString("nom"),
+                            null // pas besoin de Centre ici
+                    ));
+                }
+            }
+        }
+        return commerces;
+    }
 
 }

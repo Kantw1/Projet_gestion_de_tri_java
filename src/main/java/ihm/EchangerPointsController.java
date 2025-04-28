@@ -99,7 +99,7 @@ public class EchangerPointsController {
                 this.utilisateurConnecte = utilisateur;
             }
             System.out.println("Utilisateur rechargé : ID=" + utilisateurConnecte.getId() + ", Nom=" + utilisateurConnecte.getNom() + ", Points=" + utilisateurConnecte.getPtsFidelite());
-            
+
             pointsLabel.setText("Points disponibles : " + utilisateurConnecte.getPtsFidelite());
 
             // Ensuite charger la table produits
@@ -114,29 +114,33 @@ public class EchangerPointsController {
 
     private void chargerProduitsDisponibles() {
         try (Connection conn = DatabaseConnection.getConnection()) {
-
-            CentreDeTriDAO centreDeTriDAO = new CentreDeTriDAO(conn);
-            CentreCommerceDAO centreCommerceDAO = new CentreCommerceDAO(conn);
-            CategorieProduitDAO categorieProduitDAO = new CategorieProduitDAO(conn);
             UtilisateurDAO utilisateurDAO = new UtilisateurDAO(conn);
+            CentreDeTriDAO centreDeTriDAO = new CentreDeTriDAO(conn);
+            ContratPartenariatDAO contratDAO = new ContratPartenariatDAO(conn);
+            CategorieProduitDAO categorieProduitDAO = new CategorieProduitDAO(conn);
 
-            int centreId = utilisateurDAO.getCentreByUtilisateurId(utilisateurConnecte.getId());
+            int centreId = utilisateurDAO.getCentreIdByUtilisateurId(utilisateurConnecte.getId());
             centreUtilisateur = centreDeTriDAO.getById(centreId);
-            commercesDisponibles = new ArrayList<>();
+
+            // 🔥 Aller chercher tous les contrats actifs
+            List<ContratPartenariat> contratsActifs = new ArrayList<>();
+            for (ContratPartenariat contrat : contratDAO.getContratsByCentre(centreUtilisateur)) {
+                if (contrat.getDateDebut().isBefore(java.time.LocalDate.now()) &&
+                        contrat.getDateFin().isAfter(java.time.LocalDate.now())) {
+                    contratsActifs.add(contrat);
+                }
+            }
+
             List<LigneProduit> lignes = new ArrayList<>();
+            commercesDisponibles = new ArrayList<>();
 
-            List<Integer> commerceIds = centreCommerceDAO.getCommercesByCentre(centreId);
+            for (ContratPartenariat contrat : contratsActifs) {
+                Commerce commerce = contrat.getCommerce();
+                commercesDisponibles.add(commerce);
 
-            for (int commerceId : commerceIds) {
-                Commerce commerce = centreCommerceDAO.getCommerceById(commerceId);
-                if (commerce != null) {
-                    commerce.setCentre(centreUtilisateur);
-                    commercesDisponibles.add(commerce);
-
-                    List<CategorieProduit> categories = categorieProduitDAO.getCategoriesByCommerceId(commerceId);
-                    for (CategorieProduit categorie : categories) {
-                        lignes.add(new LigneProduit(commerce, categorie));
-                    }
+                List<CategorieProduit> categories = categorieProduitDAO.getCategoriesByCommerce(commerce.getId());
+                for (CategorieProduit categorie : categories) {
+                    lignes.add(new LigneProduit(commerce, categorie));
                 }
             }
 
@@ -147,6 +151,7 @@ public class EchangerPointsController {
             afficherErreur("Erreur lors du chargement des produits.");
         }
     }
+
 
     @FXML
     private void handleAcheterCategorie() {

@@ -119,5 +119,28 @@ public class CategorieProduitDAO {
             }
         }
     }
+    public List<CategorieProduit> getCategoriesByCommerce(int commerceId) throws SQLException {
+        List<CategorieProduit> categories = new ArrayList<>();
+        String sql = """
+        SELECT cp.id, cp.nom, cp.pointNecessaire, cp.bonReduction
+        FROM CommerceCategorieProduit ccp
+        JOIN CategorieProduit cp ON ccp.categorieID = cp.id
+        WHERE ccp.commerceID = ?
+    """;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, commerceId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    categories.add(new CategorieProduit(
+                            rs.getInt("id"),
+                            rs.getString("nom"),
+                            rs.getInt("pointNecessaire"),
+                            rs.getFloat("bonReduction")
+                    ));
+                }
+            }
+        }
+        return categories;
+    }
 
 }

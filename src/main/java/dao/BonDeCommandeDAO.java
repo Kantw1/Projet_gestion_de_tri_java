@@ -17,28 +17,29 @@ public class BonDeCommandeDAO {
         this.conn = conn;
     }
 
-    public void insert(BonDeCommande bdc) throws SQLException {
-        String sql = "INSERT INTO BonDeCommande (utilisateurID, etatCommande, dateCommande, commerceID, pointsUtilises) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setInt(1, bdc.getUtilisateur().getId());
-            stmt.setString(2, bdc.getEtatCommande());
-            stmt.setDate(3, Date.valueOf(bdc.getDateCommande()));
-            stmt.setInt(4, bdc.getCommerce().getId());
-            stmt.setInt(5, bdc.getPointsUtilises());
+    public void insert(BonDeCommande bon) throws SQLException {
+        String insertBon = "INSERT INTO BonDeCommande (utilisateurID, dateCommande, commerceID, pointsUtilises, etatCommande) VALUES (?, NOW(), ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(insertBon, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, bon.getUtilisateur().getId());
+            stmt.setInt(2, bon.getCommerce().getId());
+            stmt.setInt(3, bon.getPointsUtilises());
+            stmt.setString(4, "valide"); // tu peux mettre "valide" par défaut
+
             stmt.executeUpdate();
 
-            try (ResultSet rs = stmt.getGeneratedKeys()) {
-                if (rs.next()) {
-                    int idGenere = rs.getInt(1);
-                    // Enregistre les catégories liées
-                    for (CategorieProduit cp : bdc.getProduits()) {
-                        try (PreparedStatement joinStmt = conn.prepareStatement(
-                                "INSERT INTO CommandeCategorieProduit (bonDeCommandeID, categorieProduitID) VALUES (?, ?)")) {
-                            joinStmt.setInt(1, idGenere);
-                            joinStmt.setInt(2, cp.getId());
-                            joinStmt.executeUpdate();
-                        }
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                int bonId = rs.getInt(1);
+
+                // Ensuite insérer chaque catégorie liée
+                String insertLiaison = "INSERT INTO CommandeCategorieProduit (bonDeCommandeID, categorieProduitID) VALUES (?, ?)";
+                try (PreparedStatement stmt2 = conn.prepareStatement(insertLiaison)) {
+                    for (CategorieProduit cp : bon.getCategories()) {
+                        stmt2.setInt(1, bonId);
+                        stmt2.setInt(2, cp.getId());
+                        stmt2.addBatch();
                     }
+                    stmt2.executeBatch();
                 }
             }
         }

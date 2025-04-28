@@ -137,4 +137,8 @@ public class BonDeCommande {
     public int getId() {
         return id;
     }
+    public List<CategorieProduit> getCategories() {
+        return ReductionsDisponibles;
+    }
+
 }
