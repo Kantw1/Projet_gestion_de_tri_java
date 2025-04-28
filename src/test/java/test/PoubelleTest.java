@@ -9,33 +9,35 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PoubelleTest {
+class PoubelleTest {
 
     private Poubelle poubelle;
     private Utilisateur utilisateur;
     private Depot depot;
 
     @BeforeEach
-    public void setUp() {
-        poubelle = new Poubelle(1, 100, "Quartier A", TypePoubelle.JAUNE, 80);
+    void setUp() {
+        CentreDeTri centreDeTri = new CentreDeTri(1, "Centre Principal"); // Ajouté
+        poubelle = new Poubelle(1, 100, "Quartier A", TypePoubelle.JAUNE, 80, 90, centreDeTri);
         utilisateur = new Utilisateur(1, "Alice", 1234);
         poubelle.getAccesAutorises().add(1234);
         poubelle.getUtilisateursAutorises().add(utilisateur);
+        poubelle.getTypePoubelle().getTypesAcceptes().add(NatureDechet.PLASTIQUE);
         depot = new Depot(1, NatureDechet.PLASTIQUE, 0.5f, 1, LocalDateTime.now(), poubelle, utilisateur);
     }
 
     @Test
-    public void testIdentifierUtilisateur() {
+    void testIdentifierUtilisateur() {
         assertTrue(poubelle.identifierUtilisateur(utilisateur));
     }
 
     @Test
-    public void testVerifierTypeDechets() {
+    void testVerifierTypeDechets() {
         assertTrue(poubelle.verifierTypeDechets(NatureDechet.PLASTIQUE));
     }
 
     @Test
-    public void testAttribuerPoint() {
+    void testAttribuerPoint() {
         utilisateur.ajouterPoints(0);
         poubelle.getHistoriqueDepots().add(depot);
         poubelle.attribuerPoint(utilisateur);
@@ -43,52 +45,49 @@ public class PoubelleTest {
     }
 
     @Test
-    public void testNotifierCentreTri() {
+    void testNotifierCentreTri() {
         poubelle.getHistoriqueDepots().clear();
         poubelle.ajouterDechets(depot);
-        // ici on ne teste pas l'affichage, seulement que ça ne lève pas d'erreur
     }
 
     @Test
-    public void testVerifierAcces() {
+    void testVerifierAcces() {
         assertTrue(poubelle.verifierAcces(1234));
     }
 
     @Test
-    public void testAjouterDechets() {
+    void testAjouterDechets() {
         int ancienneQuantite = poubelle.getQuantiteActuelle();
         poubelle.ajouterDechets(depot);
         assertEquals(ancienneQuantite + depot.getQuantite(), poubelle.getQuantiteActuelle());
     }
 
     @Test
-    public void testEstPleine() {
+    void testEstPleine() {
         poubelle.ajouterDechets(new Depot(2, NatureDechet.PLASTIQUE, 10f, 100, LocalDateTime.now(), poubelle, utilisateur));
         assertTrue(poubelle.estPleine());
     }
 
     @Test
-    public void testCalculerPenalite() {
-        poubelle.ajouterDechets(new Depot(3, NatureDechet.PLASTIQUE, 10f, 100, LocalDateTime.now(), poubelle, utilisateur));
-        // pénalité appelée pour test, retour visuel/logique attendu côté système
+    void testCalculerPenalite() {
         poubelle.calculerPenalite(utilisateur);
     }
 
     @Test
-    public void testAccepterDepot() {
+    void testAccepterDepot() {
         boolean result = poubelle.accepterDepot(depot, utilisateur);
         assertTrue(result);
     }
 
     @Test
-    public void testGetTauxRemplissage() {
+    void testGetTauxRemplissage() {
         poubelle.ajouterDechets(depot);
         float taux = poubelle.getTauxRemplissage();
         assertTrue(taux > 0);
     }
 
     @Test
-    public void testGetDechetsAutorises() {
+    void testGetDechetsAutorises() {
         List<NatureDechet> types = poubelle.getDechetsAutorises();
         assertNotNull(types);
         assertTrue(types.contains(NatureDechet.PLASTIQUE));

@@ -13,23 +13,31 @@ public class CentreDeTriTest {
     private CentreDeTri centre;
     private Poubelle poubelle;
     private Commerce commerce;
+    private Depot depotValide;
+    private Depot depotInvalide;
 
     @BeforeEach
     public void setUp() {
         centre = new CentreDeTri(7, "Centre Principal", "1 rue de la medaille");
-        poubelle = new Poubelle(1, 100, "Zone 1", TypePoubelle.JAUNE, 1);
+        poubelle = new Poubelle(0, 100, "Emplacement", TypePoubelle.PLASTIQUE, 50, 20, centre);
         commerce = new Commerce(1, "Commerce 1", centre);
+
+        depotValide = new Depot(1, NatureDechet.PLASTIQUE, 10); // NatureDechet accepté par type JAUNE
+        depotInvalide = new Depot(2, NatureDechet.VERRE, 5);    // NatureDechet non accepté pour type JAUNE
+
+        poubelle.ajouterDepot(depotValide);
+        poubelle.ajouterDepot(depotInvalide);
+
+        centre.ajouterPoubelle(poubelle);
     }
 
     @Test
     public void testAjouterPoubelle() {
-        centre.ajouterPoubelle(poubelle);
         assertTrue(centre.getPoubelle().contains(poubelle));
     }
 
     @Test
     public void testRetirerPoubelle() {
-        centre.ajouterPoubelle(poubelle);
         centre.retirerPoubelle(poubelle);
         assertFalse(centre.getPoubelle().contains(poubelle));
     }
@@ -51,12 +59,14 @@ public class CentreDeTriTest {
     public void testGetQuartiersDesservis() {
         List<String> quartiers = centre.getQuartiersDesservis();
         assertNotNull(quartiers);
+        assertTrue(quartiers.isEmpty());
     }
 
     @Test
     public void testGetHistoriqueRejets() {
         List<Depot> rejets = centre.getHistoriqueRejets();
         assertNotNull(rejets);
+        assertTrue(rejets.isEmpty());
     }
 
     @Test
@@ -71,32 +81,39 @@ public class CentreDeTriTest {
 
     @Test
     public void testGetId() {
-        assertEquals(7, centre.getId()); // ✔ ID fixé dans setUp()
+        assertEquals(7, centre.getId());
     }
 
     @Test
     public void testCollecterDechets() {
-        centre.ajouterPoubelle(poubelle);
-        centre.collecterDechets(); // S'exécute sans erreur
+        assertDoesNotThrow(() -> centre.collecterDechets());
     }
 
     @Test
     public void testGenererStatistiques() {
-        centre.genererStatistiques(); // S'exécute sans erreur
+        assertDoesNotThrow(() -> centre.genererStatistiques());
     }
 
     @Test
     public void testTraiterRejet() {
-        centre.traiterRejet(); // S'exécute sans erreur
+        // Avant traitement
+        assertEquals(2, poubelle.getHistoriqueDepots().size());
+
+        centre.traiterRejet();
+
+        // Après traitement : le dépôt invalide doit être déplacé dans historiqueRejets
+        assertEquals(1, poubelle.getHistoriqueDepots().size());
+        assertEquals(1, centre.getHistoriqueRejets().size());
+        assertEquals(depotInvalide, centre.getHistoriqueRejets().get(0));
     }
 
     @Test
     public void testAnalyserDepotsParQuartier() {
-        centre.analyserDepotsParQuartier(); // S'exécute sans erreur
+        assertDoesNotThrow(() -> centre.analyserDepotsParQuartier());
     }
 
     @Test
     public void testAnalyserDepotsParType() {
-        centre.analyserDepotsParType(); // S'exécute sans erreur
+        assertDoesNotThrow(() -> centre.analyserDepotsParType());
     }
 }

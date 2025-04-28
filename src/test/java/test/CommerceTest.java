@@ -20,23 +20,25 @@ public class CommerceTest {
     private ContratPartenariat contrat;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         centre = new CentreDeTri(1, "Centre_1", "Adresse Test");
         commerce = new Commerce(1, "Commerce Test", centre);
 
         utilisateur = new Utilisateur(1, "Client", 1234);
-        utilisateur.ajouterPoints(100);
+        utilisateur.ajouterPoints(100); // Ajout de 100 points
 
         cat1 = new CategorieProduit(1, "Produit", 50, 0.2f);
         commerce.ajouterCategorie(cat1);
 
-        contrat = new ContratPartenariat(1,
+        contrat = new ContratPartenariat(
+                1,
                 LocalDate.now().minusDays(5),
                 LocalDate.now().plusDays(5),
-                centre, commerce);
+                centre,
+                commerce
+        );
 
-        contrat.ajouterCategorie(cat1); // ✅ AJOUT À FAIRE pour passer les tests
-
+        contrat.ajouterCategorie(cat1); // Important pour que le contrat soit conforme
         commerce.setContrat(contrat);
 
         List<CategorieProduit> produits = new ArrayList<>();
@@ -44,63 +46,63 @@ public class CommerceTest {
         commande = new BonDeCommande(1, utilisateur, produits, commerce);
     }
 
-
     @Test
-    public void testEchangerPoints() {
+    void testEchangerPoints() {
         boolean result = commerce.echangerPoints(utilisateur, cat1);
-        assertTrue(result);
-        assertEquals(50, utilisateur.getPtsFidelite(), "Les points doivent être déduits après l'échange");
+        assertTrue(result, "L'échange de points doit réussir");
+        assertEquals(50, utilisateur.getPtsFidelite(), "Il doit rester 50 points après échange");
     }
 
     @Test
-    public void testGetCategoriesProduits() {
+    void testGetCategoriesProduits() {
         List<CategorieProduit> categories = commerce.getCategoriesProduits();
-        assertEquals(1, categories.size());
-        assertTrue(categories.contains(cat1));
+        assertNotNull(categories, "La liste des catégories ne doit pas être nulle");
+        assertEquals(1, categories.size(), "Il doit y avoir une catégorie");
+        assertTrue(categories.contains(cat1), "La catégorie initiale doit être présente");
     }
 
     @Test
-    public void testVerifierConditionsContrat() {
-        assertTrue(commerce.verifierConditionsContrat(contrat));
+    void testVerifierConditionsContrat() {
+        assertTrue(commerce.verifierConditionsContrat(contrat), "Le contrat doit être valide");
     }
 
     @Test
-    public void testAccepterCommande() {
-        assertTrue(commerce.accepterCommande(commande));
-        assertTrue(commerce.getHistoriqueCommandes().contains(commande));
+    void testAccepterCommande() {
+        assertTrue(commerce.accepterCommande(commande), "La commande doit être acceptée");
+        assertTrue(commerce.getHistoriqueCommandes().contains(commande), "La commande doit être dans l'historique");
     }
 
     @Test
-    public void testGetReductionPourCategorie() {
-        float reduc = commerce.getReductionPourCategorie(cat1);
-        assertEquals(0.2f, reduc);
+    void testGetReductionPourCategorie() {
+        float reduction = commerce.getReductionPourCategorie(cat1);
+        assertEquals(0.2f, reduction, 0.0001, "La réduction doit être 0.2");
     }
 
     @Test
-    public void testAjouterCategorie() {
+    void testAjouterCategorie() {
         CategorieProduit nouvelle = new CategorieProduit(2, "Autre", 60, 0.15f);
         commerce.ajouterCategorie(nouvelle);
-        assertTrue(commerce.getCategoriesProduits().contains(nouvelle));
+        assertTrue(commerce.getCategoriesProduits().contains(nouvelle), "La nouvelle catégorie doit être ajoutée");
     }
 
     @Test
-    public void testSupprimerCategorie() {
+    void testSupprimerCategorie() {
         commerce.supprimerCategorie(cat1);
-        assertFalse(commerce.getCategoriesProduits().contains(cat1));
+        assertFalse(commerce.getCategoriesProduits().contains(cat1), "La catégorie doit être supprimée");
     }
 
     @Test
-    public void testGetCentre() {
-        assertEquals(centre, commerce.getCentre());
+    void testGetCentre() {
+        assertEquals(centre, commerce.getCentre(), "Le centre associé doit être correct");
     }
 
     @Test
-    public void testGetNom() {
-        assertEquals("Commerce Test", commerce.getNom());
+    void testGetNom() {
+        assertEquals("Commerce Test", commerce.getNom(), "Le nom doit être 'Commerce Test'");
     }
 
     @Test
-    public void testGetContrat() {
-        assertEquals(contrat, commerce.getContrat());
+    void testGetContrat() {
+        assertEquals(contrat, commerce.getContrat(), "Le contrat associé doit être correct");
     }
 }
