@@ -12,6 +12,9 @@ public class Poubelle {
 
     // ========== ATTRIBUTS ==========
 
+    private CentreDeTri centreDeTri; // nouvelle propriété
+
+
     /** Identifiant unique de la poubelle */
     private int id;
 
@@ -44,7 +47,7 @@ public class Poubelle {
 
     // ========== CONSTRUCTEUR ==========
 
-    public Poubelle(int id, int capaciteMax, String emplacement, TypePoubelle typePoubelle, int seuilAlerte) {
+    public Poubelle(int id, int capaciteMax, String emplacement, TypePoubelle typePoubelle, int seuilAlerte, CentreDeTri centreDeTri) {
         this.id = id;
         this.capaciteMax = capaciteMax;
         this.emplacement = emplacement;
@@ -55,7 +58,9 @@ public class Poubelle {
         this.utilisateursAutorises = new ArrayList<>();
         this.dechetsAutorises = typePoubelle.getTypesAcceptes();
         this.seuilAlerte = seuilAlerte;
+        this.centreDeTri = centreDeTri; // ✅
     }
+
 
 
     // ========== MÉTHODES UML ==========
@@ -130,6 +135,17 @@ public class Poubelle {
     public int getCapaciteMax() { return capaciteMax; }
 
     public String getEmplacement() { return emplacement; }
+
+    /** Calcule le poids total de déchets déposés dans cette poubelle */
+    public float getPoidsTotal() {
+        return (float) historiqueDepots.stream()
+                .mapToDouble(Depot::getPoids)
+                .sum();
+    }
+
+    public CentreDeTri getCentreDeTri() {
+        return centreDeTri;
+    }
 
     public TypePoubelle getTypePoubelle() { return typePoubelle; }
 

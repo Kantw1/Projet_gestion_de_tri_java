@@ -14,12 +14,6 @@ public class AjouterAdminController {
     private TextField nomField;
 
     @FXML
-    private TextField prenomField;
-
-    @FXML
-    private TextField emailField;
-
-    @FXML
     private PasswordField motDePasseField;
 
     @FXML
@@ -48,8 +42,6 @@ public class AjouterAdminController {
 
             showAlert(Alert.AlertType.INFORMATION, "Succès", "Administrateur ajouté avec succès !");
             nomField.clear();
-            prenomField.clear();  // même si tu ne l'utilises pas
-            emailField.clear();   // même si tu ne l'utilises pas
             motDePasseField.clear();
 
         } catch (Exception e) {

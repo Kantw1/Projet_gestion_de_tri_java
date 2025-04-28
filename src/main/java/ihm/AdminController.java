@@ -42,20 +42,20 @@ public class AdminController {
         }
     }
 
-
     @FXML
-    private void handleVoirPoubelles() {
+    private void handleVoirCentres() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ListePoubellesView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ListeCentresView.fxml"));
             Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("Liste des Poubelles");
+            Stage stage = (Stage) infoLabel.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
+            infoLabel.setText("Erreur lors de l'ouverture de la liste des centres !");
         }
     }
+
 
 
     @FXML

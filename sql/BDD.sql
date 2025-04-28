@@ -141,6 +141,3 @@ CREATE TABLE HistoriqueDepot (
     FOREIGN KEY (utilisateurID) REFERENCES Utilisateur(id),
     FOREIGN KEY (depotID) REFERENCES Depot(id)
 );
-
-INSERT INTO CentreDeTri (nom, adresse) VALUES ('Centre Nord', '12 rue du Centre, Paris');
-INSERT INTO CentreDeTri (nom, adresse) VALUES ('Centre Nord', '1 rue des nuages gabagoul, Cergy');

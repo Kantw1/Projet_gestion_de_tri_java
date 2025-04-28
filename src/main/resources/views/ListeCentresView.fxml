@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="ihm.ListeCentresController">
+
+    <top>
+        <VBox alignment="CENTER" spacing="20">
+            <Label text="Gestion des Centres de Tri"
+                   style="-fx-font-size: 28px; -fx-font-weight: bold;"
+                   BorderPane.alignment="CENTER" />
+            <Button text="Ajouter un Centre de Tri" onAction="#handleAjouterCentre" prefWidth="250" style="-fx-font-size: 16px;" />
+        </VBox>
+    </top>
+
+    <center>
+        <TableView fx:id="centreTable" prefWidth="800" prefHeight="500">
+            <columns>
+                <TableColumn fx:id="idCol" text="ID Centre" prefWidth="80"/>
+                <TableColumn fx:id="nomCol" text="Nom du Centre" prefWidth="200"/>
+                <TableColumn fx:id="adresseCol" text="Adresse" prefWidth="300"/>
+                <TableColumn fx:id="actionCol" text="Actions" prefWidth="200"/>
+            </columns>
+        </TableView>
+    </center>
+
+</BorderPane>
