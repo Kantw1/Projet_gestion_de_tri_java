@@ -47,19 +47,20 @@ public class Poubelle {
 
     // ========== CONSTRUCTEUR ==========
 
-    public Poubelle(int id, int capaciteMax, String emplacement, TypePoubelle typePoubelle, int seuilAlerte, CentreDeTri centreDeTri) {
+    public Poubelle(int id, int capaciteMax, String emplacement, TypePoubelle typePoubelle, int quantiteActuelle, int seuilAlerte, CentreDeTri centreDeTri) {
         this.id = id;
         this.capaciteMax = capaciteMax;
         this.emplacement = emplacement;
         this.typePoubelle = typePoubelle;
-        this.quantiteActuelle = 0;
+        this.quantiteActuelle = quantiteActuelle; // 🔥 ici : on respecte ce qu'on récupère
         this.historiqueDepots = new ArrayList<>();
         this.accesAutorises = new ArrayList<>();
         this.utilisateursAutorises = new ArrayList<>();
         this.dechetsAutorises = typePoubelle.getTypesAcceptes();
         this.seuilAlerte = seuilAlerte;
-        this.centreDeTri = centreDeTri; // ✅
+        this.centreDeTri = centreDeTri;
     }
+
 
 
 
@@ -141,6 +142,9 @@ public class Poubelle {
         return (float) historiqueDepots.stream()
                 .mapToDouble(Depot::getPoids)
                 .sum();
+    }
+    public void setQuantiteActuelle(int quantiteActuelle) {
+        this.quantiteActuelle = quantiteActuelle;
     }
 
     public CentreDeTri getCentreDeTri() {

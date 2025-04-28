@@ -4,8 +4,12 @@ import dao.PoubelleDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 import model.CentreDeTri;
 import model.Poubelle;
 import model.TypePoubelle;
@@ -14,6 +18,7 @@ import utils.DatabaseConnection;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+
 
 public class ListePoubellesController {
 
@@ -25,6 +30,8 @@ public class ListePoubellesController {
     private TableColumn<Poubelle, String> typeCol;
     @FXML
     private TableColumn<Poubelle, Integer> capaciteCol;
+    @FXML
+    private TableColumn<Poubelle, Integer> quantiteCol;
     @FXML
     private TableColumn<Poubelle, String> emplacementCol;
     @FXML
@@ -51,6 +58,7 @@ public class ListePoubellesController {
             idCol.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getId()).asObject());
             typeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getTypePoubelle().name()));
             capaciteCol.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getCapaciteMax()).asObject());
+            quantiteCol.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getQuantiteActuelle()).asObject());
             emplacementCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getEmplacement()));
 
             addButtonToTable();
@@ -65,6 +73,10 @@ public class ListePoubellesController {
     private void addButtonToTable() {
         actionCol.setCellFactory(param -> new TableCell<Poubelle, Void>() {
             private final Button deleteBtn = new Button("Supprimer");
+            private final Button viderBtn = new Button("Appeler Entreprise");
+            private final Button voirHistoriqueBtn = new Button("Voir Historique");
+
+            private final HBox pane = new HBox(10, viderBtn, voirHistoriqueBtn, deleteBtn);
 
             {
                 deleteBtn.setOnAction(event -> {
@@ -76,6 +88,36 @@ public class ListePoubellesController {
                         e.printStackTrace();
                     }
                 });
+
+                viderBtn.setOnAction(event -> {
+                    Poubelle p = getTableView().getItems().get(getIndex());
+                    try {
+                        p.setQuantiteActuelle(0);
+                        poubelleDAO.update(p);
+                        loadPoubelles();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+                // ✨ Ton code ici pour Voir l'Historique
+                voirHistoriqueBtn.setOnAction(event -> {
+                    Poubelle p = getTableView().getItems().get(getIndex());
+                    try {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ListeHistoriqueView.fxml"));
+                        Parent root = loader.load();
+
+                        ListeHistoriqueController controller = loader.getController();
+                        controller.setPoubelleId(p.getId());
+
+                        Stage stage = new Stage();
+                        stage.setTitle("Historique de la Poubelle #" + p.getId());
+                        stage.setScene(new Scene(root));
+                        stage.show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
             }
 
             @Override
@@ -84,11 +126,13 @@ public class ListePoubellesController {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    setGraphic(new HBox(deleteBtn));
+                    setGraphic(pane);
                 }
             }
         });
     }
+
+
 
     @FXML
     private void handleAjouterPoubelle() {
@@ -115,7 +159,17 @@ public class ListePoubellesController {
                             int capacite = Integer.parseInt(capStr.trim());
                             TypePoubelle type = TypePoubelle.valueOf(typeStr.trim().toUpperCase());
 
-                            Poubelle p = new Poubelle(0, capacite, emplacement, type, 80, centre); // seuilAlerte par défaut 80%
+                            // 🔥 Quand on ajoute une poubelle, quantité actuelle = 0
+                            Poubelle p = new Poubelle(
+                                    0,
+                                    capacite,
+                                    emplacement,
+                                    type,
+                                    0, // quantiteActuelle = 0 car nouvelle poubelle
+                                    80, // seuilAlerte à 80% par défaut
+                                    centre
+                            );
+
                             Connection conn = DatabaseConnection.getConnection();
                             PoubelleDAO dao = new PoubelleDAO(conn);
                             dao.insert(p, centre.getId());

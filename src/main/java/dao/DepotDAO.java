@@ -112,23 +112,31 @@ public class DepotDAO {
         String sql = "SELECT * FROM depot WHERE poubelleID = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, poubelleId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Depot d = new Depot(
-                            rs.getInt("id"),
-                            NatureDechet.valueOf(rs.getString("type")),
-                            rs.getFloat("poids"),
-                            rs.getInt("quantite"),
-                            rs.getTimestamp("heureDepot").toLocalDateTime(),
-                            null, // pas d'objet Poubelle rechargé ici
-                            null  // pas d'objet Utilisateur rechargé ici
-                    );
-                    liste.add(d);
-                }
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                // ⚡ On récupère aussi l'utilisateur
+                Utilisateur utilisateur = new Utilisateur(
+                        rs.getInt("utilisateurID"),
+                        "",   // nom vide (si tu veux l'afficher après tu pourras changer)
+                        0     // codeAcces 0 ici juste pour éviter une erreur
+                );
+
+                Depot depot = new Depot(
+                        rs.getInt("id"),
+                        NatureDechet.valueOf(rs.getString("type")),
+                        rs.getFloat("poids"),
+                        rs.getInt("quantite"),
+                        rs.getTimestamp("heureDepot").toLocalDateTime(),
+                        null,
+                        utilisateur // ✅ Met l'utilisateur ici !
+                );
+
+                liste.add(depot);
             }
         }
         return liste;
     }
+
 
     /**
      * Récupère tous les dépôts faits par un utilisateur donné.

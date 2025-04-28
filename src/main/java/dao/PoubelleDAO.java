@@ -15,8 +15,9 @@ public class PoubelleDAO {
         this.conn = conn;
     }
 
-
-
+    /**
+     * Insère une nouvelle poubelle et la lie à un centre de tri
+     */
     public void insert(Poubelle p, int centreId) throws SQLException {
         String sqlPoubelle = "INSERT INTO poubelle (capaciteMax, emplacement, typePoubelle, quantiteActuelle, seuilAlerte) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sqlPoubelle, Statement.RETURN_GENERATED_KEYS)) {
@@ -31,7 +32,7 @@ public class PoubelleDAO {
             if (rs.next()) {
                 int poubelleId = rs.getInt(1);
 
-                // 🔥 Maintenant on lie la poubelle au centre dans centrepoubelle
+                // 🔥 Lier la poubelle au centre
                 String sqlLien = "INSERT INTO centrepoubelle (centreID, poubelleID) VALUES (?, ?)";
                 try (PreparedStatement stmtLien = conn.prepareStatement(sqlLien)) {
                     stmtLien.setInt(1, centreId);
@@ -42,14 +43,17 @@ public class PoubelleDAO {
         }
     }
 
+    /**
+     * Récupère une poubelle par son ID
+     */
     public Poubelle getById(int id) throws SQLException {
         String sql = """
-                     SELECT p.*, c.id AS centreId, c.nom AS centreNom, c.adresse AS centreAdresse
-                     FROM poubelle p
-                     JOIN centrepoubelle cp ON p.id = cp.poubelleID
-                     JOIN centre_de_tri c ON cp.centreID = c.id
-                     WHERE p.id = ?
-                     """;
+            SELECT p.*, c.id AS centreId, c.nom AS centreNom, c.adresse AS centreAdresse
+            FROM poubelle p
+            JOIN centrepoubelle cp ON p.id = cp.poubelleID
+            JOIN centredeTri c ON cp.centreID = c.id
+            WHERE p.id = ?
+        """;
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -65,6 +69,7 @@ public class PoubelleDAO {
                             rs.getInt("capaciteMax"),
                             rs.getString("emplacement"),
                             TypePoubelle.valueOf(rs.getString("typePoubelle")),
+                            rs.getInt("quantiteActuelle"),
                             rs.getInt("seuilAlerte"),
                             centre
                     );
@@ -74,6 +79,9 @@ public class PoubelleDAO {
         return null;
     }
 
+    /**
+     * Récupère toutes les poubelles
+     */
     public List<Poubelle> getAll() throws SQLException {
         List<Poubelle> liste = new ArrayList<>();
         String sql = """
@@ -84,7 +92,7 @@ public class PoubelleDAO {
             JOIN CentrePoubelle cp ON p.id = cp.poubelleID
             JOIN CentreDeTri c ON cp.centreID = c.id
             ORDER BY c.nom ASC
-            """;
+        """;
         try (Statement stmt = conn.createStatement()) {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
@@ -99,6 +107,7 @@ public class PoubelleDAO {
                         rs.getInt("capaciteMax"),
                         rs.getString("emplacement"),
                         TypePoubelle.valueOf(rs.getString("typePoubelle")),
+                        rs.getInt("quantiteActuelle"),
                         rs.getInt("seuilAlerte"),
                         centre
                 );
@@ -108,6 +117,9 @@ public class PoubelleDAO {
         return liste;
     }
 
+    /**
+     * Met à jour toutes les infos d'une poubelle
+     */
     public void update(Poubelle p) throws SQLException {
         String sql = "UPDATE poubelle SET capaciteMax = ?, emplacement = ?, typePoubelle = ?, quantiteActuelle = ?, seuilAlerte = ? WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -121,30 +133,37 @@ public class PoubelleDAO {
         }
     }
 
+    /**
+     * Supprime une poubelle (avec son lien au centre)
+     */
     public void delete(int id) throws SQLException {
-        // Supprimer d'abord dans centrepoubelle !
+        // Supprimer d'abord dans centrepoubelle
         String sqlLien = "DELETE FROM centrepoubelle WHERE poubelleID = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sqlLien)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
         }
 
-        // Puis supprimer dans poubelle
+        // Puis dans poubelle
         String sqlPoubelle = "DELETE FROM poubelle WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sqlPoubelle)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
         }
     }
+
+    /**
+     * Récupère toutes les poubelles d'un centre précis
+     */
     public List<Poubelle> getPoubellesByCentreId(int centreId) throws SQLException {
         List<Poubelle> liste = new ArrayList<>();
         String sql = """
-        SELECT 
-            p.id AS poubelleId, p.capaciteMax, p.emplacement, p.typePoubelle, p.quantiteActuelle, p.seuilAlerte
-        FROM Poubelle p
-        JOIN CentrePoubelle cp ON p.id = cp.poubelleID
-        WHERE cp.centreID = ?
-        ORDER BY p.id ASC
+            SELECT 
+                p.id AS poubelleId, p.capaciteMax, p.emplacement, p.typePoubelle, p.quantiteActuelle, p.seuilAlerte
+            FROM Poubelle p
+            JOIN CentrePoubelle cp ON p.id = cp.poubelleID
+            WHERE cp.centreID = ?
+            ORDER BY p.id ASC
         """;
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, centreId);
@@ -155,13 +174,13 @@ public class PoubelleDAO {
                         rs.getInt("capaciteMax"),
                         rs.getString("emplacement"),
                         TypePoubelle.valueOf(rs.getString("typePoubelle")),
+                        rs.getInt("quantiteActuelle"),
                         rs.getInt("seuilAlerte"),
-                        null // ici pas besoin de recharger le Centre, on sait déjà pour qui c'est
+                        null // Pas besoin de recharger l'objet Centre ici
                 );
                 liste.add(p);
             }
         }
         return liste;
     }
-
 }

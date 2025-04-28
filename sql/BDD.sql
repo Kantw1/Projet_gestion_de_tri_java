@@ -137,6 +137,9 @@ CREATE TABLE CentreUtilisateur (
 CREATE TABLE HistoriqueDepot (
     utilisateurID INT,
     depotID INT,
+    dateDepot DATETIME,
+    typeDechet VARCHAR(50),
+    pointsGagnes INT,
     PRIMARY KEY (utilisateurID, depotID),
     FOREIGN KEY (utilisateurID) REFERENCES Utilisateur(id),
     FOREIGN KEY (depotID) REFERENCES Depot(id)

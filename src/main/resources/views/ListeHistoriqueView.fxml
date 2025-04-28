@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="ihm.ListeHistoriqueController">
+
+    <top>
+        <VBox alignment="CENTER" spacing="10">
+            <padding>
+                <Insets top="20" bottom="10"/>
+            </padding>
+            <Label text="Historique des Dépôts"
+                   style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+        </VBox>
+    </top>
+
+    <center>
+        <TableView fx:id="historiqueTable" prefWidth="800" prefHeight="500">
+            <columns>
+                <TableColumn fx:id="dateCol" text="Date et Heure" prefWidth="180"/>
+                <TableColumn fx:id="typeCol" text="Type de Déchet" prefWidth="180"/>
+                <TableColumn fx:id="pointsCol" text="Points Gagnés/Perdus" prefWidth="180"/>
+                <TableColumn fx:id="utilisateurCol" text="Utilisateur" prefWidth="180"/> <!-- ✅ Ajout de la colonne utilisateur -->
+            </columns>
+        </TableView>
+    </center>
+
+</BorderPane>

@@ -179,7 +179,7 @@ public class DepotController {
         depotDAO.insert(depot); // 🔥 On insère et récupère l'ID
 
         // Maintenant qu'on a l'ID généré, on insère l'historique
-        historiqueDepotDAO.insert(utilisateur.getId(), depot.getId());
+        //historiqueDepotDAO.insert(utilisateur.getId(), depot.getId());
 
         return depot.getPoints();
     }
