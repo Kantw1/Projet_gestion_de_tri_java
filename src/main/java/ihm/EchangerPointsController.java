@@ -87,8 +87,10 @@ public class EchangerPointsController {
             if (utilisateurMisAJour != null) {
                 this.utilisateurConnecte = utilisateurMisAJour;
             } else {
-                this.utilisateurConnecte = utilisateur; // fallback si problème (devrait pas arriver)
+                this.utilisateurConnecte = utilisateur; // fallback
             }
+            // Mettre immédiatement à jour le label des points
+            pointsLabel.setText("Points disponibles : " + utilisateurConnecte.getPtsFidelite());
 
             chargerProduitsDisponibles();
         } catch (Exception e) {
@@ -97,19 +99,17 @@ public class EchangerPointsController {
         }
     }
 
-
     private void chargerProduitsDisponibles() {
         try (Connection conn = DatabaseConnection.getConnection()) {
 
-            UtilisateurDAO utilisateurDAO = new UtilisateurDAO(conn);
             CentreDeTriDAO centreDeTriDAO = new CentreDeTriDAO(conn);
             CentreCommerceDAO centreCommerceDAO = new CentreCommerceDAO(conn);
             CategorieProduitDAO categorieProduitDAO = new CategorieProduitDAO(conn);
+            UtilisateurDAO utilisateurDAO = new UtilisateurDAO(conn);
 
             int centreId = utilisateurDAO.getCentreByUtilisateurId(utilisateurConnecte.getId());
             centreUtilisateur = centreDeTriDAO.getById(centreId);
             commercesDisponibles = new ArrayList<>();
-
             List<LigneProduit> lignes = new ArrayList<>();
 
             List<Integer> commerceIds = centreCommerceDAO.getCommercesByCentre(centreId);
@@ -128,11 +128,10 @@ public class EchangerPointsController {
             }
 
             tableView.setItems(FXCollections.observableArrayList(lignes));
-            pointsLabel.setText("Points disponibles : " + utilisateurConnecte.getPtsFidelite());
 
         } catch (Exception e) {
             e.printStackTrace();
-            afficherErreur("Erreur lors du chargement des données.");
+            afficherErreur("Erreur lors du chargement des produits.");
         }
     }
 
@@ -172,8 +171,8 @@ public class EchangerPointsController {
             conn.commit();
 
             afficherSucces("Achat effectué avec succès !");
-            pointsLabel.setText("Points disponibles : " + utilisateurConnecte.getPtsFidelite());
             tableView.getItems().remove(ligne);
+            pointsLabel.setText("Points disponibles : " + utilisateurConnecte.getPtsFidelite());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -212,7 +211,7 @@ public class EchangerPointsController {
                     continue;
                 }
 
-                if (confirmer("Acheter toutes les réductions chez ce commerce pour " + totalPoints + " points ?")) {
+                if (confirmer("Acheter toutes les réductions chez " + commerce.getNom() + " pour " + totalPoints + " points ?")) {
                     for (LigneProduit ligne : produitsCommerce) {
                         int pointsCategorie = ligne.getPointsNecessaires();
                         int nouveauxPoints = utilisateurConnecte.getPtsFidelite() - pointsCategorie;
