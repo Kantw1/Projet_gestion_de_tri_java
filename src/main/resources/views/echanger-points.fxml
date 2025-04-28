@@ -2,24 +2,38 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="ihm.EchangerPointsController"
-            prefWidth="500" prefHeight="300">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="ihm.EchangerPointsController">
 
+    <!-- En-tête avec points de fidélité -->
     <top>
-        <Label text="Échanger mes Points"
-               style="-fx-font-size: 24px; -fx-font-weight: bold;"
-               BorderPane.alignment="CENTER"/>
+        <HBox spacing="20" padding="10">
+            <Label text="Échangez vos points !" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Label fx:id="pointsLabel" text="Points disponibles : 0" style="-fx-font-size: 16px;"/>
+        </HBox>
     </top>
 
+    <!-- Centre avec la TableView -->
     <center>
-        <VBox spacing="20" alignment="CENTER">
-            <Label text="Nombre de points à échanger :" />
-            <TextField fx:id="pointsField" promptText="Ex: 100"/>
-            <Button text="Échanger" onAction="#handleEchanger"/>
-            <Label fx:id="resultLabel" />
+        <VBox spacing="10" padding="10">
+            <TableView fx:id="tableView" prefHeight="400">
+                <columns>
+                    <TableColumn fx:id="commerceColumn" text="Commerce" prefWidth="200"/>
+                    <TableColumn fx:id="categorieColumn" text="Catégorie" prefWidth="200"/>
+                    <TableColumn fx:id="pointsColumn" text="Points nécessaires" prefWidth="150"/>
+                </columns>
+            </TableView>
         </VBox>
     </center>
+
+    <!-- Bas avec les boutons d'action -->
+    <bottom>
+        <HBox spacing="20" alignment="center" padding="10">
+            <Button fx:id="acheterCategorieButton" text="Acheter la sélection" onAction="#handleAcheterCategorie" prefWidth="180" />
+            <Button fx:id="acheterToutButton" text="Acheter tout dans le commerce" onAction="#handleAcheterTout" prefWidth="220" />
+        </HBox>
+    </bottom>
 
 </BorderPane>
