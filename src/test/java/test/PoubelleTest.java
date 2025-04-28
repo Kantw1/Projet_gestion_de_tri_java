@@ -17,12 +17,15 @@ class PoubelleTest {
 
     @BeforeEach
     void setUp() {
-        CentreDeTri centreDeTri = new CentreDeTri(1, "Centre Principal"); // Ajouté
+        CentreDeTri centreDeTri = new CentreDeTri(1, "Centre Principal", "Adresse Centre"); // Corrigé
+        utilisateur = new Utilisateur(1, "Alice", 1234, 1); // Correction : constructeur complet
+
         poubelle = new Poubelle(1, 100, "Quartier A", TypePoubelle.JAUNE, 80, 90, centreDeTri);
-        utilisateur = new Utilisateur(1, "Alice", 1234);
+
+        // Ajout du code d'accès
         poubelle.getAccesAutorises().add(1234);
         poubelle.getUtilisateursAutorises().add(utilisateur);
-        poubelle.getTypePoubelle().getTypesAcceptes().add(NatureDechet.PLASTIQUE);
+
         depot = new Depot(1, NatureDechet.PLASTIQUE, 0.5f, 1, LocalDateTime.now(), poubelle, utilisateur);
     }
 
@@ -38,7 +41,7 @@ class PoubelleTest {
 
     @Test
     void testAttribuerPoint() {
-        utilisateur.ajouterPoints(0);
+        utilisateur.setPtsFidelite(0);
         poubelle.getHistoriqueDepots().add(depot);
         poubelle.attribuerPoint(utilisateur);
         assertTrue(utilisateur.getPtsFidelite() > 0);
@@ -46,8 +49,8 @@ class PoubelleTest {
 
     @Test
     void testNotifierCentreTri() {
-        poubelle.getHistoriqueDepots().clear();
-        poubelle.ajouterDechets(depot);
+        poubelle.setQuantiteActuelle(90); // Au seuil
+        poubelle.notifierCentreTri(); // Pas d'assertion, on vérifie qu'aucune erreur n'est levée
     }
 
     @Test
@@ -64,13 +67,14 @@ class PoubelleTest {
 
     @Test
     void testEstPleine() {
-        poubelle.ajouterDechets(new Depot(2, NatureDechet.PLASTIQUE, 10f, 100, LocalDateTime.now(), poubelle, utilisateur));
+        Depot grosDepot = new Depot(2, NatureDechet.PLASTIQUE, 10f, 100, LocalDateTime.now(), poubelle, utilisateur);
+        poubelle.ajouterDechets(grosDepot);
         assertTrue(poubelle.estPleine());
     }
 
     @Test
     void testCalculerPenalite() {
-        poubelle.calculerPenalite(utilisateur);
+        assertDoesNotThrow(() -> poubelle.calculerPenalite(utilisateur));
     }
 
     @Test

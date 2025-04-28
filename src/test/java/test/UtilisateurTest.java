@@ -14,18 +14,19 @@ class UtilisateurTest {
     private Utilisateur utilisateur;
     private Poubelle poubelle;
     private Depot depot;
+    private CentreDeTri centreDeTri;
 
     @BeforeEach
     void setUp() {
-        CentreDeTri centreDeTri = new CentreDeTri(1, "Centre Principal"); // Ajouté
+        centreDeTri = new CentreDeTri(1, "Centre Principal", "Adresse Centre"); // ✅ Correction : constructeur complet
         utilisateur = new Utilisateur(1, "Alice", 1234, "utilisateur", 1);
         utilisateur.ajouterPoints(100);
 
         poubelle = new Poubelle(1, 100, "Chatelet", TypePoubelle.JAUNE, 5, 90, centreDeTri);
         utilisateur.ajouterPoubelleAccessible(poubelle);
 
+        // Autoriser accès
         poubelle.getAccesAutorises().add(utilisateur.getCodeAcces());
-        poubelle.getTypePoubelle().getTypesAcceptes().add(NatureDechet.PLASTIQUE);
 
         depot = new Depot(1, NatureDechet.PLASTIQUE, 1.0f, 2, LocalDateTime.now(), poubelle, utilisateur);
         utilisateur.deposerDechets(poubelle, depot);
@@ -46,8 +47,10 @@ class UtilisateurTest {
 
     @Test
     void testConvertirPoints() {
+        CategorieProduit categorie = new CategorieProduit(1, "Test", 50, 0.2f);
         int pointsAvant = utilisateur.getPtsFidelite();
-        BonDeCommande commande = utilisateur.convertirPoints(50);
+
+        BonDeCommande commande = utilisateur.convertirPoints(categorie);
 
         assertNotNull(commande);
         assertEquals(50, commande.getPointsUtilises());

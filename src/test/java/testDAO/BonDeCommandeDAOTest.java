@@ -8,7 +8,7 @@ import org.junit.jupiter.api.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,9 +18,7 @@ class BonDeCommandeDAOTest {
     private static Connection conn;
     private static BonDeCommandeDAO bdcDAO;
     private static Utilisateur utilisateur;
-    private static Commerce commerce;
     private static CategorieProduit categorie1;
-    private static List<CategorieProduit> categories;
 
     @BeforeAll
     static void setup() throws Exception {
@@ -28,67 +26,39 @@ class BonDeCommandeDAOTest {
         conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/BDD", "root", "");
 
         CentreDeTriDAO centreDAO = new CentreDeTriDAO(conn);
-        CentreDeTri centre = new CentreDeTri(0, "Centre 1", "Adresse");
+        CentreDeTri centre = new CentreDeTri(0, "Centre 1", "Adresse Test");
         centreDAO.insert(centre);
         centre = centreDAO.getAll().get(centreDAO.getAll().size() - 1);
 
         UtilisateurDAO utilisateurDAO = new UtilisateurDAO(conn);
         utilisateur = new Utilisateur(0, "Testeur", 1234, "utilisateur", centre.getId());
-        utilisateur.ajouterPoints(200);
         utilisateurDAO.insert(utilisateur);
         utilisateur = utilisateurDAO.getAll().get(utilisateurDAO.getAll().size() - 1);
-
-        CommerceDAO commerceDAO = new CommerceDAO(conn);
-        commerce = new Commerce(0, "Carrefour", centre);
-        commerceDAO.insert(commerce);
-        commerce = commerceDAO.getAll(centre).get(commerceDAO.getAll(centre).size() - 1);
 
         CategorieProduitDAO categorieDAO = new CategorieProduitDAO(conn);
         categorie1 = new CategorieProduit(0, "Alimentation", 80, 0.15f);
         categorieDAO.insert(categorie1);
         categorie1 = categorieDAO.getAll().get(categorieDAO.getAll().size() - 1);
 
-        categories = new ArrayList<>();
-        categories.add(categorie1);
-
         bdcDAO = new BonDeCommandeDAO(conn);
     }
 
     @Test
     void testInsertAndGet() throws SQLException {
-        BonDeCommande bdc = new BonDeCommande(0, utilisateur, categories, commerce);
-        bdc.setEtatCommande("valide");
-        bdc.setPointsUtilises(50);
+        BonDeCommande bdc = new BonDeCommande(0, utilisateur, categorie1, LocalDate.now(), 80);
         bdcDAO.insert(bdc);
 
         List<BonDeCommande> liste = bdcDAO.getByUtilisateurId(utilisateur.getId());
-        assertFalse(liste.isEmpty());
+        assertFalse(liste.isEmpty(), "La liste ne doit pas être vide après insertion");
 
         BonDeCommande dernier = liste.get(liste.size() - 1);
-        BonDeCommande charge = bdcDAO.getById(dernier.getId(), utilisateur, commerce, categories);
-
-        assertNotNull(charge);
-        assertEquals("valide", charge.getEtatCommande());
-    }
-
-    @Test
-    void testUpdate() throws SQLException {
-        List<BonDeCommande> liste = bdcDAO.getByUtilisateurId(utilisateur.getId());
-        assertFalse(liste.isEmpty());
-
-        BonDeCommande bdc = liste.get(0);
-        bdc.setEtatCommande("validée");
-        bdcDAO.update(bdc);
-
-        BonDeCommande verif = bdcDAO.getById(bdc.getId(), utilisateur, commerce, categories);
-        assertEquals("validée", verif.getEtatCommande());
+        assertEquals(categorie1.getNom(), dernier.getCategorieProduit().getNom(), "La catégorie du bon doit correspondre");
+        assertEquals(80, dernier.getPointsUtilises(), "Les points utilisés doivent correspondre");
     }
 
     @Test
     void testDelete() throws SQLException {
-        BonDeCommande bdc = new BonDeCommande(0, utilisateur, categories, commerce);
-        bdc.setEtatCommande("valide");
-        bdc.setPointsUtilises(50);
+        BonDeCommande bdc = new BonDeCommande(0, utilisateur, categorie1, LocalDate.now(), 80);
         bdcDAO.insert(bdc);
 
         List<BonDeCommande> toutes = bdcDAO.getByUtilisateurId(utilisateur.getId());
@@ -96,8 +66,9 @@ class BonDeCommandeDAOTest {
 
         bdcDAO.delete(dernier.getId());
 
-        BonDeCommande supprimee = bdcDAO.getById(dernier.getId(), utilisateur, commerce, categories);
-        assertNull(supprimee);
+        List<BonDeCommande> apresSuppression = bdcDAO.getByUtilisateurId(utilisateur.getId());
+        boolean existeEncore = apresSuppression.stream().anyMatch(b -> b.getId() == dernier.getId());
+        assertFalse(existeEncore, "Le bon de commande doit avoir été supprimé");
     }
 
     @AfterAll

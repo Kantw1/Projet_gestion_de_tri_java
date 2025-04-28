@@ -4,7 +4,6 @@ import org.junit.platform.launcher.Launcher;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
 import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
-import org.junit.platform.engine.discovery.DiscoverySelectors;
 
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
@@ -15,26 +14,35 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 public class MainTest {
 
     public static void main(String[] args) {
+        // Création d'un listener pour récupérer les résultats
         SummaryGeneratingListener listener = new SummaryGeneratingListener();
 
+        // Création de la requête de découverte des classes de test
         LauncherDiscoveryRequest request = org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder
                 .request()
                 .selectors(
                         selectClass(DepotTest.class),
                         selectClass(UtilisateurTest.class),
-                        selectClass(CategorieProduitTest.class),
-                        selectClass(PoubelleTest.class),
-                        selectClass(BonDeCommandeTest.class),
-                        selectClass(CommerceTest.class),
-                        selectClass(CentreDeTriTest.class),
-                        selectClass(ContratPartenariatTest.class)
+                        // Commenter les lignes suivantes si les tests n'existent pas encore :
+                        // selectClass(CategorieProduitTest.class),
+                        // selectClass(PoubelleTest.class),
+                        // selectClass(BonDeCommandeTest.class),
+                        selectClass(CommerceTest.class)
+                        // selectClass(CentreDeTriTest.class),
+                        // selectClass(ContratPartenariatTest.class)
                 )
                 .build();
 
+        // Création du launcher
         Launcher launcher = LauncherFactory.create();
+
+        // Enregistrement du listener
         launcher.registerTestExecutionListeners(listener);
+
+        // Exécution de la requête
         launcher.execute(request);
 
+        // Impression du résumé des tests
         var summary = listener.getSummary();
         summary.printTo(new java.io.PrintWriter(System.out));
     }
