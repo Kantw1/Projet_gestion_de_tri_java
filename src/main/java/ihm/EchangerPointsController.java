@@ -12,8 +12,17 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import javafx.stage.Stage;
 
 public class EchangerPointsController {
+    @FXML
+    private void handleRetour() {
+        // Obtient la scène de la table
+        Stage stage = (Stage) tableView.getScene().getWindow();  // Utilise tableView
+
+        // Ferme la fenêtre actuelle
+        stage.close();
+    }
 
     @FXML
     private TableView<LigneProduit> tableView;

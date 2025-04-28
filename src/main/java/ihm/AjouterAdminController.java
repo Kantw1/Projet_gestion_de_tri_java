@@ -7,9 +7,14 @@ import javafx.scene.control.TextField;
 import model.Utilisateur;
 import dao.UtilisateurDAO;
 import utils.DatabaseConnection;
+import javafx.stage.Stage;
 
 public class AjouterAdminController {
-
+    @FXML
+    private void handleRetour() {
+        Stage stage = (Stage) nomField.getScene().getWindow();
+        stage.close();
+    }
     @FXML
     private TextField nomField;
 

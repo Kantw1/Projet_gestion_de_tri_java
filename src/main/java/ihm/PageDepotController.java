@@ -5,8 +5,10 @@ import dao.HistoriqueDepotDAO;
 import dao.UtilisateurDAO;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 import model.*;
 import utils.DatabaseConnection;
+
 
 import java.sql.Connection;
 
@@ -14,6 +16,14 @@ import java.sql.Connection;
  * Contrôleur pour la page de dépôt : dépôt de déchets dans une poubelle spécifique.
  */
 public class PageDepotController {
+    @FXML
+    private void handleRetour() {
+        // Obtient la scène actuelle de la fenêtre
+        Stage stage = (Stage) titreDepotLabel.getScene().getWindow();  // Utilise titreDepotLabel ou tout autre élément de la scène
+
+        // Ferme la fenêtre actuelle
+        stage.close();
+    }
 
     @FXML
     private Label titreDepotLabel;

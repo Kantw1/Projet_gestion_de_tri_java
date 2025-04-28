@@ -11,6 +11,7 @@
         <Label text="Mes Bons de Commande"
                style="-fx-font-size: 24px; -fx-font-weight: bold;"
                BorderPane.alignment="CENTER"/>
+        <Button text="Retour" onAction="#handleRetour" prefWidth="100"/>
     </top>
 
     <center>

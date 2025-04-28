@@ -20,7 +20,31 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class ListeCentresController {
+    @FXML
+    private void handleRetour(javafx.event.ActionEvent event) {
+        try {
+            // Charger la nouvelle vue AdminView.fxml
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/AdminView.fxml"));
+            Parent root = loader.load();
 
+            // Créer une nouvelle scène avec la vue chargée
+            Scene scene = new Scene(root);
+
+            // Créer un nouveau stage pour afficher la nouvelle vue
+            Stage stage = new Stage();
+            stage.setTitle("Page Admin");
+            stage.setScene(scene);
+
+            // Fermer la fenêtre actuelle
+            Stage currentStage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+            currentStage.close();
+
+            // Afficher la nouvelle fenêtre
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     @FXML
     private TableView<CentreDeTri> centreTable;
     @FXML
