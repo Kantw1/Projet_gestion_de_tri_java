@@ -30,13 +30,18 @@ public class AdminController {
 
     @FXML
     private void handleAjouterUtilisateur() {
-        // ⚡️ Plus tard tu ouvriras un vrai formulaire d'inscription admin
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Ajouter un utilisateur");
-        alert.setHeaderText(null);
-        alert.setContentText("Fonctionnalité Ajouter utilisateur en cours...");
-        alert.showAndWait();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/AjouterAdminView.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Ajouter un Administrateur");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
 
     @FXML
     private void handleVoirPoubelles() {
