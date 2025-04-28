@@ -21,8 +21,8 @@ public class AdminController {
             Stage stage = new Stage();
             stage.setTitle("Liste des utilisateurs");
             stage.setScene(new Scene(root));
-            Scene scene = new Scene(root, 600, 400);
-            scene.getStylesheets().add(HelloApplication.class.getResource("/style.css").toExternalForm());
+            //Scene scene = new Scene(root, 600, 400);
+            //scene.getStylesheets().add(HelloApplication.class.getResource("/style.css").toExternalForm());
             stage.show();
 
         } catch (Exception e) {
