@@ -119,16 +119,3 @@ CREATE TABLE CentreUtilisateur (
     FOREIGN KEY (centreID) REFERENCES CentreDeTri(id),
     FOREIGN KEY (utilisateurID) REFERENCES Utilisateur(id)
 );
-
-
--- Historique des dépôts
-CREATE TABLE HistoriqueDepot (
-    utilisateurID INT,
-    depotID INT,
-    dateDepot DATETIME,
-    typeDechet VARCHAR(50),
-    pointsGagnes INT,
-    PRIMARY KEY (utilisateurID, depotID),
-    FOREIGN KEY (utilisateurID) REFERENCES Utilisateur(id),
-    FOREIGN KEY (depotID) REFERENCES Depot(id)
-);
