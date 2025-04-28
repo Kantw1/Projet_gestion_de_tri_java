@@ -21,20 +21,22 @@ public class CentreDeTriTest {
     @BeforeEach
     public void setUp() {
         centre = new CentreDeTri(7, "Centre Principal", "1 rue de la medaille");
-        // Assurez-vous que le constructeur de Poubelle a la signature correcte sans ajouter de méthodes.
-        // Ajouter le paramètre manquant pour le constructeur de Poubelle (CentreDeTri)
-        poubelle = new Poubelle(1, 100, "Zone 1", TypePoubelle.JAUNE, 1, centre); // Maintenant, le constructeur a 6 arguments
+
+        poubelle = new Poubelle(1, 100, "Zone 1", TypePoubelle.JAUNE, 0, 10, centre);
+        //                             ↑↑    ↑↑
+        // Niveau de remplissage: 0    Points associés: 10 (par exemple)
 
         commerce = new Commerce(1, "Commerce 1", centre);
 
-        // Utilisation de la méthode de dépôt si possible.
-        depotValide = new Depot(1, NatureDechet.PLASTIQUE, 10, 1, LocalDateTime.now(), poubelle, utilisateur);
-        depotInvalide = new Depot(2, NatureDechet.VERRE, 5, 1, LocalDateTime.now(), poubelle, utilisateur);
+        utilisateur = new Utilisateur(1, "John Doe", 0, 1);
 
-        // Si vous ne pouvez pas utiliser "ajouterDepot", assurez-vous de gérer autrement les dépôts.
-        // Si vous avez une méthode dans CentreDeTri pour l'ajout de dépôts, utilisez-la.
-        centre.ajouterDepot(depotValide);
-        centre.ajouterDepot(depotInvalide);
+
+        depotValide = new Depot(1, NatureDechet.PLASTIQUE, 10.0f, 0, LocalDateTime.now(), poubelle, utilisateur);
+        depotInvalide = new Depot(2, NatureDechet.VERRE, 5.0f, 0, LocalDateTime.now(), poubelle, utilisateur);
+
+        poubelle.getHistoriqueDepots().add(depotValide);
+        poubelle.getHistoriqueDepots().add(depotInvalide);
+
         centre.ajouterPoubelle(poubelle);
     }
 
