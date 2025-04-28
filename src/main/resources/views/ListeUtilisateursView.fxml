@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="ihm.ListeUtilisateursController">
+
+    <top>
+        <Label text="Liste des Utilisateurs"
+               style="-fx-font-size: 28px; -fx-font-weight: bold;"
+               BorderPane.alignment="CENTER"/>
+    </top>
+
+    <center>
+        <TableView fx:id="utilisateurTable" prefWidth="600" prefHeight="400">
+            <columns>
+                <TableColumn fx:id="idCol" text="ID" prefWidth="50"/>
+                <TableColumn fx:id="nomCol" text="Nom" prefWidth="150"/>
+                <TableColumn fx:id="ptsCol" text="Points" prefWidth="100"/>
+                <TableColumn fx:id="codeAccesCol" text="Code Accès" prefWidth="100"/>
+                <TableColumn fx:id="roleCol" text="Role" prefWidth="100"/>
+                <TableColumn fx:id="actionCol" text="Action" prefWidth="100"/>
+            </columns>
+        </TableView>
+    </center>
+
+</BorderPane>

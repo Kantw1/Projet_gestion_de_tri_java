@@ -15,13 +15,18 @@ public class AdminController {
 
     @FXML
     private void handleVoirUtilisateurs() {
-        // ⚡️ Ici tu pourras afficher la vraie liste plus tard
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Liste des utilisateurs");
-        alert.setHeaderText(null);
-        alert.setContentText("Fonctionnalité Voir utilisateurs en cours...");
-        alert.showAndWait();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ListeUtilisateursView.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Liste des utilisateurs");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
 
     @FXML
     private void handleAjouterUtilisateur() {
@@ -32,6 +37,21 @@ public class AdminController {
         alert.setContentText("Fonctionnalité Ajouter utilisateur en cours...");
         alert.showAndWait();
     }
+
+    @FXML
+    private void handleVoirPoubelles() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ListePoubellesView.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Liste des Poubelles");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @FXML
     private void handleDeconnexion() {

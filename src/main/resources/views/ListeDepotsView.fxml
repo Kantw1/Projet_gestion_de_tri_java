@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="ihm.ListeDepotsController">
+
+    <top>
+        <Label text="Liste des Dépôts"
+               style="-fx-font-size: 28px; -fx-font-weight: bold;"
+               BorderPane.alignment="CENTER"/>
+    </top>
+
+    <center>
+        <TableView fx:id="depotTable" prefWidth="600" prefHeight="400">
+            <columns>
+                <TableColumn fx:id="idDepotCol" text="ID" prefWidth="50"/>
+                <TableColumn fx:id="typeCol" text="Type de Déchet" prefWidth="150"/>
+                <TableColumn fx:id="poidsCol" text="Poids" prefWidth="100"/> <!-- 🛠 Ici ajouté -->
+                <TableColumn fx:id="quantiteCol" text="Quantité" prefWidth="100"/>
+                <TableColumn fx:id="pointsCol" text="Points gagnés" prefWidth="100"/>
+                <TableColumn fx:id="dateCol" text="Date du dépôt" prefWidth="200"/>
+            </columns>
+        </TableView>
+    </center>
+
+</BorderPane>
