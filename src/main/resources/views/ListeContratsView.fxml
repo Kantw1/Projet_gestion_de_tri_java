@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="ihm.ListeContratsController">
+
+    <top>
+        <Label text="Liste des Commerces"
+               style="-fx-font-size: 24px; -fx-font-weight: bold;"
+               BorderPane.alignment="CENTER"/>
+    </top>
+
+    <center>
+        <VBox spacing="15" alignment="CENTER">
+            <TableView fx:id="commerceTable" prefWidth="600" prefHeight="400">
+                <columns>
+                    <TableColumn fx:id="idCol" text="ID" prefWidth="100"/>
+                    <TableColumn fx:id="nomCol" text="Nom du Commerce" prefWidth="500"/>
+                </columns>
+            </TableView>
+
+            <HBox spacing="20" alignment="CENTER">
+                <Button text="Voir Contrats Associés" onAction="#handleVoirContrats" />
+                <Button text="Voir Catégories" onAction="#handleVoirCategories" />
+                <Button text="Ajouter un Commerce" onAction="#handleAjouterCommerce" /> <!-- ✅ AJOUTÉ ICI -->
+            </HBox>
+        </VBox>
+    </center>
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+</BorderPane>

@@ -19,20 +19,19 @@ public class CommerceDAO {
      * Le champ ID est auto-généré par la BDD.
      */
     public void insert(Commerce commerce) throws SQLException {
-        String sql = "INSERT INTO commerce (nom, centreID) VALUES (?, ?)";
+        String sql = "INSERT INTO commerce (nom) VALUES (?)";  // ✅ on enlève centreID
         try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, commerce.getNom());
-            stmt.setInt(2, commerce.getCentre().getId());
+            stmt.setString(1, commerce.getNom()); // ✅ uniquement le nom
             stmt.executeUpdate();
 
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 int idGenere = rs.getInt(1);
-                // si jamais tu ajoutes un setId() dans Commerce, tu peux faire :
-                // commerce.setId(idGenere);
+                // commerce.setId(idGenere);  // optionnel si besoin
             }
         }
     }
+
 
     /**
      * Récupère un commerce par son ID.
@@ -111,7 +110,21 @@ public class CommerceDAO {
         }
         return commercesDisponibles;
     }
-
-
+    // Retourne tous les commerces, peu importe les centres ou contrats
+    public List<Commerce> getAllWithoutCentre() throws SQLException {
+        List<Commerce> commerces = new ArrayList<>();
+        String sql = "SELECT * FROM commerce";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                commerces.add(new Commerce(
+                        rs.getInt("id"),
+                        rs.getString("nom"),
+                        null // Pas besoin de CentreDeTri ici
+                ));
+            }
+        }
+        return commerces;
+    }
 
 }

@@ -55,6 +55,20 @@ public class AdminController {
             infoLabel.setText("Erreur lors de l'ouverture de la liste des centres !");
         }
     }
+    @FXML
+    private void handleVoirContrats() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ListeContratsView.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Liste des Contrats de Partenariat");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
 

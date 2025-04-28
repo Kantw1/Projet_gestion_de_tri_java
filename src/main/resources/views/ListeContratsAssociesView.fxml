@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="ihm.ListeContratsAssociesController">
+
+    <top>
+        <Label text="Contrats Associés au Commerce"
+               style="-fx-font-size: 24px; -fx-font-weight: bold;"
+               BorderPane.alignment="CENTER"/>
+    </top>
+
+    <center>
+        <TableView fx:id="contratTable" prefWidth="600" prefHeight="400">
+            <columns>
+                <TableColumn fx:id="idCol" text="ID" prefWidth="100"/>
+                <TableColumn fx:id="dateDebutCol" text="Date Début" prefWidth="250"/>
+                <TableColumn fx:id="dateFinCol" text="Date Fin" prefWidth="250"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+</BorderPane>

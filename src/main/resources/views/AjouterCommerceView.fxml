@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="ihm.AjouterCommerceController">
+
+    <center>
+        <VBox spacing="15" alignment="CENTER">
+            <Label text="Ajouter un Commerce"
+                   style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+            <TextField fx:id="nomField" promptText="Nom du commerce" prefWidth="250"/>
+
+            <Button text="Valider" onAction="#handleValider" prefWidth="150"/>
+
+        </VBox>
+    </center>
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+</BorderPane>

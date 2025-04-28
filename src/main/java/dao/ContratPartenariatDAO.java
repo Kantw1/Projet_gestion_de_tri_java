@@ -52,23 +52,34 @@ public class ContratPartenariatDAO {
         return null;
     }
 
-    public List<ContratPartenariat> getAll(CentreDeTri centre, Commerce commerce) throws SQLException {
+    public List<ContratPartenariat> getAll() throws SQLException {
         List<ContratPartenariat> contrats = new ArrayList<>();
-        String sql = "SELECT * FROM contratPartenariat";
-        try (Statement stmt = conn.createStatement()) {
-            ResultSet rs = stmt.executeQuery(sql);
+        String sql = "SELECT cp.id, cp.dateDebut, cp.dateFin, c.id AS commerceId, c.nom AS commerceNom " +
+                "FROM contratPartenariat cp " +
+                "JOIN commerce c ON cp.commerceID = c.id";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                contrats.add(new ContratPartenariat(
+                Commerce commerce = new Commerce(
+                        rs.getInt("commerceId"),
+                        rs.getString("commerceNom"),
+                        null // On n'a pas besoin ici du CentreDeTri dans la table
+                );
+
+                ContratPartenariat contrat = new ContratPartenariat(
                         rs.getInt("id"),
                         rs.getDate("dateDebut").toLocalDate(),
                         rs.getDate("dateFin").toLocalDate(),
-                        centre,
+                        null, // Pas besoin de CentreDeTri complet ici
                         commerce
-                ));
+                );
+                contrats.add(contrat);
             }
         }
         return contrats;
     }
+
 
     public void update(ContratPartenariat contrat) throws SQLException {
         String sql = "UPDATE contratPartenariat SET dateDebut = ?, dateFin = ?, centreID = ?, commerceID = ? WHERE id = ?";
@@ -124,21 +135,42 @@ public class ContratPartenariatDAO {
         }
         return contrats;
     }
-    public List<ContratPartenariat> getAllByCentre(CentreDeTri centre) throws SQLException {
+    public List<ContratPartenariat> getContratsByCommerce(Commerce commerce) throws SQLException {
         List<ContratPartenariat> contrats = new ArrayList<>();
-        String sql = "SELECT * FROM contratPartenariat WHERE centreID = ?";
+        String sql = """
+        SELECT cp.id, cp.dateDebut, cp.dateFin,
+               ct.id AS centreId,
+               c.id AS commerceId, c.nom AS commerceNom
+        FROM contratPartenariat cp
+        JOIN commerce c ON cp.commerceID = c.id
+        JOIN centreDeTri ct ON cp.centreID = ct.id
+        WHERE c.id = ?
+    """;
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, centre.getId());
+            stmt.setInt(1, commerce.getId());
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                Commerce commerce = new Commerce(rs.getInt("commerceID"), "", centre); // juste l'ID, pas besoin du nom
-                contrats.add(new ContratPartenariat(
+                CentreDeTri centre = new CentreDeTri(
+                        rs.getInt("centreId"),
+                        "",
+                        ""
+                );
+
+                Commerce comm = new Commerce(
+                        rs.getInt("commerceId"),
+                        rs.getString("commerceNom"),
+                        centre
+                );
+
+                ContratPartenariat contrat = new ContratPartenariat(
                         rs.getInt("id"),
                         rs.getDate("dateDebut").toLocalDate(),
                         rs.getDate("dateFin").toLocalDate(),
                         centre,
-                        commerce
-                ));
+                        comm
+                );
+                contrats.add(contrat);
             }
         }
         return contrats;

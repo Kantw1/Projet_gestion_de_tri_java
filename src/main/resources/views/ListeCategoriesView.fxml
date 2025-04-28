@@ -12,13 +12,17 @@
     </top>
 
     <center>
-        <TableView fx:id="categorieTable" prefWidth="600" prefHeight="400">
-            <columns>
-                <TableColumn fx:id="nomCol" text="Nom de la Catégorie" prefWidth="300"/>
-                <TableColumn fx:id="pointsCol" text="Points Nécessaires" prefWidth="150"/>
-                <TableColumn fx:id="reductionCol" text="Réduction (%)" prefWidth="150"/>
-            </columns>
-        </TableView>
+        <VBox spacing="20" alignment="CENTER">
+            <TableView fx:id="categorieTable" prefWidth="600" prefHeight="400">
+                <columns>
+                    <TableColumn fx:id="nomCol" text="Nom de la Catégorie" prefWidth="300"/>
+                    <TableColumn fx:id="pointsCol" text="Points Nécessaires" prefWidth="150"/>
+                    <TableColumn fx:id="reductionCol" text="Réduction (%)" prefWidth="150"/>
+                </columns>
+            </TableView>
+
+            <Button text="Ajouter une Catégorie" onAction="#handleAjouterCategorie" style="-fx-font-size: 16px;" />
+        </VBox>
     </center>
 
     <padding>

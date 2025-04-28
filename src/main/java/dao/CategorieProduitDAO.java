@@ -103,5 +103,21 @@ public class CategorieProduitDAO {
             stmt.executeUpdate();
         }
     }
+    public int insertAndGetId(CategorieProduit categorie) throws SQLException {
+        String sql = "INSERT INTO categorieProduit (nom, pointNecessaire, bonReduction) VALUES (?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, categorie.getNom());
+            stmt.setInt(2, categorie.getPointNecessaire());
+            stmt.setFloat(3, categorie.getBonReduction());
+            stmt.executeUpdate();
+
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1); // retourne l'ID généré
+            } else {
+                throw new SQLException("Erreur lors de l'insertion de la catégorie, aucun ID généré.");
+            }
+        }
+    }
 
 }

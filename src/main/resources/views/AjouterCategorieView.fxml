@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="ihm.AjouterCategorieController">
+
+    <top>
+        <Label text="Ajouter une Catégorie"
+               style="-fx-font-size: 24px; -fx-font-weight: bold;"
+               BorderPane.alignment="CENTER" />
+    </top>
+
+    <center>
+        <VBox spacing="15" alignment="CENTER">
+            <Label text="Nom de la Catégorie" />
+            <TextField fx:id="nomField" promptText="Ex: Alimentaire" prefWidth="300"/>
+
+            <Label text="Points Nécessaires" />
+            <TextField fx:id="pointsField" promptText="Ex: 100" prefWidth="300"/>
+
+            <Label text="Pourcentage de Réduction (%)" />
+            <TextField fx:id="reductionField" promptText="Ex: 20" prefWidth="300"/>
+
+            <Button text="Valider" onAction="#handleValider" style="-fx-font-size: 16px;"/>
+        </VBox>
+    </center>
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+</BorderPane>

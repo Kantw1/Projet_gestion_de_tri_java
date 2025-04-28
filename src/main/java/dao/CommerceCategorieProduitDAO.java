@@ -53,5 +53,13 @@ public class CommerceCategorieProduitDAO {
         }
         return commerces;
     }
+    public void associerCategorieACommerce(int commerceId, int categorieId) throws SQLException {
+        String sql = "INSERT INTO commerceCategorieProduit (commerceID, categorieID) VALUES (?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, commerceId);
+            stmt.setInt(2, categorieId);
+            stmt.executeUpdate();
+        }
+    }
 
 }
