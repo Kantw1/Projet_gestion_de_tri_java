@@ -24,7 +24,8 @@ public class CommerceTest {
         centre = new CentreDeTri(1, "Centre_1", "Adresse Test");
         commerce = new Commerce(1, "Commerce Test", centre);
 
-        utilisateur = new Utilisateur(1, "Client", 1234);
+        utilisateur = new Utilisateur(1, "Client", 100, 1);
+
         utilisateur.ajouterPoints(100); // Ajout de 100 points
 
         cat1 = new CategorieProduit(1, "Produit", 50, 0.2f);
@@ -43,7 +44,7 @@ public class CommerceTest {
 
         List<CategorieProduit> produits = new ArrayList<>();
         produits.add(cat1);
-        commande = new BonDeCommande(1, utilisateur, produits, commerce);
+        commande = new BonDeCommande(1, utilisateur, cat1, LocalDate.now(), 0);
     }
 
     @Test
